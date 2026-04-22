@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # --- SERVICIO BACKEND (PYTHON/FLASK) ---
+  backend:
+    build: 
+      context: ./backend
+    container_name: brain-viz-backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/data:/app/data
+    environment:
+      - FLASK_ENV=development
+
+  # --- SERVICIO FRONTEND (REACT/THREE.JS) ---
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: brain-viz-frontend
+    ports:
+      - "3000:5173" # Accederemos desde localhost:3000, Vite sirve en 5173
+    volumes:
+      - ./frontend/src:/app/src  # Hot-Reloading: cambios en src se ven al instante
+      - ./frontend/vite.config.js:/app/vite.config.js
+      # TRUCO IMPORTANTE: Esto evita que tu carpeta local vacía borre 
+      # los node_modules instalados dentro del contenedor
+      - /app/node_modules 
+    depends_on:
+      - backend # Espera a que el backend exista antes de iniciar
+
+networks:
+  default:
+    name: brain-net

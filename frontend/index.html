@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brain Viz · Connectome</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg: #070a10;
+        --surface: rgba(255,255,255,0.04);
+        --surface-strong: rgba(255,255,255,0.07);
+        --border: rgba(255,255,255,0.08);
+        --border-strong: rgba(255,255,255,0.14);
+        --text: #e6e9ef;
+        --muted: #8b93a7;
+        --accent: #7dd3fc;
+        --accent-2: #a78bfa;
+        --accent-3: #f472b6;
+        --danger: #fb7185;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+      body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        color: var(--text);
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+      #root { width: 100%; height: 100%; position: relative; }
+
+      .aurora {
+        position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+        background:
+          radial-gradient(60vmax 60vmax at 15% 10%, rgba(125,211,252,0.18), transparent 60%),
+          radial-gradient(55vmax 55vmax at 85% 0%, rgba(167,139,250,0.18), transparent 60%),
+          radial-gradient(40vmax 40vmax at 50% 110%, rgba(244,114,182,0.12), transparent 60%),
+          var(--bg);
+      }
+      .aurora::before, .aurora::after {
+        content: ''; position: absolute; inset: -20%;
+        background: radial-gradient(closest-side, rgba(125,211,252,0.25), transparent 70%);
+        filter: blur(60px); opacity: 0.6;
+        animation: drift 24s ease-in-out infinite alternate;
+      }
+      .aurora::after {
+        background: radial-gradient(closest-side, rgba(167,139,250,0.22), transparent 70%);
+        animation-duration: 32s; animation-delay: -8s;
+      }
+      @keyframes drift {
+        0%   { transform: translate(-10%, -5%) scale(1); }
+        50%  { transform: translate(8%, 4%)  scale(1.15); }
+        100% { transform: translate(-4%, 8%) scale(0.95); }
+      }
+      .grain {
+        position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.035;
+        background-image: radial-gradient(rgba(255,255,255,0.8) 1px, transparent 1px);
+        background-size: 3px 3px;
+        mix-blend-mode: overlay;
+      }
+
+      ::-webkit-scrollbar { width: 8px; height: 8px; }
+      ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 8px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+
+      input:focus, button:focus { outline: none; }
+    </style>
+  </head>
+  <body>
+    <div class="aurora"></div>
+    <div class="grain"></div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

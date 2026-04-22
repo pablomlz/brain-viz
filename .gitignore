@@ -1,0 +1,24 @@
+# Entornos virtuales de Python
+.venv/
+venv/
+env/
+
+# Ficheros de caché y compilados de Python
+__pycache__/
+*.pyc
+
+# Ficheros de entorno
+.env
+.env.*
+
+# Dependencias de Node.js
+node_modules/
+
+# Ficheros de build del frontend
+dist/
+
+# Logs
+npm-debug.log*
+
+# Ficheros del sistema operativo
+.DS_Store
