@@ -4,6 +4,8 @@ import { OrbitControls, Html, Stars } from '@react-three/drei';
 import * as THREE from 'three';
 import Login from './Login';
 
+const API_BASE_URL = ''; // Las peticiones van al mismo host; Vite proxy las redirige al backend
+
 const GROUP_PALETTE = [
   '#7dd3fc', '#a78bfa', '#f472b6', '#fbbf24',
   '#34d399', '#f87171', '#60a5fa', '#c084fc',
@@ -19,7 +21,7 @@ function BrainVis({ setMeta, hovered, setHovered, settings }) {
   const groupRef = useRef();
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/brain-data')
+    fetch(`${API_BASE_URL}/api/brain-data`)
       .then((res) => res.json())
       .then((brainData) => {
         if (brainData?.error) {
@@ -254,10 +256,10 @@ export default function App() {
 
       {/* Bottom-right: quick links */}
       <div style={hudBottomRight}>
-        <a href="http://localhost:5000/health" target="_blank" rel="noreferrer" style={linkStyle}>
+        <a href={`${API_BASE_URL}/health`} target="_blank" rel="noreferrer" style={linkStyle}>
           <span style={{ ...pulse, background: '#4ade80' }} /> Health
         </a>
-        <a href="http://localhost:5000/api/brain-data?format=html" target="_blank" rel="noreferrer" style={linkStyle}>
+        <a href={`${API_BASE_URL}/api/brain-data?format=html`} target="_blank" rel="noreferrer" style={linkStyle}>
           API Data
         </a>
       </div>

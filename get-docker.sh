@@ -1,5 +1,16 @@
 #!/bin/sh
 set -e
+
+# On macOS, Docker Engine via this script is not supported.
+# Docker Desktop already includes Docker Engine and Compose.
+if [ "$(uname -s)" = "Darwin" ]; then
+	echo "macOS detectado."
+	echo "Este script instala Docker Engine en Linux, no en macOS."
+	echo "Instala Docker Desktop para Mac desde: https://www.docker.com/products/docker-desktop/"
+	echo "Luego verifica con: docker --version && docker compose version"
+	exit 0
+fi
+
 # Docker Engine for Linux installation script.
 #
 # This script is intended as a convenient way to configure docker's package

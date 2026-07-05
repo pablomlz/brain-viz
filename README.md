@@ -167,6 +167,18 @@ Instrucciones para levantar el entorno de desarrollo desde cero.
 * Docker y Docker Compose instalados.
 * Archivos de datos (`AAL90.node`, `AAL90.edge`) ubicados en `backend/data/`.
 
+### macOS (recomendado)
+
+En Mac, instala **Docker Desktop** (no `get-docker.sh`, ese script es para Linux).
+
+1. Instala Docker Desktop para Mac.
+2. Abre Docker Desktop y espera a que indique que está corriendo.
+3. Verifica:
+    ```bash
+    docker --version
+    docker compose version
+    ```
+
 ### Comandos de Ejecución
 
 1.  **Clonar/Descargar** el repositorio.
@@ -174,15 +186,33 @@ Instrucciones para levantar el entorno de desarrollo desde cero.
     ```bash
     docker compose up --build
     ```
-3.  **Acceso a la Aplicación:**
-    * Frontend (Visualizador): [http://localhost:3000](http://localhost:3000)
-    * Backend (API Status): [http://localhost:5000/health](http://localhost:5000/health)
-    * API Datos (JSON): [http://localhost:5000/api/brain-data](http://localhost:5000/api/brain-data)
+3.  **Descubre los puertos asignados automáticamente:**
+    ```bash
+    docker compose ps
+    ```
+    Busca las columnas "Published" para ver a qué puertos del host se han asignado los servicios. Ejemplo de salida:
+    
+    | Name                 | Command           | State | Ports                |
+    |----------------------|-------------------|-------|----------------------|
+    | brain-viz-backend    | ...               | Up    | 0.0.0.0:49154->5000/ |
+    | brain-viz-frontend   | ...               | Up    | 0.0.0.0:49153->5173/ |
+    
+    En este ejemplo:
+    - Backend: http://localhost:49154/health
+    - Frontend: http://localhost:49153
 
 4.  **Detener la aplicación:**
     ```bash
     docker compose down
     ```
+
+### Cambiar puertos sin editar archivos
+
+Si necesitas puertos fijos, puedes volver a editar el docker-compose.yml o usar variables de entorno como antes, pero por defecto ahora los puertos se asignan automáticamente y no habrá conflictos.
+
+### Troubleshooting macOS: puerto 5000 ocupado
+
+Ya no deberías tener problemas de puertos ocupados, ya que Docker asigna puertos libres automáticamente. Si necesitas saber el puerto, usa `docker compose ps` tras levantar los servicios.
 
 ##  Configuración de Puertos y Red
 
@@ -190,6 +220,8 @@ Instrucciones para levantar el entorno de desarrollo desde cero.
 | :--- | :--- | :--- | :--- |
 | **Frontend** | 5173 (Vite default) | **3000** | Puerto estándar para desarrollo React. |
 | **Backend** | 5000 (Flask default) | **5000** | Puerto estándar API Python. |
+
+> Nota: puedes sobreescribir estos puertos con `FRONTEND_PORT` y `BACKEND_PORT` al ejecutar `docker compose`.
 
 
 

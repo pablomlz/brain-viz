@@ -1,0 +1,435 @@
+\chapter{Planificación}
+
+En la transformación entre la fase del análisis (donde se definen los requisitos y el
+funcionamiento del sistema) y la fase de desarrollo es necesario establecer una estrategia
+de ejecución detallada. El objetivo de este capítulo es establecer la metodología, la técnica
+y la parte económica de esta aplicación web.
+
+Para ello se detallan todos los recursos necesarios, organizando las tareas en el tiempo
+mediante una planificación en forma de calendario, y se analizan las tecnologías elegidas
+para programar y desarrollar cada punto. Para finalizar, se calcula el coste final estimado
+del proyecto.
+
+\section{Organización y recursos}
+
+Una buena estructura a la hora de desarrollar un proyecto software como este desde el
+inicio es fundamental para poder realizarlo de forma exitosa y evitando complicaciones. En
+este caso, se utiliza una estructura ágil y eficaz basada en sprints (ciclos cortos de trabajo),
+con el objetivo de ir creando pequeñas versiones funcionales del proyecto de manera
+continua. Esto aumenta tanto la claridad del desarrollo como la capacidad de adaptación
+ante cambios o errores detectados a lo largo del proceso.
+
+De este modo, el director del trabajo puede ver los avances e ir validando paso a paso. Por
+mi parte, como alumno del TFG, asumo todos los roles del equipo de desarrollo, llevando a
+cabo todas las fases de este proyecto.
+
+Además de definir la metodología, es fundamental establecer con qué medios se cuenta
+para poder realizar el proyecto. Esto se divide en dos grupos principales: los recursos
+humanos y los recursos materiales. A continuación se analizan en detalle estos puntos.
+
+\subsection{Recursos humanos}
+
+Como se ha mencionado previamente, y es lógico en un TFG, se asumen todos los roles que
+se describen en este apartado, pero para poder hacer una estimación realista de los costes
+se toma como referencia el mercado laboral actual de España. Se simula que este proyecto
+lo llevan a cabo varios profesionales.
+
+Dependiendo del sprint en el que se esté, hace falta un perfil técnico u otro. Teniendo esto
+en cuenta, se han definido los siguientes roles, que serán necesarios a lo largo del proyecto.
+
+\begin{table}[H]
+	\centering
+	\caption{Salario medio del personal.}
+	\begin{tabularx}{0.75\textwidth}{X r r}
+		\toprule
+		\textbf{Rol} & \textbf{Salario anual bruto} & \textbf{Salario por hora} \\
+		\midrule
+		Analista                  & 31.500\,\euro{} & 16,15\,\euro{} \\
+		Ingeniero de Datos        & 30.000\,\euro{} & 15,38\,\euro{} \\
+		Ingeniero de Requisitos   & 35.000\,\euro{} & 17,95\,\euro{} \\
+		Ingeniero de Software     & 35.000\,\euro{} & 17,95\,\euro{} \\
+		Programador               & 28.500\,\euro{} & 14,62\,\euro{} \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+Estos datos son una aproximación basada en ofertas reales, pero pueden variar en función
+del momento en el que se consulten o dependiendo del nivel y experiencia de los
+profesionales.
+
+A lo largo de cada tarea se reparten estos roles. En este caso, al ser una aplicación web de
+visualización 3D, las tareas se dividen entre backend y frontend. Aunque las tareas
+concretas pueden cambiar en cada ciclo, se han definido las siguientes asignaciones.
+
+\begin{table}[H]
+	\centering
+	\caption{Secciones generales de cada sprint.}
+	\begin{tabularx}{\textwidth}{X >{\centering\arraybackslash}p{1.8cm} l}
+		\toprule
+		\textbf{Sección} & \textbf{Capa} & \textbf{Encargado} \\
+		\midrule
+		Procesamiento de datos y algoritmos        & Backend  & Ingeniero de Datos \\
+		Diseñar la API y su comunicación           & Backend  & Ingeniero de Software \\
+		Diseñar el entorno y la visualización 3D   & Frontend & Ingeniero de Software \\
+		Programación e integración del código      & Ambas    & Programador \\
+		Pruebas de software y validación           & Ambas    & Ingeniero de Software \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+Partiendo de esta base, y sabiendo que la aplicación sigue un modelo Cliente-Servidor con
+contenedores, más adelante se calcula cuánto cuesta el trabajo humano y cómo se reparten
+sus horas a lo largo del tiempo de trabajo.
+
+\subsection{Recursos materiales}
+
+Para poder sacar adelante la aplicación también es fundamental contar con unas buenas
+herramientas, además del personal técnico. Se necesita software y hardware a la altura de
+este proyecto para poder programarlo y hacer pruebas de calidad previas a su salida.
+
+Para poder obtener un presupuesto y saber cuánto cuesta cada una de estas herramientas,
+que son más abstractas, se toma como referencia lo que marca la Ley del Impuesto sobre
+Sociedades. Según esta ley, se puede estimar que los productos software tienen una vida
+útil de 6 años (2190 días) antes de quedar obsoletos. En cuanto a las herramientas hardware,
+la estimación está fijada en 8 años (2920 días).
+
+Una ventaja que se encuentra es que la mayoría de las tecnologías utilizadas (como Docker,
+VS Code, Python y React) son gratuitas o de código abierto, lo que hace el proyecto más
+económico. En la siguiente tabla se puede ver todo de forma más detallada.
+
+\begin{table}[H]
+	\centering
+	\caption{Productos software utilizados.}
+	\begin{tabularx}{\textwidth}{X r c r}
+		\toprule
+		\textbf{Licencias} & \textbf{Coste total} & \textbf{Amortización} & \textbf{Coste diario} \\
+		\midrule
+		Microsoft Windows 11 Pro               & 12,90\,\euro{} & 2190 días & 0,005\,\euro{}/día \\
+		Microsoft Office 2024 Pro              & 12,49\,\euro{} & 2190 días & 0,005\,\euro{}/día \\
+		VS Code y otras tecnologías gratuitas  & 0,00\,\euro{}  & 2190 días & 0,000\,\euro{}/día \\
+		\midrule
+		\multicolumn{3}{r}{\textbf{Total}} & \textbf{0,010\,\euro{}/día} \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{Productos hardware utilizados.}
+	\begin{tabularx}{\textwidth}{X l r c r}
+		\toprule
+		\textbf{Producto} & \textbf{Tipo} & \textbf{Coste total} & \textbf{Amortización} & \textbf{Coste diario} \\
+		\midrule
+		ASUS Zenbook 14         & Portátil & 1.099,00\,\euro{} & 2920 días & 0,38\,\euro{}/día \\
+		HP OMEN 24 180Hz        & Monitor  & 169,00\,\euro{}   & 2920 días & 0,06\,\euro{}/día \\
+		Logitech G203           & Ratón    & 29,99\,\euro{}    & 2920 días & 0,01\,\euro{}/día \\
+		Teclado inalámbrico TKL & Teclado  & 69,99\,\euro{}    & 2920 días & 0,02\,\euro{}/día \\
+		\midrule
+		\multicolumn{4}{r}{\textbf{Total}} & \textbf{0,47\,\euro{}/día} \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\section{Planificación temporal}
+
+Para poder organizar la planificación en forma de calendario de una forma acertada, se
+toman jornadas laborales estándar de 8 horas; los sprints mencionados en puntos anteriores
+son la mejor forma de estructurar el trabajo en la línea temporal.
+
+Es fundamental organizar el orden de preferencia de las tareas. Por ejemplo, no se pueden
+programar los filtros visuales si aún no se ha realizado la renderización de las conexiones en
+el modelo 3D. Por ello, los requisitos funcionales se clasifican en el siguiente orden de
+prioridad, en una escala de 1 a 4, donde los requisitos con prioridad 1 son esenciales y
+prioritarios, mientras que los de nivel 4 son utilidades secundarias. Esta sección se refiere
+únicamente al desarrollo de software puro.
+
+\begin{table}[H]
+	\centering
+	\caption{Priorización de requisitos.}
+	\begin{tabularx}{\textwidth}{>{\centering\arraybackslash}p{1.3cm} X >{\centering\arraybackslash}p{1.8cm}}
+		\toprule
+		\textbf{RF} & \textbf{Resumen de funcionalidad} & \textbf{Prioridad} \\
+		\midrule
+		RF 1  & Carga de red cerebral (ficheros locales o atlas precargados). & 1 \\
+		RF 2  & Renderizado espacial 3D de nodos y aristas ponderadas. & 1 \\
+		RF 3  & Interacción y controles de cámara orbital (rotar, zoom, paneo). & 1 \\
+		RF 4  & Filtrado dinámico de conexiones visibles mediante umbral. & 2 \\
+		RF 5  & Consulta de información detallada y métricas de cada nodo. & 2 \\
+		RF 6  & Selección e inspección visual de un nodo haciendo clic. & 2 \\
+		RF 7  & Personalización gráfica (colores/tamaños según atributos biológicos). & 3 \\
+		RF 8  & Panel lateral (HUD) con estadísticas globales de la red activa. & 3 \\
+		RF 9  & Exportación y descarga de la visualización actual como imagen. & 4 \\
+		RF 10 & Restablecimiento rápido de la vista y parámetros iniciales. & 4 \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+Una vez claros los requisitos más urgentes, se pueden asignar a cada uno de los sprints. En
+total, se divide el desarrollo de la plataforma en cuatro sprints. En la siguiente tabla se
+muestra cómo quedan distribuidas estas funcionalidades. Junto a cada bloque se incluye la
+estimación de días laborables que llevará completarlo, medición fundamental para montar
+el calendario definitivo.
+
+\begin{table}[H]
+	\centering
+	\caption{Asignación de requisitos por sprint.}
+	\begin{tabularx}{\textwidth}{>{\centering\arraybackslash}p{1.6cm} >{\centering\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}X}
+		\toprule
+		\textbf{Sprint} & \textbf{Estimación temporal} & \textbf{Requisitos funcionales asignados} \\
+		\midrule
+		1 & 18 días &
+			RF 1. Carga de red cerebral (ficheros locales o atlas precargados). \newline
+			RF 2. Renderizado espacial 3D de nodos y aristas ponderadas. \\
+		\addlinespace
+		2 & 13 días &
+			RF 3. Interacción y controles de cámara orbital (rotar, zoom...). \newline
+			RF 4. Filtrado dinámico de conexiones visibles mediante umbral. \\
+		\addlinespace
+		3 & 12 días &
+			RF 5. Consulta de información detallada y métricas de cada nodo. \newline
+			RF 6. Selección e inspección visual de un nodo haciendo clic. \\
+		\addlinespace
+		4 & 8 días &
+			RF 7. Personalización gráfica (colores/tamaños según atributos biológicos). \newline
+			RF 8. Panel lateral (HUD) con estadísticas globales de la red activa. \newline
+			RF 9. Exportación y descarga de la visualización actual como imagen. \newline
+			RF 10. Restablecimiento rápido de la vista y parámetros iniciales. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\section{Análisis de tecnologías disponibles}
+
+El objetivo de este proyecto es el diseño, desarrollo y despliegue de una aplicación web
+interactiva de visualización 3D de redes neuronales. La estructura de esta aplicación se
+divide en dos componentes principales:
+
+\begin{itemize}
+	\item \textbf{Servicio de backend:} encargado de llevar a cabo el procesamiento y análisis
+		de las redes neuronales. Su función es aplicar análisis a los grafos de las fuentes de
+		datos y exponer los resultados a través de una API.
+	\item \textbf{Aplicación cliente o frontend:} encargada de la interacción con el usuario y de
+		la visualización 3D en el navegador del cliente.
+\end{itemize}
+
+La selección de estas tecnologías se ha basado en la idoneidad para el problema específico.
+A continuación se analizan y comparan las tecnologías consideradas.
+
+\subsection{Framework de Backend y Análisis de Grafos}
+
+Para el backend se debe tener en cuenta que debe cumplir con dos requisitos clave:
+
+\begin{itemize}
+	\item Servir los datos de las redes al cliente a través de una API.
+	\item Utilizar bibliotecas de análisis de grafos para el procesamiento de las matrices de
+		adyacencia.
+\end{itemize}
+
+Ya que Python contiene bibliotecas de análisis de grafos implementadas de forma nativa
+(como NetworkX, igraph o graph-tool), elegir un framework de backend en Python es la
+decisión más eficiente y lógica. Con esto se evita la dificultad de crear servicios de
+intercomunicación entre lenguajes.
+
+\begin{table}[H]
+	\centering
+	\caption{Alternativas de backend en Python.}
+	\small
+	\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}X}
+		\toprule
+		\textbf{Framework} & \textbf{Arquitectura} & \textbf{Utilidad para el proyecto} \\
+		\midrule
+		Django & Monolítico (Full-stack, ``pilas incluidas'') &
+			Incluye un ORM, un panel de administrador y un sistema de autenticación.
+			Estos elementos no son imprescindibles para el núcleo de esta aplicación web,
+			la cual se enfoca en un servicio de datos. \\
+		\addlinespace
+		Flask & Micro-framework (Minimalista) &
+			Para desarrollar APIs REST livianas, Flask es perfecto. Posibilita una
+			integración simple y directa con librerías como NetworkX. Su filosofía
+			minimalista posibilita construir únicamente lo que se necesita, lo cual es
+			ideal para un servicio de API limitado. \\
+		\addlinespace
+		FastAPI & Micro-framework (Moderno, Asíncrono) &
+			Proporciona un rendimiento más elevado debido a su carácter asíncrono
+			(ASGI). Produce de manera automática documentación interactiva
+			(OpenAPI/Swagger), lo que representa un beneficio importante para el
+			desarrollo y la depuración de la API. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\textbf{Selección para el backend:}
+
+Django es muy complejo y su enfoque monolítico no ayuda al desarrollo de la aplicación,
+por lo que se descarta, quedando las opciones de Flask y FastAPI:
+
+\begin{itemize}
+	\item \textbf{Flask:} permite tener un endpoint funcional de forma rápida y fácil de
+		integrar. Es la opción más directa, siendo sencilla también la integración con
+		NetworkX.
+	\item \textbf{FastAPI:} tiene un mayor rendimiento asíncrono, es una alternativa más
+		moderna y permite la validación de datos mediante \textit{type hints}. La
+		documentación automática también es una ventaja notable.
+\end{itemize}
+
+\textbf{Selección final:} la mejor opción para desarrollar este proyecto es Flask, ya que
+permite crear una API totalmente funcional para leer los ficheros de forma directa, para
+después procesarlos con NetworkX y enviarlos como JSON al frontend.
+
+\subsection{Framework de Frontend (UI)}
+
+El frontend es la parte con la que interactúa el usuario. La aplicación web debe gestionar la
+visualización 3D y controlar el estado de la aplicación.
+
+\begin{table}[H]
+	\centering
+	\caption{Alternativas de frontend.}
+	\small
+	\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.1cm} >{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}X}
+		\toprule
+		\textbf{Framework} & \textbf{Paradigma} & \textbf{Ecosistema} & \textbf{Integración 3D} \\
+		\midrule
+		React & Basado en componentes (Declarativo) &
+			Enorme. Mantenido por Meta. &
+			Contiene bindings que integran Three.js. \\
+		\addlinespace
+		Vue.js & Basado en componentes (Progresivo) &
+			Grande. Impulsado por la comunidad. &
+			Existen integraciones como \textit{trois}, que también integran Three.js. \\
+		\addlinespace
+		Angular & Framework completo (MVC / Componentes) &
+			Grande. Mantenido por Google. &
+			La integración con librerías 3D es menos común o de más bajo nivel. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\textbf{Selección para el frontend:} para decidir entre estas tres opciones:
+
+\begin{itemize}
+	\item \textbf{Angular:} no aporta beneficios respecto al resto y queda descartado por su
+		dificultad y rigidez.
+	\item \textbf{React y Vue:} son mejores opciones que Angular, pero React tiene una ventaja
+		superior gracias al ecosistema de visualización 3D, en concreto al binding
+		\textit{react-three-fiber}, que permite desarrollar con bastante potencia el
+		renderizado 3D usando Three.js.
+\end{itemize}
+
+\textbf{Selección final:} la mejor opción para el desarrollo de la aplicación web a nivel de UI
+es React, que por su gran estabilidad, popularidad y sobre todo su buena integración 3D es
+la mejor forma de gestionar el desafío de una interfaz 3D interactiva.
+
+\subsection{Tecnología de visualización 3D}
+
+La biblioteca elegida para la visualización 3D debe ser capaz de renderizar grafos en un
+canvas WebGL y permitir una interacción fluida para una buena experiencia de usuario.
+
+\begin{table}[H]
+	\centering
+	\caption{Tecnologías de visualización 3D consideradas.}
+	\small
+	\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.0cm} >{\raggedright\arraybackslash}p{2.4cm} >{\raggedright\arraybackslash}p{2.1cm} >{\raggedright\arraybackslash}X}
+		\toprule
+		\textbf{Tecnología} & \textbf{Tipo} & \textbf{Nivel de abstracción} & \textbf{Caso de uso} \\
+		\midrule
+		PlayCanvas & Motor de juego 3D (con editor) & Alto &
+			Motor enfocado al desarrollo de videojuegos, con editor visual en la nube,
+			pero su modelo no se adapta a la carga dinámica de datos. \\
+		\addlinespace
+		luma.gl / deck.gl & Framework de visualización de datos & Alto (geodatos) &
+			Optimizado para la carga y visualización de grandes cantidades de datos
+			geoespaciales, como mapas. No diseñado para grafos abstractos en 3D. \\
+		\addlinespace
+		graph.gl & Framework de visualización de grafos & Alto (grafos) &
+			Proyecto con una comunidad pequeña y menos mantenido que el resto de
+			alternativas. Alto riesgo de encontrar problemas y poca documentación. \\
+		\addlinespace
+		Babylon.js & Motor de juego / framework 3D & Medio-Alto &
+			Mantenido por Microsoft. Es un ``todo en uno'' muy potente y
+			relativamente sencillo. Ecosistema robusto. \\
+		\addlinespace
+		Three.js & Librería de renderizado 3D & Bajo &
+			Es el estándar en la industria. La librería WebGL de más bajo nivel y más
+			utilizada. Requiere más esfuerzo en la gestión de escena, cámaras, luces y
+			bucle de renderizado manual. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\textbf{Selección para la visualización 3D:} se descartan PlayCanvas, luma.gl y graph.gl por
+no ajustarse al uso de visualización de datos 3D. La mejor elección se encuentra entre:
+
+\begin{itemize}
+	\item \textbf{Babylon.js:} una excelente opción ``todo en uno'' y relativamente sencilla de
+		implementar.
+	\item \textbf{Three.js:} más flexible y con más ejemplos disponibles.
+\end{itemize}
+
+Esta decisión está ligada a la elección previa del framework de frontend. Al haberse
+seleccionado React por sus ventajas respecto al resto de opciones, lo más lógico es usar
+Three.js, aunque no de forma pura, sino a través de un render declarativo.
+
+\textbf{Selección final:} se utiliza Three.js, mediante \textit{react-three-fiber}. Esta
+combinación mejora el equilibrio del proyecto gracias a:
+
+\begin{itemize}
+	\item \textbf{Potencia:} Three.js es la librería más potente y flexible.
+	\item \textbf{Facilidad de uso:} al usar React para gestionar la aplicación, la
+		implementación de Three.js es más sencilla gracias a react-three-fiber.
+	\item \textbf{Integración en el sistema:} react-three-fiber actúa como la conexión perfecta
+		entre ambos, permitiendo declarar componentes como luces o cámaras igual que
+		componentes de React, eliminando así las dificultades del bucle de renderizado
+		manual y facilitando la conexión con el estado de la aplicación.
+\end{itemize}
+
+\subsection{Resumen del stack seleccionado}
+
+\begin{table}[H]
+	\centering
+	\caption{Resumen del stack tecnológico seleccionado.}
+	\small
+	\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.2cm} >{\raggedright\arraybackslash}p{2.3cm} >{\raggedright\arraybackslash}p{2.9cm} >{\raggedright\arraybackslash}X}
+		\toprule
+		\textbf{Componente} & \textbf{Tecnología principal} & \textbf{Bibliotecas} & \textbf{Justificación} \\
+		\midrule
+		Backend & Python & Flask, NetworkX &
+			Integración nativa para análisis de grafos, eficiencia y enfoque minimalista
+			para APIs REST. \\
+		\addlinespace
+		Frontend & JavaScript & React, Three.js, react-three-fiber &
+			Modelo declarativo de componentes, ecosistema líder y la mejor
+			integración de su clase entre UI y renderizado 3D. \\
+		\addlinespace
+		Despliegue & Docker & Docker, Docker Compose &
+			Cumple con los requisitos del proyecto, garantiza la reproducibilidad del
+			entorno y facilita la orquestación de los servicios de backend y frontend. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\section{Estimación de costes}
+
+Para cerrar el capítulo de la planificación, se recopilan todos los datos calculados en los
+apartados anteriores y se presenta la estimación de costes final del proyecto.
+
+Como se ha visto en el resumen de las tareas, el esfuerzo en recursos humanos marca que el
+proyecto tiene una duración total de 62 días laborables. Este es exactamente el periodo de
+tiempo utilizado para calcular la parte proporcional de desgaste (amortización) que sufren
+los equipos físicos y las licencias de sistema operativo durante el desarrollo.
+
+\begin{table}[H]
+	\centering
+	\caption{Estimación de costes total del proyecto.}
+	\begin{tabularx}{0.85\textwidth}{X r}
+		\toprule
+		\textbf{Recursos} & \textbf{Coste} \\
+		\midrule
+		Recursos humanos                                        & 8.010,80\,\euro{} \\
+		Recursos hardware (62 días $\times$ 0,47\,\euro{}/día)  & 29,14\,\euro{} \\
+		Recursos software (62 días $\times$ 0,014\,\euro{}/día) & 0,87\,\euro{} \\
+		Tecnologías utilizadas                                  & 0,00\,\euro{} \\
+		\midrule
+		\textbf{Coste total} & \textbf{8.040,81\,\euro{}} \\
+		\bottomrule
+	\end{tabularx}
+\end{table}

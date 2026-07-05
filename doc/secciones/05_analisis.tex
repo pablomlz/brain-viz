@@ -1,0 +1,81 @@
+\chapter{Análisis del problema}
+ 
+El problema abordado en este trabajo consiste en diseñar e implementar una herramienta web capaz de visualizar y explorar grafos cerebrales (connectomes) de forma interactiva en tres dimensiones. Aunque existen soluciones de escritorio en el ámbito de la neuroimagen, muchas requieren entornos complejos de instalación o no están orientadas a una experiencia de uso inmediata desde navegador.
+
+En este contexto, el reto principal no es solo representar nodos y aristas, sino hacerlo de forma comprensible para el usuario final, manteniendo un equilibrio entre fidelidad de los datos, rendimiento gráfico y simplicidad de interacción.
+
+\section{Contexto y motivación}
+
+Un connectome se modela habitualmente como un grafo ponderado donde:
+
+\begin{itemize}
+	\item cada nodo representa una región cerebral,
+	\item cada arista representa una conexión estructural o funcional,
+	\item el peso de la arista expresa intensidad o relevancia de la conexión.
+\end{itemize}
+
+La combinación de alta densidad de conexiones y representación espacial 3D introduce dificultades claras para el análisis visual: oclusión, sobrecarga perceptiva y pérdida de contexto. Por ello, resulta necesario proporcionar mecanismos de filtrado, resaltado y navegación que permitan reducir la complejidad sin eliminar información relevante.
+
+\section{Definición del problema}
+
+El sistema debe transformar dos fuentes de datos principales (fichero de nodos y matriz de adyacencia) en una representación interactiva navegable en tiempo real desde navegador web. Esta transformación implica varias subtareas:
+
+\begin{enumerate}
+	\item Parseo robusto de ficheros heterogéneos.
+	\item Validación de consistencia entre nodos y aristas.
+	\item Exposición de datos mediante una API REST estable.
+	\item Renderizado 3D eficiente en cliente.
+	\item Interacciones de usuario orientadas al análisis exploratorio.
+\end{enumerate}
+
+Desde el punto de vista técnico, el problema se puede resumir como una tubería de procesamiento y visualización donde cualquier error en la etapa de datos se propaga al renderizado final.
+
+\section{Requisitos de análisis}
+
+Para que la solución sea útil en un entorno académico y reproducible, se establecen los siguientes requisitos de análisis:
+
+\begin{itemize}
+	\item \textbf{Exactitud de datos:} los enlaces visualizados deben corresponder con la estructura del grafo de entrada.
+	\item \textbf{Interpretabilidad:} el usuario debe poder identificar regiones, grupos y relaciones sin ambigüedad.
+	\item \textbf{Interactividad:} la navegación por cámara, el hover y la selección deben responder con baja latencia.
+	\item \textbf{Escalabilidad moderada:} la aplicación debe soportar datasets de tamaño medio sin degradación crítica.
+	\item \textbf{Despliegue sencillo:} el sistema debe levantarse con un flujo reproducible basado en contenedores.
+\end{itemize}
+
+\section{Restricciones y supuestos}
+
+El análisis también contempla limitaciones realistas del proyecto:
+
+\begin{itemize}
+	\item El frontend se ejecuta sobre WebGL, por lo que el rendimiento depende de la capacidad gráfica del equipo cliente.
+	\item La versión inicial prioriza un dataset de referencia (AAL90), por lo que la generalización a grafos mucho mayores requerirá técnicas adicionales (LOD, clustering dinámico o simplificación de geometría).
+	\item El backend se orienta a servir datos preprocesados y métricas básicas, no a ejecutar pipelines de neuroimagen pesados.
+	\item El alcance de autenticación y persistencia avanzada queda fuera del núcleo MVP y se considera evolución posterior.
+\end{itemize}
+
+\section{Riesgos técnicos identificados}
+
+Durante el análisis se identifican los siguientes riesgos:
+
+\begin{itemize}
+	\item \textbf{Sobrecarga visual:} demasiadas aristas visibles simultáneamente reducen la utilidad analítica.
+	\item \textbf{Inconsistencia de formatos:} pequeñas variaciones en los ficheros de entrada pueden romper el parseo.
+	\item \textbf{Cuellos de botella en renderizado:} número elevado de draw calls o geometrías no optimizadas.
+	\item \textbf{Dependencia del entorno local:} conflictos de puertos o diferencias de sistema operativo en desarrollo.
+\end{itemize}
+
+Como mitigación, se adopta una arquitectura desacoplada (API + cliente 3D) y una estrategia de despliegue con Docker Compose, reduciendo variabilidad del entorno.
+
+\section{Criterios de éxito}
+
+Se considera que el problema está correctamente resuelto en su alcance actual cuando:
+
+\begin{itemize}
+	\item el sistema carga y muestra el connectome completo sin errores,
+	\item el usuario puede explorar la escena 3D de forma fluida,
+	\item existe trazabilidad entre datos de entrada y visualización final,
+	\item el despliegue es reproducible mediante una única secuencia de comandos.
+\end{itemize}
+
+Este análisis fundamenta las decisiones de diseño presentadas en los capítulos siguientes y justifica la elección de tecnologías empleadas en la implementación.
+ 
