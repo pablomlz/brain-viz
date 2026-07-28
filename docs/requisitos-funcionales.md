@@ -1,483 +1,466 @@
-# Especificación de Requisitos Funcionales
-## Aplicación Web para Visualización 3D de Redes Cerebrales
+# Especificación de Requisitos del Software
+## Aplicación Web para la Visualización 3D Interactiva de Redes Cerebrales
 
-**Proyecto:** Brain Viz Connectome  
-**Autor:** Pablo Moliz Arias  
-**Tipo:** Trabajo Fin de Grado - Ingeniería Informática  
-**Fecha:** Enero 2026  
-**Versión:** 1.0
+**Proyecto:** Brain Viz Connectome
+**Autor:** Pablo Moliz Arias
+**Tipo:** Trabajo Fin de Grado — Ingeniería Informática (UGR)
+**Director:** Juan Ruíz de Miras
+**Versión:** 2.0
+**Última revisión:** 2026-07-06
 
 ---
 
 ## Índice
-1. [Introducción](#1-introducción)
-2. [Alcance del Sistema](#2-alcance-del-sistema)
-3. [Requisitos Funcionales](#3-requisitos-funcionales)
-4. [Matriz de Trazabilidad](#4-matriz-de-trazabilidad)
-5. [Criterios de Validación](#5-criterios-de-validación)
+1. [Introducción y alcance](#1-introducción-y-alcance)
+2. [Perfil de usuarios](#2-perfil-de-usuarios)
+3. [Requisitos funcionales](#3-requisitos-funcionales)
+4. [Requisitos no funcionales](#4-requisitos-no-funcionales)
+5. [Requisitos de información](#5-requisitos-de-información)
+6. [Casos de uso](#6-casos-de-uso)
+7. [Matriz de trazabilidad](#7-matriz-de-trazabilidad)
+8. [Criterios de validación](#8-criterios-de-validación)
 
 ---
 
-## 1. Introducción
+## 1. Introducción y alcance
 
 ### 1.1. Propósito
-Este documento define los requisitos funcionales de Brain Viz Connectome, una aplicación web para la visualización interactiva y análisis de redes de conectividad cerebral (connectomas) en tres dimensiones. El sistema está orientado a investigadores en neurociencia que necesitan explorar y comprender la topología de redes neuronales representadas como grafos espaciales.
+Este documento define los requisitos de **Brain Viz Connectome**, una aplicación web para la
+visualización interactiva en 3D y el análisis básico de redes de conectividad cerebral
+(*connectomas*). El sistema permite cargar una red cerebral a partir de una matriz de adyacencia
+y un fichero de coordenadas nodales, procesarla en el backend y explorarla de forma interactiva
+en el navegador mediante WebGL.
 
-### 1.2. Contexto
-Las redes cerebrales se modelan como grafos donde:
-- **Nodos** representan regiones anatómicas (ROIs) con coordenadas 3D en espacio MNI
-- **Aristas** representan conexiones funcionales o estructurales (matriz de adyacencia ponderada)
+### 1.2. Contexto del dominio
+Una red cerebral (*connectoma*) se modela como un grafo ponderado:
+- **Nodos**: regiones anatómicas (ROIs) con coordenadas espaciales 3D (típicamente en espacio MNI).
+- **Aristas**: conexiones estructurales o funcionales entre regiones, con un peso asociado
+  (matriz de adyacencia). El peso puede representar una correlación, un número de fibras u otra
+  medida de conectividad; **0 indica ausencia de conexión**.
 
-Los datos provienen de bases públicas de neuroimagen (Human Connectome Project, AAL, Desikan-Killiany, etc.)
+Los datos se obtienen de **matrices de adyacencia disponibles en bases de datos públicas de
+neuroimagen** (p. ej. atlas AAL, Desikan-Killiany, o derivados del Human Connectome Project).
+El formato de ficheros adoptado (`.node` / `.edge`) es el que popularizó **BrainNet Viewer**,
+una herramienta de referencia en el ámbito, lo que garantiza compatibilidad con datasets ya
+existentes en la comunidad.
 
-### 1.3. Usuarios objetivo
-- Investigadores en neurociencia computacional
-- Estudiantes de máster/doctorado en neuroimagen
-- Clínicos interesados en análisis de conectividad
+### 1.3. Objetivos del sistema (alineados con los del TFG)
+1. Cargar y validar redes cerebrales desde ficheros estándar y atlas precargados.
+2. Renderizar la red en un espacio 3D interactivo mediante WebGL en el frontend.
+3. Facilitar la exploración visual mediante navegación, filtrado, selección e inspección.
+4. **Calcular métricas básicas de teoría de grafos sobre la red en el backend.**
+5. Empaquetar y desplegar el sistema mediante contenedores (Docker).
 
-### 1.4. Convenciones
-- **Prioridad Alta (P1)**: Funcionalidad esencial para MVP, sin ella el sistema no es viable
-- **Prioridad Media (P2)**: Funcionalidad importante que aporta valor significativo
-- **Prioridad Baja (P3)**: Funcionalidad deseable, mejora la experiencia pero no es crítica
-
----
-
-## 2. Alcance del Sistema
-
-### 2.1. Objetivos del sistema
-1. Cargar y validar datasets de conectomas desde ficheros estándar
-2. Renderizar redes cerebrales en espacio 3D interactivo vía WebGL
-3. Facilitar exploración visual mediante controles de navegación y filtrado
-4. Calcular métricas básicas de teoría de grafos sobre las redes cargadas
-5. Permitir exportación de visualizaciones y datos procesados
-
-### 2.2. Límites del sistema
+### 1.4. Alcance
 **Incluye:**
-- Visualización de grafos con hasta 1000 nodos
-- Métricas locales (grado, clustering) y globales (componentes, densidad)
-- Detección básica de comunidades
-- Interfaz web responsiva (desktop/tablet)
+- Visualización de grafos de tamaño moderado (objetivo de referencia: hasta ~1000 nodos).
+- Filtrado por umbral de peso e inspección de nodos.
+- Métricas locales (grado, centralidades) y globales (densidad, clustering, componentes).
+- Interfaz web para navegador de escritorio (soporte razonable en tablet).
 
 **No incluye:**
-- Procesamiento de imágenes de resonancia magnética (fMRI/DTI)
-- Construcción de matrices de conectividad desde señales raw
-- Análisis estadístico inferencial (requiere R/Python notebooks externos)
-- Edición colaborativa en tiempo real
+- Procesamiento de imágenes de resonancia (fMRI/DTI) ni construcción de matrices desde señal cruda.
+- Análisis estadístico inferencial (comparación entre grupos, tests, etc.).
+- Persistencia en base de datos ni edición colaborativa en tiempo real.
+
+### 1.5. Convenciones de prioridad
+La prioridad determina el **orden de implementación por sprints**. Si al final del proyecto no se
+implementan todos los requisitos, los que queden pendientes serán los de menor prioridad.
+
+| Prioridad | Nivel | Sprint | Significado |
+|:---:|:---|:---:|:---|
+| **1** | Crítica | 1 | Imprescindible; sin ella el sistema no es viable (MVP). |
+| **2** | Alta | 2 | Aporta el valor principal de exploración interactiva. |
+| **3** | Media | 3 | Análisis de red; distingue la herramienta de un simple visor. |
+| **4** | Baja | 4 | Utilidades y personalización; deseables, no críticas. |
 
 ---
 
-## 3. Requisitos del Sistema
+## 2. Perfil de usuarios
 
-### 3.1. Requisitos Funcionales
+El sistema está pensado para un **único rol de usuario final** (no hay administración ni
+multiusuario en el alcance actual). Los perfiles a los que va dirigido son:
 
-#### **[RF 1] Inicio del sistema con datasets precargados**
-- **Prioridad:** P1 (Alta)
-- **Descripción:** El usuario podrá iniciar el sistema y comenzar a usar la aplicación de manera funcional visualizando redes cerebrales de prueba precargadas.
-- **Precondiciones:** 
-  - Aplicación desplegada y accesible
-  - Datasets de ejemplo disponibles en servidor
-- **Postcondiciones:** 
-  - Usuario accede a interfaz con visualización 3D funcional
-  - Red de prueba renderizada por defecto
-- **Relacionado con:** [RI 1], [RI 2], [RNF 3]
+| Perfil | Descripción | Necesidad principal |
+|:---|:---|:---|
+| **Investigador en neurociencia** | Analiza connectomas y necesita explorar su topología. | Cargar sus matrices, filtrar e inspeccionar métricas. |
+| **Estudiante / docente** | Usa la herramienta con fines didácticos o de aprendizaje. | Visualizar atlas de ejemplo de forma intuitiva y sin instalación. |
+| **Usuario técnico general** | Curioso o evaluador sin conocimiento previo del dominio. | Interfaz autoexplicativa que funcione con datos precargados. |
 
-#### **[RF 1.1] Selección de dataset precargado**
-- **Descripción:** El usuario podrá seleccionar un conjunto de datos (dataset) de prueba precargado en el sistema (ej. Atlas AAL90) para iniciar la visualización 3D sin necesidad de subir archivos locales.
-- **Criterios de aceptación:**
-  - Mínimo un dataset de ejemplo disponible (AAL90)
-  - Selector visible en interfaz (dropdown o botones)
-  - Cambio de dataset limpia visualización anterior
-  - Metadatos mostrados: nombre, número de nodos, fuente
-
-#### **[RF 2] Carga y visualización de redes cerebrales personalizadas**
-- **Prioridad:** P1 (Alta)
-- **Descripción:** El usuario será capaz tanto de cargar sus propias redes cerebrales mediante la selección simultánea de dos ficheros de texto locales compatibles [RI 1] [RI 2] como también de visualizar la red cerebral renderizada en un espacio tridimensional de forma interactiva.
-- **Entrada:** 
-  - Fichero `.node` conforme a [RI 1] y [RI 1.1]
-  - Fichero `.edge` conforme a [RI 2] y [RI 2.1]
-- **Precondiciones:**
-  - Ficheros cumplen formato especificado
-  - Codificación UTF-8 [RI 3]
-  - Dimensiones consistentes entre ambos ficheros
-- **Postcondiciones:**
-  - Grafo procesado en backend
-  - Nodos renderizados como esferas 3D en coordenadas (x, y, z)
-  - Aristas renderizadas como líneas entre nodos
-- **Criterios de aceptación:**
-  - Carga simultánea de ambos ficheros
-  - Validación de integridad [RNF 2]
-  - Tiempo de carga < 2 segundos para grafos de 500 nodos
-  - Renderizado a 60 FPS [RNF 1]
-- **Relacionado con:** [RI 1], [RI 2], [RI 3], [RI 4], [RNF 1], [RNF 2]
-
-#### **[RF 3] Controles de cámara 3D**
-- **Prioridad:** P1 (Alta)
-- **Descripción:** El usuario podrá interactuar espacialmente con la visualización 3D a través de controles de cámara. A su vez, podrá rotar (orbitar), hacer zoom y desplazar panorámicamente el modelo cerebral de manera libre.
-- **Interacciones requeridas:**
-  - **Rotación (órbita):** Click izquierdo + arrastrar
-  - **Zoom:** Rueda del ratón o gesto pinch (tablet)
-  - **Pan (desplazamiento panorámico):** Click derecho + arrastrar o dos dedos (tablet)
-- **Precondiciones:**
-  - Escena 3D renderizada
-  - WebGL activo [RNF 1]
-- **Postcondiciones:**
-  - Cámara actualizada en tiempo real
-  - Navegación fluida sin lag
-- **Criterios de aceptación:**
-  - Implementación con `OrbitControls` de Three.js
-  - Movimiento suave con damping
-  - Límites de zoom configurados (no penetrar ni alejarse infinitamente)
-  - Funciona con mouse, trackpad y gestos táctiles básicos
-- **Relacionado con:** [RNF 1], [RNF 3]
-
-#### **[RF 4] Filtrado dinámico de conexiones por umbral**
-- **Prioridad:** P1 (Alta)
-- **Descripción:** El usuario podrá filtrar las conexiones visibles en tiempo real y editar el umbral de las ya existentes a través de un control deslizante. Estas conexiones quedarán actualizadas en el lienzo 3D instantáneamente.
-- **Entrada:** 
-  - Valor de umbral ajustado mediante slider (rango 0.0 a 1.0)
-- **Precondiciones:**
-  - Dataset cargado con pesos de aristas
-- **Postcondiciones:**
-  - Solo aristas con peso ≥ umbral son visibles
-  - Visualización actualizada sin recarga de página
-- **Criterios de aceptación:**
-  - Control deslizante accesible en interfaz
-  - Actualización reactiva e instantánea
-  - Contador "N de M aristas visibles" actualizado en vivo
-  - Sin degradación de rendimiento al ajustar [RNF 1]
-- **Relacionado con:** [RF 4.1], [RF 7], [RNF 1]
-
-#### **[RF 4.1] Ocultación automática de aristas por peso**
-- **Descripción:** El usuario podrá ocultar automáticamente aquellas aristas cuyo peso sea inferior al valor seleccionado, reduciendo la oclusión visual de la red.
-- **Criterios de aceptación:**
-  - Aristas filtradas tienen `opacity = 0` o no se renderizan
-  - Reducción visual de saturación en redes densas
-  - Cálculo eficiente en backend o frontend según estrategia
-
-#### **[RF 5] Consulta de información detallada de nodos**
-- **Prioridad:** P2 (Media)
-- **Descripción:** El usuario podrá consultar el progreso y la información detallada de los nodos de la red. Esto incluye las coordenadas anatómicas de los nodos, su etiqueta y su grado de conexión.
-- **Información mostrada:**
-  - ID del nodo
-  - Etiqueta (label) [RI 1]
-  - Coordenadas anatómicas (x, y, z) [RI 1.1]
-  - Grado de conexión (número de aristas conectadas)
-  - Grupo o lóbulo anatómico (si disponible)
-- **Precondiciones:**
-  - Nodo seleccionado por el usuario [RF 6]
-- **Postcondiciones:**
-  - Panel de información visible en interfaz
-- **Criterios de aceptación:**
-  - Información legible y bien estructurada
-  - Actualización instantánea al cambiar de nodo
-  - Panel modal o lateral con opción de cierre
-- **Relacionado con:** [RF 6], [RF 7], [RI 1]
-
-#### **[RF 6] Selección de nodos mediante click**
-- **Prioridad:** P2 (Media)
-- **Descripción:** El usuario podrá seleccionar el nodo que quiera inspeccionar haciendo clic sobre él en el entorno 3D. El sistema es el encargado de realizar ese resaltado visual frente al resto de la red.
-- **Entrada:**
-  - Click del ratón sobre esfera 3D
-- **Precondiciones:**
-  - Escena renderizada
-  - Controles de cámara activos
-- **Postcondiciones:**
-  - Nodo seleccionado visualmente resaltado
-  - Estado de selección almacenado en memoria [RI 4]
-  - Panel de información activado [RF 5]
-- **Criterios de aceptación:**
-  - Detección mediante `Raycaster` de Three.js
-  - Resaltado visual: aumento de tamaño (x1.5) y/o cambio de color
-  - Solo un nodo seleccionado simultáneamente
-  - Click en espacio vacío deselecciona
-- **Relacionado con:** [RF 5], [RI 4], [RNF 3]
-
-#### **[RF 7] Panel de estadísticas globales**
-- **Prioridad:** P1 (Alta)
-- **Descripción:** El usuario dispondrá de un panel de información global donde podrá consultar en tiempo real las estadísticas generales de la red cargada. Estas métricas incluyen el número de nodos procesados y el total de aristas visibles tras aplicar el umbral.
-- **Información mostrada:**
-  - Nombre del dataset (si disponible)
-  - Número total de nodos
-  - Número de aristas visibles / totales
-  - Umbral actual aplicado
-- **Precondiciones:**
-  - Dataset cargado y procesado
-- **Postcondiciones:**
-  - Panel visible permanentemente (HUD)
-  - Métricas actualizadas al cambiar umbral [RF 4]
-- **Criterios de aceptación:**
-  - Posicionado en esquina de interfaz (no obstruye visualización)
-  - Estilo coherente con diseño general
-  - Actualización en tiempo real de métricas
-- **Relacionado con:** [RF 4], [RI 1], [RI 2]
-
-#### **[RF 8] Exportación de visualización como imagen**
-- **Prioridad:** P3 (Baja)
-- **Descripción:** El usuario podrá exportar la visualización actual de la red cerebral. El sistema generará una captura de imagen del lienzo 3D que se descargará automáticamente en el equipo.
-- **Entrada:**
-  - Click en botón "Exportar" o "Capturar Vista"
-- **Precondiciones:**
-  - Escena renderizada en canvas WebGL
-- **Postcondiciones:**
-  - Imagen PNG descargada en equipo del usuario
-  - Nombre de fichero con timestamp
-- **Criterios de aceptación:**
-  - Captura en resolución actual del canvas
-  - Formato PNG con compresión
-  - Descarga automática sin intervención adicional
-  - Fondo configurable (transparente u opaco)
+Todos los perfiles comparten las mismas funcionalidades: no se requiere autenticación real para
+operar (la pantalla de acceso es meramente presentacional en el alcance actual). Se asume que el
+usuario dispone de un navegador moderno con soporte WebGL 2.0.
 
 ---
 
-### 3.2. Requisitos No Funcionales
+## 3. Requisitos funcionales
 
-#### **[RNF 1] Rendimiento gráfico fluido**
-- **Descripción:** La aplicación deberá garantizar un rendimiento gráfico fluido en la renderización de los datos, de forma que el usuario pueda manipular el modelo 3D manteniendo una tasa de fotogramas estable gracias a la aceleración por hardware de WebGL.
-- **Criterios de aceptación:**
-  - Renderizado a ≥ 60 FPS con grafos de hasta 500 nodos
-  - Renderizado a ≥ 30 FPS con grafos de hasta 1000 nodos
-  - Uso de aceleración por hardware WebGL 2.0
-  - Geometrías optimizadas (LOD, instancing si aplica)
-  - Sin congelamiento de interfaz durante interacción
-- **Método de verificación:** 
-  - Profiler de navegador (Chrome DevTools Performance)
-  - Pruebas con datasets de tamaños variable
-- **Relacionado con:** [RF 2], [RF 3], [RF 4]
+> Formato de cada requisito: identificador, prioridad (sprint), descripción, entradas/salidas,
+> criterios de aceptación y requisitos relacionados.
 
-#### **[RNF 2] Gestión transparente de errores**
-- **Descripción:** La aplicación deberá avisar al usuario cuando surja algún tipo de error que no dependa de él, como la incompatibilidad en las dimensiones de los ficheros introducidos [RI 1] [RI 2], siendo lo más transparente posible en cada caso.
-- **Errores cubiertos:**
-  - Dimensiones incongruentes entre `.node` y `.edge`
-  - Formato de fichero incorrecto
-  - Caracteres no válidos o codificación incorrecta
-  - Ficheros vacíos o corruptos
-  - Valores numéricos fuera de rango esperado
-- **Criterios de aceptación:**
-  - Mensajes de error descriptivos y específicos
-  - Sin terminología técnica incomprensible para usuario final
-  - Indicación de qué fichero falla y por qué
-  - Sin crashes o pantallas en blanco
-  - Opción de reintentar carga
-- **Relacionado con:** [RF 2], [RI 1], [RI 2], [RI 3]
+### Prioridad 1 — Núcleo imprescindible (Sprint 1 · MVP)
 
-#### **[RNF 3] Interfaz intuitiva y autoexplicativa**
-- **Descripción:** La interfaz de navegación deberá ser suficientemente intuitiva para que cada usuario sepa en cada momento cómo interactuar con el modelo 3D y lo que está visualizando de forma que no sea precisa una fuente de información externa.
+#### [RF-01] Carga de red cerebral desde atlas precargado
+- **Prioridad:** 1 (Crítica) · **Sprint 1**
+- **Descripción:** Al iniciarse, el sistema carga automáticamente una red cerebral de ejemplo
+  incluida en el servidor (atlas público AAL90), de modo que el usuario pueda empezar a
+  visualizar sin necesidad de aportar ficheros propios.
+- **Precondiciones:** Aplicación desplegada; dataset de ejemplo disponible en `backend/data/`.
+- **Postcondiciones:** Red renderizada por defecto en la escena 3D al abrir la aplicación.
 - **Criterios de aceptación:**
-  - Controles visualmente reconocibles (iconografía estándar)
-  - Tooltips o labels explicativos en controles principales
-  - Feedback visual inmediato a las acciones del usuario
-  - Jerarquía visual clara (HUD, paneles, controles)
-  - Navegación sin necesidad de manual o tutorial
-- **Método de verificación:**
-  - Test de usuario con persona sin conocimiento previo
-  - Tiempo promedio para realizar tarea básica < 2 minutos
-- **Relacionado con:** [RF 3], [RF 4], [RF 6], [RF 7]
+  - Al menos un dataset de ejemplo disponible (AAL90: 90 nodos).
+  - La red se muestra sin intervención del usuario tras la carga inicial.
+  - Se muestran sus metadatos básicos (nº de nodos, nº de aristas).
+- **Relacionado con:** RF-02, RF-05, RI-01, RI-02.
+
+#### [RF-02] Procesamiento de la red en el backend y exposición vía API
+- **Prioridad:** 1 (Crítica) · **Sprint 1**
+- **Descripción:** El backend parsea el fichero de nodos (`.node`) y la matriz de adyacencia
+  (`.edge`), construye el grafo con una librería de análisis de grafos (NetworkX) y expone la red
+  procesada a través de una API REST en formato JSON.
+- **Entrada:** Ficheros `.node` [RI-01] y `.edge` [RI-02].
+- **Salida:** JSON con `nodes` (id, label, x, y, z, group), `links` (source, target, value) y
+  `meta` (total de nodos y aristas).
+- **Criterios de aceptación:**
+  - Endpoint `GET /api/brain-data` devuelve la red en JSON válido.
+  - Endpoint `GET /health` para verificación de estado del servicio.
+  - Validación de existencia y consistencia dimensional entre `.node` y `.edge` [RNF-02].
+  - Construcción del grafo como no dirigido a partir de la matriz de adyacencia.
+- **Relacionado con:** RF-01, RF-10, RI-01, RI-02, RNF-02.
+
+#### [RF-03] Renderizado 3D de la red
+- **Prioridad:** 1 (Crítica) · **Sprint 1**
+- **Descripción:** El sistema renderiza los nodos como esferas situadas en sus coordenadas
+  anatómicas (x, y, z) y las aristas como segmentos entre los nodos que conectan.
+- **Precondiciones:** Red procesada y servida por el backend [RF-02]; WebGL activo.
+- **Postcondiciones:** Escena 3D visible e interactiva en el navegador.
+- **Criterios de aceptación:**
+  - Cada nodo se posiciona según sus coordenadas reales.
+  - Las aristas se dibujan entre los nodos origen y destino correctos.
+  - Renderizado fluido acorde a [RNF-01].
+- **Relacionado con:** RF-04, RF-09, RNF-01.
+
+#### [RF-04] Navegación con cámara orbital
+- **Prioridad:** 1 (Crítica) · **Sprint 1**
+- **Descripción:** El usuario puede explorar la escena rotando (órbita), acercando/alejando (zoom)
+  y desplazando (paneo) el modelo cerebral de forma libre y fluida.
+- **Interacciones:** rotar = arrastrar con botón izquierdo; zoom = rueda/pinch; paneo = botón
+  derecho o dos dedos.
+- **Criterios de aceptación:**
+  - Movimiento suave con amortiguación (*damping*).
+  - Límites de zoom configurados (no atravesar ni perder el modelo).
+  - Funciona con ratón, trackpad y gestos táctiles básicos.
+- **Relacionado con:** RF-03, RNF-01, RNF-03.
+
+#### [RF-05] Panel de estadísticas globales (HUD)
+- **Prioridad:** 1 (Crítica) · **Sprint 1**
+- **Descripción:** Un panel superpuesto (HUD) muestra en todo momento las estadísticas generales
+  de la red activa.
+- **Información mostrada:** nombre del dataset (si aplica), número total de nodos, número de
+  aristas totales y visibles, número de grupos/lóbulos.
+- **Criterios de aceptación:**
+  - Panel visible de forma permanente sin obstruir la visualización.
+  - Las cifras se actualizan al cambiar el umbral de filtrado [RF-06].
+- **Relacionado con:** RF-06, RF-10.
+
+### Prioridad 2 — Interacción y exploración (Sprint 2)
+
+#### [RF-06] Filtrado dinámico de aristas por umbral de peso
+- **Prioridad:** 2 (Alta) · **Sprint 2**
+- **Descripción:** El usuario ajusta en tiempo real, mediante un control deslizante, el umbral
+  mínimo de peso de las aristas visibles, reduciendo la saturación visual en redes densas.
+- **Entrada:** valor de umbral (slider).
+- **Postcondiciones:** solo las aristas con peso ≥ umbral se muestran; la escena se actualiza sin
+  recargar la página.
+- **Criterios de aceptación:**
+  - Actualización reactiva e instantánea al mover el slider.
+  - Contador "N de M aristas visibles" actualizado en vivo [RF-05].
+  - Sin degradación perceptible del rendimiento [RNF-01].
+  - El umbral deja de estar fijado en el backend y pasa a ser controlable por el usuario.
+- **Relacionado con:** RF-05, RI-02, RNF-01.
+
+#### [RF-07] Selección de nodo mediante clic
+- **Prioridad:** 2 (Alta) · **Sprint 2**
+- **Descripción:** El usuario selecciona un nodo haciendo clic sobre él; el sistema lo resalta
+  visualmente respecto al resto de la red.
+- **Entrada:** clic del ratón sobre una esfera 3D (detección por *raycasting*).
+- **Postcondiciones:** nodo resaltado; información detallada disponible [RF-08].
+- **Criterios de aceptación:**
+  - Resaltado visual claro (mayor tamaño y/o cambio de color).
+  - Solo un nodo seleccionado a la vez.
+  - Clic en espacio vacío deselecciona.
+- **Relacionado con:** RF-08, RF-13, RNF-03.
+
+#### [RF-08] Panel de información del nodo seleccionado
+- **Prioridad:** 2 (Alta) · **Sprint 2**
+- **Descripción:** Al seleccionar un nodo, se muestra un panel con su información detallada.
+- **Información mostrada:** ID, etiqueta anatómica, coordenadas (x, y, z), grado de conexión y
+  grupo/lóbulo. Se ampliará con métricas de centralidad en [RF-11].
+- **Criterios de aceptación:**
+  - Información legible y estructurada; se actualiza al cambiar de nodo.
+  - Panel con opción de cierre/deselección.
+  - Muestra la **etiqueta real** del nodo (corrige el uso erróneo de `name` en lugar de `label`).
+- **Relacionado con:** RF-07, RF-11.
+
+#### [RF-09] Coloreado de nodos por grupo/lóbulo anatómico
+- **Prioridad:** 2 (Alta) · **Sprint 2**
+- **Descripción:** Los nodos se colorean según su grupo o lóbulo anatómico, con una leyenda que
+  asocia cada color a su grupo.
+- **Criterios de aceptación:**
+  - Paleta consistente y distinguible entre grupos.
+  - Leyenda visible que refleja los grupos presentes en la red activa.
+- **Relacionado con:** RF-03, RF-12.
+
+### Prioridad 3 — Análisis de red (Sprint 3)
+
+#### [RF-10] Cálculo de métricas globales de la red en el backend
+- **Prioridad:** 3 (Media) · **Sprint 3**
+- **Descripción:** El backend calcula, mediante la librería de análisis de grafos, métricas
+  globales de la red y las expone en la API para mostrarlas en la interfaz.
+- **Métricas mínimas:** número de nodos y aristas, densidad, grado medio, coeficiente de
+  clustering medio y número de componentes conexas.
+- **Criterios de aceptación:**
+  - Las métricas se calculan en el backend (no en el cliente) y se sirven vía API.
+  - Se presentan en un panel de estadísticas de red en la interfaz.
+  - El cálculo se realiza sobre la red completa cargada.
+- **Relacionado con:** RF-02, RF-05, RF-11.
+
+#### [RF-11] Métricas de centralidad por nodo
+- **Prioridad:** 3 (Media) · **Sprint 3**
+- **Descripción:** El backend calcula métricas de centralidad por nodo (grado, intermediación
+  *betweenness* y cercanía *closeness*), que se muestran en el panel del nodo seleccionado.
+- **Criterios de aceptación:**
+  - Cada nodo dispone de sus valores de centralidad.
+  - Se muestran al seleccionar el nodo, ampliando el panel de [RF-08].
+  - El cálculo es eficiente para el tamaño de red objetivo [RNF-01].
+- **Relacionado con:** RF-08, RF-10, RF-12.
+
+#### [RF-12] Mapeo visual de métricas (tamaño/color por métrica)
+- **Prioridad:** 3 (Media) · **Sprint 3**
+- **Descripción:** El usuario puede elegir que el **tamaño** y/o el **color** de los nodos se
+  determine en función de una métrica (p. ej. tamaño proporcional al grado, color según
+  centralidad), además del coloreado por lóbulo de [RF-09].
+- **Criterios de aceptación:**
+  - Selector de esquema de coloreado/tamaño (por lóbulo, por grado, por centralidad).
+  - Cambio de esquema actualiza la escena de forma inmediata.
+  - Leyenda/escala coherente con el esquema activo.
+- **Relacionado con:** RF-09, RF-11.
+
+#### [RF-13] Búsqueda de nodo por etiqueta
+- **Prioridad:** 3 (Media) · **Sprint 3**
+- **Descripción:** El usuario busca un nodo por su etiqueta anatómica; el sistema lo resalta y
+  centra la cámara sobre él.
+- **Criterios de aceptación:**
+  - Campo de búsqueda con coincidencias por etiqueta/ID.
+  - Al elegir un resultado, el nodo se resalta [RF-07] y la cámara se centra en él.
+- **Relacionado con:** RF-07, RF-04.
+
+### Prioridad 4 — Utilidades y personalización (Sprint 4)
+
+#### [RF-14] Carga de datasets personalizados del usuario
+- **Prioridad:** 4 (Baja) · **Sprint 4**
+- **Descripción:** El usuario puede cargar sus propios ficheros `.node` y `.edge` para visualizar
+  redes distintas a las precargadas.
+- **Criterios de aceptación:**
+  - Carga simultánea de ambos ficheros (selección o *drag & drop*).
+  - Validación de formato y de consistencia dimensional, con mensajes claros [RNF-02].
+  - La red cargada sustituye a la anterior en la escena.
+- **Relacionado con:** RF-01, RI-01, RI-02, RNF-02.
+
+#### [RF-15] Gestión y selección de datasets precargados
+- **Prioridad:** 4 (Baja) · **Sprint 4**
+- **Descripción:** El sistema ofrece varios atlas/datasets de ejemplo entre los que el usuario
+  puede elegir mediante un selector.
+- **Criterios de aceptación:**
+  - Lista de datasets precargados disponibles.
+  - Cambiar de dataset limpia la visualización anterior y carga la nueva red.
+- **Relacionado con:** RF-01, RF-14.
+
+#### [RF-16] Ajustes de visualización
+- **Prioridad:** 4 (Baja) · **Sprint 4**
+- **Descripción:** El usuario personaliza aspectos visuales de la escena.
+- **Ajustes:** tamaño de los nodos, opacidad de las aristas, mostrar/ocultar aristas, rotación
+  automática, ejes de referencia y tema claro/oscuro.
+- **Criterios de aceptación:**
+  - Cada ajuste se refleja de inmediato en la escena.
+  - Los ajustes no rompen la interacción ni el rendimiento.
+- **Relacionado con:** RF-03, RF-09.
+
+#### [RF-17] Restablecimiento de la vista y los parámetros
+- **Prioridad:** 4 (Baja) · **Sprint 4**
+- **Descripción:** El usuario restablece con un solo control la cámara y los parámetros de
+  visualización a su estado inicial.
+- **Criterios de aceptación:**
+  - Restaura posición/orientación de cámara y ajustes por defecto.
+- **Relacionado con:** RF-04, RF-16.
+
+#### [RF-18] Exportación de la visualización y de las métricas
+- **Prioridad:** 4 (Baja) · **Sprint 4**
+- **Descripción:** El usuario exporta la vista actual como imagen y/o las métricas calculadas.
+- **Criterios de aceptación:**
+  - Captura del lienzo 3D descargada como PNG.
+  - Métricas de red y por nodo exportables en CSV o JSON.
+  - Descarga automática con nombre de fichero identificable (p. ej. con timestamp).
+- **Relacionado con:** RF-10, RF-11.
 
 ---
 
-### 3.3. Requisitos de Información
+## 4. Requisitos no funcionales
 
-#### **[RI 1] Formato de fichero de nodos**
-- **Descripción:** El documento para introducir la topología de los nodos de la red debe tener una extensión de texto plano compatible (`.node`).
-- **Especificaciones:**
-  - Extensión: `.node`
-  - Formato: texto plano ASCII
-  - Codificación: UTF-8 [RI 3]
-  - Sin cabecera (no headers)
-- **Relacionado con:** [RF 2], [RI 1.1], [RI 3]
+#### [RNF-01] Rendimiento gráfico fluido
+- La aplicación mantiene una tasa de fotogramas estable manipulando el modelo 3D, apoyándose en
+  la aceleración por hardware de WebGL.
+- **Criterios:** ≥ 60 FPS con redes de hasta ~500 nodos; ≥ 30 FPS hasta ~1000 nodos; sin
+  congelamiento de la interfaz durante la interacción.
+- **Verificación:** *profiler* del navegador con datasets de tamaño variable.
+- **Relacionado con:** RF-03, RF-04, RF-06.
 
-#### **[RI 1.1] Estructura de columnas del fichero de nodos**
-- **Descripción:** El formato del documento debe ser en columnas separadas por espacios, siendo las tres primeras columnas las coordenadas espaciales X, Y, Z de cada nodo. El orden de las demás columnas dependerá de los atributos del nodo.
-- **Estructura mínima requerida:**
-  ```
-  <x> <y> <z> [color_id] [size] [label]
-  ```
-- **Especificaciones:**
-  - **Columnas obligatorias:** `x`, `y`, `z` (coordenadas espaciales, valores numéricos)
-  - **Columnas opcionales:** 
-    - `color_id` o `group` (identificador de grupo/lóbulo, entero)
-    - `size` (tamaño de nodo, numérico)
-    - `label` (etiqueta textual, string sin espacios o entrecomillado)
-  - Separador: uno o más espacios o tabs (`\s+`)
-  - Una fila por nodo
+#### [RNF-02] Gestión transparente de errores
+- La aplicación informa al usuario de los errores de datos de forma clara (dimensiones
+  incongruentes entre `.node` y `.edge`, formato incorrecto, ficheros vacíos o corruptos,
+  codificación inválida).
+- **Criterios:** mensajes descriptivos y sin jerga; indicación de qué fichero falla y por qué;
+  sin caídas ni pantallas en blanco; posibilidad de reintentar.
+- **Relacionado con:** RF-02, RF-14, RI-01, RI-02.
+
+#### [RNF-03] Interfaz intuitiva y autoexplicativa
+- La interfaz permite operar sin manual externo: controles reconocibles, *feedback* visual
+  inmediato y jerarquía visual clara.
+- **Verificación:** prueba con usuario sin conocimiento previo; tarea básica completada en < 2 min.
+- **Relacionado con:** RF-04, RF-06, RF-07.
+
+#### [RNF-04] Portabilidad y despliegue reproducible
+- El sistema se empaqueta en contenedores y se levanta con un único comando, garantizando la
+  reproducibilidad del entorno con independencia del sistema operativo anfitrión.
+- **Criterios:** `docker compose up --build` levanta backend y frontend sin pasos manuales
+  adicionales; los servicios se comunican dentro de la red de contenedores.
+- **Relacionado con:** RF-02, objetivo de despliegue del TFG.
+
+#### [RNF-05] Compatibilidad de navegador
+- La aplicación funciona en navegadores modernos con soporte WebGL 2.0 (Chrome, Firefox, Edge).
+- **Verificación:** pruebas manuales en al menos tres navegadores.
+
+---
+
+## 5. Requisitos de información
+
+#### [RI-01] Fichero de nodos (`.node`)
+- Texto plano, codificación UTF-8 [RI-05], sin cabecera, una fila por nodo.
+- **Estructura de columnas** (convención BrainNet Viewer): `x  y  z  color_id  size  label`.
+  - Obligatorias: `x`, `y`, `z` (coordenadas, numéricas).
+  - Opcionales: `color_id`/`group` (entero, grupo/lóbulo), `size` (numérico), `label` (texto sin
+    espacios).
+  - Separador: uno o más espacios o tabuladores.
 - **Ejemplo:**
   ```
-  -45.3 12.8 50.1 1 1.0 Frontal_Sup_L
-  48.2 15.4 48.9 1 1.0 Frontal_Sup_R
-  -32.1 -65.4 -15.2 2 1.0 Occipital_Mid_L
+  -45.3  12.8  50.1  1  1.0  Frontal_Sup_L
+   48.2  15.4  48.9  1  1.0  Frontal_Sup_R
+  -32.1 -65.4 -15.2  2  1.0  Occipital_Mid_L
   ```
-- **Relacionado con:** [RI 1], [RF 2], [RF 5]
+- **Relacionado con:** RF-02, RF-08.
 
-#### **[RI 2] Formato de fichero de aristas**
-- **Descripción:** El documento para introducir las conexiones de la red debe tener una extensión de texto plano compatible (`.edge`).
-- **Especificaciones:**
-  - Extensión: `.edge`
-  - Formato: texto plano ASCII
-  - Codificación: UTF-8 [RI 3]
-  - Sin cabecera
-- **Relacionado con:** [RF 2], [RI 2.1], [RI 3]
-
-#### **[RI 2.1] Estructura de matriz de adyacencia**
-- **Descripción:** Este documento contendrá una matriz de adyacencia cuadrada. Los valores numéricos representarán el peso o la existencia de la conexión entre los nodos.
-- **Especificaciones:**
-  - Matriz cuadrada N×N (N = número de nodos en [RI 1])
-  - Valores numéricos: pesos de conexión en rango [0, 1]
-    - `0` = sin conexión
-    - Valores > 0 = fuerza/peso de la conexión
-  - Separador: uno o más espacios o tabs
-  - Para grafos no dirigidos: matriz simétrica (elemento `[i,j]` = elemento `[j,i]`)
-  - Una fila por nodo origen, columnas representan nodos destino
-- **Ejemplo (matriz 3×3):**
+#### [RI-02] Fichero de aristas / matriz de adyacencia (`.edge`)
+- Texto plano, UTF-8 [RI-05], sin cabecera. Matriz cuadrada N×N (N = nº de nodos de [RI-01]).
+- **Semántica de los valores:** peso de la conexión entre dos nodos; **0 = sin conexión**. Los
+  pesos son valores numéricos (correlaciones, conteos de fibras, etc.); **no se asume que estén
+  normalizados a [0, 1]** — la aplicación puede normalizarlos internamente para el umbral de
+  filtrado.
+- **Validaciones esperadas:** nº de filas = nº de columnas = nº de nodos; matriz simétrica para
+  grafos no dirigidos; diagonal a 0 (sin auto-conexiones).
+- **Ejemplo (3×3):**
   ```
-  0.0 0.75 0.12
-  0.75 0.0 0.43
-  0.12 0.43 0.0
+  0.00  0.75  0.12
+  0.75  0.00  0.43
+  0.12  0.43  0.00
   ```
-- **Validaciones esperadas:**
-  - Dimensiones: número de filas = número de columnas = número de nodos
-  - Diagonal principal con valores 0 (sin auto-conexiones)
-  - Valores en rango válido [0, 1]
-- **Relacionado con:** [RI 2], [RF 2], [RF 4], [RNF 2]
+- **Relacionado con:** RF-02, RF-06, RNF-02.
 
-#### **[RI 3] Codificación de caracteres**
-- **Descripción:** Cualquier dato introducido a través de los ficheros locales dentro de la aplicación deberá ser recogido en formato de codificación estándar UTF-8.
-- **Especificaciones:**
-  - Encoding: UTF-8
-  - Permite caracteres internacionales en labels (ñ, á, ü, etc.)
-  - Evita problemas de compatibilidad entre sistemas operativos
-- **Relacionado con:** [RI 1], [RI 2], [RNF 2]
+#### [RI-05] Codificación de caracteres
+- Todos los ficheros de entrada se interpretan en **UTF-8**, permitiendo caracteres
+  internacionales en las etiquetas y evitando problemas de compatibilidad entre sistemas.
+- **Relacionado con:** RI-01, RI-02.
 
-#### **[RI 4] Gestión de datos en memoria**
-- **Descripción:** La aplicación procesará de forma consistente los datos de cada entidad que interactúe con el sistema, manteniéndolos en memoria únicamente durante su ejecución y sin almacenarlos de forma persistente.
-- **Especificaciones:**
-  - Datos cargados permanecen en memoria (RAM) durante la sesión
-  - Sin almacenamiento persistente en disco o base de datos (excepto localStorage para preferencias de UI)
-  - Al cerrar/recargar página, datos se pierden
-  - Sin logs o caché de datos sensibles del usuario
-  - Cumplimiento básico de privacidad: datos no persisten en servidor
-- **Justificación:**
-  - Simplicidad arquitectónica (MVP sin BBDD)
-  - Privacidad por defecto (no tracking)
-  - Adecuado para datasets públicos y de prueba
-- **Relacionado con:** [RF 1], [RF 2], [RF 6]
+#### [RI-06] Gestión de datos en memoria (sin persistencia)
+- Los datos cargados se mantienen en memoria únicamente durante la sesión; no se almacenan de
+  forma persistente en servidor ni en base de datos. Al recargar la página, los datos se pierden.
+- Solo se permite `localStorage` para preferencias de interfaz.
+- **Justificación:** simplicidad arquitectónica (MVP sin BBDD) y privacidad por defecto.
+- **Relacionado con:** RF-01, RF-14.
 
 ---
 
-## 4. Matriz de Trazabilidad
+## 6. Casos de uso
 
-### 4.1. Correspondencia entre objetivos del TFG y requisitos
+> Esta sección se desarrollará con diagramas UML (diagrama de casos de uso) y las descripciones
+> detalladas de cada caso para la memoria (capítulo *Requisitos del Software*). Se resumen aquí
+> los casos de uso principales derivados de los requisitos funcionales. Al existir un único rol de
+> usuario, todos los casos de uso los ejecuta el actor **Usuario**.
 
-| Objetivo del TFG | Requisitos Funcionales | Requisitos No Funcionales | Requisitos de Información |
-|------------------|----------------------|---------------------------|---------------------------|
-| **Visualización 3D básica** | [RF 2], [RF 3], [RF 7] | [RNF 1], [RNF 3] | [RI 1], [RI 1.1], [RI 2], [RI 2.1] |
-| **Carga de datos** | [RF 1], [RF 1.1], [RF 2] | [RNF 2] | [RI 1], [RI 2], [RI 3], [RI 4] |
-| **Interacción con grafo** | [RF 5], [RF 6] | [RNF 3] | [RI 4] |
-| **Filtrado dinámico** | [RF 4], [RF 4.1] | [RNF 1] | [RI 2.1] |
-| **Análisis básico** | [RF 7] | - | [RI 1.1], [RI 2.1] |
-| **Exportación** | [RF 8] | - | - |
+| CU | Nombre | RF asociados |
+|:---:|:---|:---|
+| CU-01 | Visualizar red precargada | RF-01, RF-02, RF-03 |
+| CU-02 | Navegar por la escena 3D | RF-04, RF-17 |
+| CU-03 | Filtrar aristas por umbral | RF-06 |
+| CU-04 | Seleccionar e inspeccionar un nodo | RF-07, RF-08, RF-11 |
+| CU-05 | Consultar métricas de la red | RF-10 |
+| CU-06 | Cambiar el esquema de coloreado/tamaño | RF-09, RF-12 |
+| CU-07 | Buscar un nodo | RF-13 |
+| CU-08 | Cargar un dataset propio | RF-14, RF-15 |
+| CU-09 | Personalizar la visualización | RF-16 |
+| CU-10 | Exportar imagen o métricas | RF-18 |
 
-### 4.2. Dependencias entre requisitos
-
-```
-[RI 1] + [RI 2] ──> [RF 2] ──┬──> [RF 3] (controles cámara)
-                              ├──> [RF 7] (estadísticas)
-                              └──> [RF 4] (filtrado)
-
-[RF 2] ──> [RF 6] (selección) ──> [RF 5] (info detallada)
-
-[RF 4] ──> [RF 4.1] (ocultación aristas)
-       └──> [RF 7] (actualización métricas)
-
-[RF 1] ──> [RF 1.1] (selección dataset precargado)
-```
-
-### 4.3. Priorización por nivel de implementación
-
-| Nivel | Requisitos Incluidos | Justificación |
-|-------|---------------------|---------------|
-| **MVP (Mínimo Viable)** | [RF 1], [RF 1.1], [RF 2], [RF 3], [RF 7], [RNF 1], [RNF 2], [RNF 3], todos los [RI] | Funcionalidad básica operativa: cargar y visualizar red con controles |
-| **Extensión 1** | [RF 4], [RF 4.1], [RF 6], [RF 5] | Interacción avanzada: filtrado y selección de nodos |
-| **Extensión 2** | [RF 8] | Exportación de resultados |
+*(Pendiente: diagrama de casos de uso y fichas detalladas por caso —actor, precondición, flujo
+principal, flujos alternativos, postcondición— para la memoria.)*
 
 ---
 
-## 5. Criterios de Validación del TFG
+## 7. Matriz de trazabilidad
 
-### 5.1. Criterios de Éxito por Calificación
+### 7.1. Objetivos del TFG → requisitos
 
-#### **Nivel Aprobado (5.0 - 6.9)**
-**Requisitos mínimos implementados:**
-- [RF 1], [RF 1.1], [RF 2], [RF 3], [RF 7]
-- [RNF 1], [RNF 2], [RNF 3]
-- [RI 1], [RI 1.1], [RI 2], [RI 2.1], [RI 3], [RI 4]
+| Objetivo del TFG | Requisitos funcionales | RNF | RI |
+|:---|:---|:---|:---|
+| Visualización 3D interactiva (frontend) | RF-03, RF-04, RF-09, RF-12, RF-16 | RNF-01, RNF-03 | RI-01, RI-02 |
+| Carga de redes desde datos públicos | RF-01, RF-02, RF-14, RF-15 | RNF-02 | RI-01, RI-02, RI-05, RI-06 |
+| Exploración e inspección | RF-05, RF-06, RF-07, RF-08, RF-13 | RNF-03 | RI-06 |
+| **Análisis básico de red (backend)** | RF-10, RF-11, RF-12 | RNF-01 | RI-02 |
+| Exportación de resultados | RF-18 | — | — |
+| Despliegue con contenedores | RF-02 | RNF-04 | — |
 
-**Evidencias requeridas:**
-- Demo funcional con dataset AAL90 precargado
-- Navegación 3D operativa (rotar, zoom, pan)
-- Panel HUD con estadísticas visibles
-- Documentación técnica básica (README + este documento de requisitos)
-- Código fuente con comentarios mínimos
+### 7.2. Asignación por sprint (orden de prioridad)
 
-#### **Nivel Notable (7.0 - 8.9)**
-**Requisitos implementados (además de los del nivel anterior):**
-- [RF 4], [RF 4.1], [RF 6], [RF 5]
-
-**Evidencias adicionales:**
-- Filtrado dinámico funcional con slider
-- Selección de nodos con panel de información
-- Tests unitarios básicos (>30% cobertura)
-- Despliegue en entorno accesible públicamente (Docker Compose funcional)
-- Documentación de usuario (cómo usar la aplicación)
-- Memoria técnica completa con justificación de decisiones
-
-#### **Nivel Sobresaliente (9.0 - 10)**
-**Requisitos implementados (todos los anteriores más):**
-- [RF 8] (exportación de visualización)
-
-**Evidencias adicionales:**
-- Tests E2E o de integración
-- Optimizaciones de rendimiento documentadas
-- Análisis de complejidad temporal/espacial
-- Comparativa con herramientas existentes (ej. BrainNet Viewer, Gephi)
-- Contribución abierta: repositorio GitHub público con CI/CD
-- Documentación de desarrollador (cómo extender el proyecto)
-- Presentación/demo pulida con casos de uso reales
-
-### 5.2. Método de Validación Técnica
-
-| Aspecto | Criterio de Validación | Método de Verificación |
-|---------|------------------------|------------------------|
-| **Funcionalidad** | Todos los RF del nivel implementados correctamente | Checklist manual + tests automatizados |
-| **Rendimiento** | 60 FPS con 500 nodos [RNF 1] | Chrome DevTools Performance Profiler |
-| **Usabilidad** | Navegación sin manual [RNF 3] | Test con usuario no familiarizado (5 tareas básicas < 5 min) |
-| **Manejo de errores** | Mensajes claros y recuperación [RNF 2] | Pruebas con ficheros inválidos (10 casos de error) |
-| **Calidad de código** | ESLint/Pylint sin errores, >30% cobertura | Pipeline CI/CD |
-| **Compatibilidad** | Funciona en Chrome, Firefox, Edge | Tests manuales en 3 navegadores |
-| **Documentación** | README completo + este documento + memoria | Revisión por tutor/tribunal |
-| **Despliegue** | `docker compose up` funciona sin intervención | Prueba en máquina limpia |
-
-### 5.3. Plan de Validación por Sprint
-
-| Sprint | Requisitos a Validar | Pruebas de Validación |
-|--------|---------------------|----------------------|
-| **Sprint 1 (MVP)** | [RF 1], [RF 1.1], [RF 2], [RF 3], [RF 7] | - Carga AAL90 correctamente<br>- Navegación fluida<br>- HUD muestra métricas<br>- Tests de rendimiento [RNF 1] |
-| **Sprint 2** | [RF 4], [RF 4.1] | - Slider ajusta umbral<br>- Aristas se ocultan dinámicamente<br>- Contador actualizado |
-| **Sprint 3** | [RF 5], [RF 6] | - Click selecciona nodo<br>- Panel muestra info correcta<br>- Resaltado visual funciona |
-| **Sprint 4** | [RF 8] | - PNG se descarga<br>- Resolución adecuada |
-
-### 5.4. Criterios de Aceptación Global
-
-El TFG se considerará **exitoso** si cumple:
-
-1. ✅ **Requisitos funcionales MVP** completamente operativos
-2. ✅ **Requisitos no funcionales** validados técnicamente
-3. ✅ **Formato de datos** [RI 1-4] correctamente implementado y validado con 2+ datasets
-4. ✅ **Documentación completa**: memoria, manual de usuario, README técnico
-5. ✅ **Demo funcional** presentable en defensa del TFG
-6. ✅ **Código reproducible**: otra persona puede ejecutar `docker compose up --build` y usar la aplicación
+| Sprint | Prioridad | Requisitos funcionales |
+|:---:|:---:|:---|
+| 1 (MVP) | 1 | RF-01, RF-02, RF-03, RF-04, RF-05 |
+| 2 | 2 | RF-06, RF-07, RF-08, RF-09 |
+| 3 | 3 | RF-10, RF-11, RF-12, RF-13 |
+| 4 | 4 | RF-14, RF-15, RF-16, RF-17, RF-18 |
 
 ---
 
-**Fecha de aprobación:** Enero 2026  
-**Revisión:** Versión 1.0  
-**Próxima revisión:** Al finalizar implementación Sprint 1
+## 8. Criterios de validación
+
+### 8.1. Validación por sprint
+
+| Sprint | Requisitos a validar | Pruebas |
+|:---:|:---|:---|
+| 1 | RF-01…RF-05 | Carga de AAL90; render 3D correcto; navegación fluida [RNF-01]; HUD con cifras. |
+| 2 | RF-06…RF-09 | El slider filtra aristas y el contador se actualiza; clic selecciona y muestra info; coloreo + leyenda. |
+| 3 | RF-10…RF-13 | Métricas globales y por nodo correctas (contraste manual con NetworkX); mapeo visual; búsqueda centra la cámara. |
+| 4 | RF-14…RF-18 | Subida y validación de ficheros; cambio de dataset; ajustes visuales; reset; exportación PNG/CSV. |
+
+### 8.2. Criterios de aceptación global
+El TFG se considerará correctamente resuelto en su alcance cuando:
+1. Los requisitos de **Prioridad 1** estén completamente operativos (MVP).
+2. Los requisitos no funcionales estén validados técnicamente [RNF-01…RNF-05].
+3. El formato de datos [RI-01, RI-02] esté implementado y validado con al menos dos datasets.
+4. El sistema sea reproducible: otra persona pueda ejecutar `docker compose up --build` y usarlo.
+5. La documentación (memoria, manual de usuario, manual de despliegue) esté completa.
+
+---
+
+**Nota de revisión (v2.0):** frente a la v1.0 se han corregido incoherencias de prioridad, se ha
+eliminado terminología heredada de otras plantillas, se ha añadido el bloque de **análisis de red
+en el backend** (RF-10, RF-11, RF-12) —objetivo central del TFG— junto con la búsqueda de nodos
+(RF-13), se ha reorganizado la priorización en 4 sprints y se ha corregido la semántica de los
+pesos de la matriz de adyacencia [RI-02].
