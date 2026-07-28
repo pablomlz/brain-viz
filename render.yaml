@@ -1,0 +1,13 @@
+# Configuración de despliegue en Render (https://render.com).
+# Con este fichero en la raíz del repositorio, Render detecta el servicio
+# automáticamente ("Blueprint") y no hay que rellenar el formulario a mano.
+services:
+  - type: web
+    name: brain-viz
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    region: frankfurt          # el más cercano a España
+    plan: free
+    branch: main
+    healthCheckPath: /health   # Render comprueba aquí que el servicio está vivo
+    autoDeploy: true           # cada push a main vuelve a desplegar

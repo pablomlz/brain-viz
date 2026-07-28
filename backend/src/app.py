@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template_string, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import os
 import json
@@ -14,6 +14,12 @@ DATA_DIR = os.path.join(os.path.dirname(BASE_DIR), 'data') # /app/data
 NODE_FILE = os.path.join(DATA_DIR, 'AAL90.node')
 EDGE_FILE = os.path.join(DATA_DIR, 'AAL90.edge')
 
+# Ficheros estáticos de la interfaz ya compilada. Solo existen en la imagen de
+# producción (ver Dockerfile de la raíz); en desarrollo la interfaz la sirve
+# Vite con recarga en caliente y este directorio no está presente.
+STATIC_DIR = os.path.join(os.path.dirname(BASE_DIR), 'static')
+HAY_FRONTEND = os.path.isdir(STATIC_DIR)
+
 
 def wants_html():
         """Detecta si el cliente prefiere HTML (header Accept o ?format=html)."""
@@ -24,44 +30,84 @@ def wants_html():
         return 'text/html' in accept
 
 
-def render_page(title: str, body: str, status_code: int = 200):
-        """Plantilla mínima coherente para endpoints HTML."""
-        template = f"""
-        <!doctype html>
-        <html lang='es'>
-        <head>
-            <meta charset='utf-8'/>
-            <meta name='viewport' content='width=device-width, initial-scale=1'/>
-            <title>{title} · Brain Viz</title>
-            <style>
-                :root {{
-                    --bg: #0c1117;
-                    --panel: #111827;
-                    --accent: #7dd3fc;
-                    --text: #e5e7eb;
-                    --muted: #9ca3af;
-                }}
-                body {{ margin: 0; padding: 24px; font-family: 'Inter', system-ui, -apple-system, sans-serif; background: radial-gradient(circle at 20% 20%, rgba(125,211,252,0.08), transparent 30%), radial-gradient(circle at 80% 0%, rgba(139,92,246,0.12), transparent 25%), var(--bg); background-attachment: fixed; color: var(--text); }}
-                .card {{ max-width: 820px; margin: 0 auto; background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 24px 28px; box-shadow: 0 20px 60px rgba(0,0,0,0.4); backdrop-filter: blur(6px); }}
-                h1 {{ margin: 0 0 12px; font-size: 26px; letter-spacing: -0.5px; }}
-                .muted {{ color: var(--muted); font-size: 14px; margin-bottom: 18px; }}
-                .pill {{ display: inline-flex; align-items: center; gap: 8px; background: rgba(125,211,252,0.12); color: var(--text); border: 1px solid rgba(125,211,252,0.3); border-radius: 999px; padding: 6px 12px; font-size: 13px; }}
-                .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 16px 0; }}
-                .stat {{ background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px 14px; }}
-                .label {{ color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; }}
-                pre {{ background: #0b1220; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 14px; overflow: auto; font-size: 12px; line-height: 1.45; }}
-                a {{ color: var(--accent); text-decoration: none; }}
-                a:hover {{ text-decoration: underline; }}
-            </style>
-        </head>
-        <body>
-            <div class='card'>
-                {body}
-            </div>
-        </body>
-        </html>
-        """
-        return render_template_string(template), status_code
+# --- Presentación de las páginas HTML de utilidad -------------------------------
+# Mismo lenguaje visual que el frontend: minimalismo científico oscuro, superficies
+# planas mate, líneas finas, acento cobalto, Space Grotesk + IBM Plex Mono.
+
+_MARK = (
+    "<svg width='24' height='24' viewBox='0 0 24 24' fill='none'>"
+    "<line x1='5' y1='17' x2='13' y2='6' stroke='#31363d' stroke-width='1.2'/>"
+    "<line x1='13' y1='6' x2='19' y2='14' stroke='#31363d' stroke-width='1.2'/>"
+    "<line x1='5' y1='17' x2='19' y2='14' stroke='#31363d' stroke-width='1.2'/>"
+    "<circle cx='5' cy='17' r='2.6' fill='#4c7df0'/>"
+    "<circle cx='13' cy='6' r='2.6' fill='#e8e9eb'/>"
+    "<circle cx='19' cy='14' r='2.6' fill='#8e949d'/>"
+    "</svg>"
+)
+
+_CSS = """
+:root{
+  --bg:#0b0c0e; --surface:#131619; --surface-2:#0e1013; --line:#23272d; --line-2:#31363d;
+  --text:#e8e9eb; --muted:#8e949d; --faint:#565c64;
+  --accent:#4c7df0; --ok:#3bb37f; --danger:#e0574d;
+  --ui:'Space Grotesk',system-ui,-apple-system,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:40px 24px;background:var(--bg);color:var(--text);font-family:var(--ui);-webkit-font-smoothing:antialiased}
+.wrap{max-width:880px;margin:0 auto}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;margin-bottom:26px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:11px}
+.brand h1{margin:0;font-size:16px;font-weight:600;letter-spacing:-.01em;line-height:1}
+.brand p{margin:3px 0 0;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);font-family:var(--mono)}
+.route{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:6px 11px;background:var(--surface)}
+h2{margin:0 0 6px;font-size:21px;font-weight:600;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px;margin:0 0 20px}
+.status{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text);border:1px solid var(--line);background:var(--surface);border-radius:5px;padding:7px 12px}
+.status.err{border-color:rgba(224,87,77,.4);color:var(--danger)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:20px 0}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:13px 15px}
+.tile .k{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.tile .v{margin-top:6px;font-size:15px;color:var(--text);font-family:var(--mono);font-variant-numeric:tabular-nums}
+.sec{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--faint);margin:22px 0 9px}
+pre{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:14px 16px;overflow:auto;
+  font-family:var(--mono);font-size:12px;line-height:1.55;color:#c3c8d0;margin:0}
+code{font-family:var(--mono);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:1px 6px;font-size:.88em;color:var(--text)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.foot{margin-top:20px;font-size:12px;color:var(--muted)}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:6px}
+::-webkit-scrollbar-track{background:transparent}
+"""
+
+
+def render_page(title: str, body: str, route: str, status_code: int = 200):
+        """Envuelve el contenido en la plantilla de página de la API."""
+        html = f"""<!doctype html>
+<html lang='es'>
+<head>
+    <meta charset='utf-8'/>
+    <meta name='viewport' content='width=device-width, initial-scale=1'/>
+    <title>{title} · Brain Viz</title>
+    <link rel='preconnect' href='https://fonts.googleapis.com'>
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+    <link href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap' rel='stylesheet'>
+    <style>{_CSS}</style>
+</head>
+<body>
+    <div class='wrap'>
+        <div class='topbar'>
+            <div class='brand'>{_MARK}<div><h1>Brain Viz</h1><p>Connectome API</p></div></div>
+            <span class='route'>{route}</span>
+        </div>
+        {body}
+    </div>
+</body>
+</html>"""
+        return html, status_code
+
 
 @app.route('/health')
 def health_check():
@@ -69,17 +115,18 @@ def health_check():
 
     if wants_html():
         body = f"""
-        <h1>Health Check</h1>
-        <div class='muted'>Estado del servicio backend</div>
-        <div class='pill'> 🟢 En línea</div>
+        <h2>Health check</h2>
+        <p class='sub'>Estado del servicio de backend.</p>
+        <span class='status'><span class='dot'></span>En línea</span>
         <div class='grid'>
-          <div class='stat'><div class='label'>Backend</div><div>Python · Flask</div></div>
-          <div class='stat'><div class='label'>Versión</div><div>API v1</div></div>
-          <div class='stat'><div class='label'>Formato</div><div>JSON / HTML</div></div>
+          <div class='tile'><div class='k'>Backend</div><div class='v'>Python · Flask</div></div>
+          <div class='tile'><div class='k'>Versión</div><div class='v'>API v1</div></div>
+          <div class='tile'><div class='k'>Formato</div><div class='v'>JSON / HTML</div></div>
         </div>
+        <div class='sec'>Respuesta</div>
         <pre>{json.dumps(payload, indent=2)}</pre>
         """
-        return render_page("Health", body)
+        return render_page("Health", body, "GET /health")
 
     return jsonify(payload)
 
@@ -88,17 +135,18 @@ def get_brain_data():
     try:
         # Llamamos a nuestro parser
         data = load_brain_graph(NODE_FILE, EDGE_FILE)
-        
+
         if data is None:
             error_payload = {"error": "Error parsing data files"}
             if wants_html():
                 body = f"""
-                <h1>Brain Data</h1>
-                <div class='muted'>No se pudieron leer los archivos de red.</div>
-                <div class='pill'>⚠️ Error</div>
+                <h2>Brain data</h2>
+                <p class='sub'>No se pudieron leer los archivos de red.</p>
+                <span class='status err'>Error</span>
+                <div class='sec'>Detalle</div>
                 <pre>{json.dumps(error_payload, indent=2)}</pre>
                 """
-                return render_page("Brain Data", body, 500)
+                return render_page("Brain Data", body, "GET /api/brain-data", 500)
             return jsonify(error_payload), 500
 
         if wants_html():
@@ -108,37 +156,64 @@ def get_brain_data():
             sample_links = data.get('links', [])[:5]
 
             body = f"""
-            <h1>Brain Data</h1>
-            <div class='muted'>Vista legible del grafo servido por la API.</div>
-            <div class='pill'>Dataset activo</div>
+            <h2>Brain data</h2>
+            <p class='sub'>Vista legible del grafo servido por la API.</p>
+            <span class='status'>AAL90 · Dataset activo</span>
             <div class='grid'>
-              <div class='stat'><div class='label'>Nodos</div><div>{total_nodes}</div></div>
-              <div class='stat'><div class='label'>Conexiones</div><div>{total_edges}</div></div>
-              <div class='stat'><div class='label'>Formato</div><div>JSON / HTML</div></div>
+              <div class='tile'><div class='k'>Nodos</div><div class='v'>{total_nodes}</div></div>
+              <div class='tile'><div class='k'>Conexiones</div><div class='v'>{total_edges}</div></div>
+              <div class='tile'><div class='k'>Formato</div><div class='v'>JSON / HTML</div></div>
             </div>
-            <div class='label'>Muestra de nodos (5)</div>
+            <div class='sec'>Muestra de nodos · 5</div>
             <pre>{json.dumps(sample_nodes, indent=2)}</pre>
-            <div class='label'>Muestra de conexiones (5)</div>
+            <div class='sec'>Muestra de conexiones · 5</div>
             <pre>{json.dumps(sample_links, indent=2)}</pre>
-            <div class='label'>Respuesta completa</div>
+            <div class='sec'>Respuesta completa</div>
             <pre>{json.dumps(data, indent=2)}</pre>
-            <div class='muted'>Para JSON puro añade <code>?format=json</code> o usa el header <code>Accept: application/json</code>.</div>
+            <p class='foot'>Para JSON puro añade <code>?format=json</code> o usa la cabecera <code>Accept: application/json</code>.</p>
             """
-            return render_page("Brain Data", body)
+            return render_page("Brain Data", body, "GET /api/brain-data")
 
         return jsonify(data)
-        
+
     except Exception as e:
         error_payload = {"error": str(e)}
         if wants_html():
             body = f"""
-            <h1>Brain Data</h1>
-            <div class='muted'>Se produjo un error al obtener los datos.</div>
-            <div class='pill'>⚠️ Error</div>
+            <h2>Brain data</h2>
+            <p class='sub'>Se produjo un error al obtener los datos.</p>
+            <span class='status err'>Error</span>
+            <div class='sec'>Detalle</div>
             <pre>{json.dumps(error_payload, indent=2)}</pre>
             """
-            return render_page("Brain Data", body, 500)
+            return render_page("Brain Data", body, "GET /api/brain-data", 500)
         return jsonify(error_payload), 500
 
+# --- Servicio de la interfaz en producción -----------------------------------
+# En la imagen de producción, Flask sirve también la aplicación de React ya
+# compilada, de modo que todo el sistema queda en un único contenedor y no es
+# necesario ningún proxy entre servicios.
+
+@app.route('/', defaults={'ruta': ''})
+@app.route('/<path:ruta>')
+def servir_frontend(ruta):
+    if not HAY_FRONTEND:
+        # Modo desarrollo: la interfaz la sirve Vite en su propio puerto.
+        return jsonify({
+            "mensaje": "API de Brain Viz en ejecución.",
+            "endpoints": ["/health", "/api/brain-data"],
+        })
+    # Si la ruta corresponde a un fichero existente (JS, CSS, imágenes), se
+    # devuelve tal cual; en cualquier otro caso se devuelve el index.html.
+    if ruta and os.path.exists(os.path.join(STATIC_DIR, ruta)):
+        return send_from_directory(STATIC_DIR, ruta)
+    return send_from_directory(STATIC_DIR, 'index.html')
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Arranque solo para DESARROLLO local. En producción se usa un servidor
+    # WSGI (gunicorn), tal y como define el Dockerfile de la raíz; el modo
+    # depuración nunca debe activarse en un servidor accesible públicamente.
+    puerto = int(os.environ.get('PORT', 5000))
+    depuracion = os.environ.get('FLASK_DEBUG', '1') == '1'
+    app.run(host='0.0.0.0', port=puerto, debug=depuracion)

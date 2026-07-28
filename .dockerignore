@@ -1,0 +1,11 @@
+# No copiar a la imagen lo que no hace falta
+**/node_modules
+**/dist
+**/__pycache__
+**/*.pyc
+.git
+doc/
+docs/
+*.md
+.venv
+venv
