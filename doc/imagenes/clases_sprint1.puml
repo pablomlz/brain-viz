@@ -1,0 +1,51 @@
+@startuml clases_sprint1
+' Diagrama de clases del modelo de dominio y los servicios del backend (Sprint 1)
+' Nomenclatura en inglés, coherente con el código.
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #FEFEFE
+skinparam classBorderColor #444444
+skinparam defaultFontSize 15
+hide circle
+
+class BrainVizApi {
+  - node_file : str
+  - edge_file : str
+  + health() : Json
+  + get_brain_data() : Json
+}
+
+class GraphParser {
+  + load_brain_graph(node_path, edge_path) : BrainNetwork
+}
+
+class BrainNetwork {
+  + to_json() : dict
+}
+
+class Node {
+  + id : int
+  + label : str
+  + x : float
+  + y : float
+  + z : float
+  + group : int
+}
+
+class Edge {
+  + source : int
+  + target : int
+  + value : float
+}
+
+class Meta {
+  + total_nodes : int
+  + total_edges : int
+}
+
+BrainVizApi ..> GraphParser : uses
+GraphParser ..> BrainNetwork : builds
+BrainNetwork "1" *-- "0..*" Node
+BrainNetwork "1" *-- "0..*" Edge
+BrainNetwork "1" *-- "1" Meta
+@enduml

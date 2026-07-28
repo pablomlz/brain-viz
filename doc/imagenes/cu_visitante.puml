@@ -1,0 +1,30 @@
+@startuml cu_visitante
+' Diagrama de casos de uso del rol Visitante [I]
+left to right direction
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FEFEFE
+  BorderColor #444444
+}
+skinparam ArrowColor #333333
+
+actor "Visitante" as V
+
+usecase "CU-01\nExplorar una\nred pública" as UC01
+usecase "CU-02\nNavegar por la\nescena 3D" as UC02
+usecase "CU-03\nFiltrar aristas\npor umbral" as UC03
+usecase "CU-04\nInspeccionar\nun nodo" as UC04
+usecase "CU-05\nConsultar métricas\nde la red" as UC05
+usecase "CU-06\nBuscar un nodo" as UC06
+usecase "CU-07\nPersonalizar la\nvisualización" as UC07
+usecase "CU-08\nExportar la\nvisualización como imagen" as UC08
+
+V --> UC01
+V --> UC02
+V --> UC03
+V --> UC04
+V --> UC05
+V --> UC06
+V --> UC07
+V --> UC08
+@enduml

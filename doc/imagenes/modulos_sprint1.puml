@@ -1,0 +1,25 @@
+@startuml modulos_sprint1
+' Modularización del software en el Sprint 1
+skinparam shadowing false
+skinparam defaultFontSize 17
+skinparam componentStyle rectangle
+skinparam defaultTextAlignment center
+
+package "Backend (Python / Flask)" {
+  component "app.py\nAPI REST\n/health, /api/brain-data" as APP
+  component "graph_parser.py\nload_brain_graph()\ncarga + análisis" as GP
+}
+
+package "Frontend (React)" {
+  component "main.jsx\npunto de entrada" as MAIN
+  component "App.jsx\nescena + HUD + controles" as APPJS
+  component "BrainVis\nnodos + aristas 3D" as BV
+  component "Login.jsx\npantalla de acceso" as LOGIN
+}
+
+APP --> GP : invoca
+MAIN --> APPJS : monta
+APPJS --> BV : contiene
+APPJS --> LOGIN : contiene
+APPJS ..> APP : fetch /api/brain-data
+@enduml

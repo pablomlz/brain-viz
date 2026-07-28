@@ -1,0 +1,26 @@
+@startuml sec_carga_red
+' Diagrama de secuencia: carga y visualización de una red (Sprint 1)
+skinparam shadowing false
+actor Usuario as U
+participant "Cliente 3D\n(React)" as FE
+participant "API Flask\n(app.py)" as API
+participant "graph_parser.py" as GP
+database "Ficheros\n.node / .edge" as F
+
+U -> FE : abre la aplicación
+activate FE
+FE -> API : GET /api/brain-data
+activate API
+API -> GP : load_brain_graph(node, edge)
+activate GP
+GP -> F : lee los ficheros
+F --> GP : coordenadas y matriz
+GP -> GP : construye el grafo (NetworkX)\ny filtra aristas
+GP --> API : JSON {nodes, links, meta}
+deactivate GP
+API --> FE : 200 OK (JSON)
+deactivate API
+FE -> FE : calcula la geometría\ny renderiza la escena
+FE --> U : escena 3D + panel de estadísticas
+deactivate FE
+@enduml

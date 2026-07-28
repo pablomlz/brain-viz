@@ -1,0 +1,369 @@
+\chapter{Requisitos del Software}
+
+Una vez realizada la introducción, donde se ha descrito de qué trata el proyecto y qué se va a
+desarrollar, en este capítulo se lleva a cabo un estudio de la ingeniería de requisitos que permite
+realizar una descripción funcional del sistema. En primer lugar se describe el perfil de los
+usuarios, ya que los requisitos se refieren a ellos y conviene tener claro qué puede hacer cada uno;
+a continuación se detallan los requisitos (funcionales, no funcionales y de información), los casos
+de uso y, por último, la asignación de los requisitos a los sprints y los criterios de validación.
+
+\section{Perfil de usuarios}
+
+Se denominará \textbf{usuario} al conjunto de personas que utilicen la aplicación. La aplicación está
+dirigida a personas interesadas en explorar y analizar redes cerebrales, y se distinguen tres grupos
+de roles. Para referirse a ellos de forma abreviada se emplean las siglas \textbf{[V]} (visitante),
+\textbf{[I]} (investigador) y \textbf{[A]} (administrador):
+
+\begin{description}
+	\item[\textbf{[V] Visitante.}] Accede a la aplicación sin necesidad de registro. Puede explorar
+		las redes cerebrales públicas precargadas: visualizarlas en 3D, navegar, filtrar, inspeccionar
+		nodos, consultar métricas y personalizar la vista. No puede subir ni almacenar datos.
+	\item[\textbf{[I] Investigador.}] Usuario registrado. Además de todo lo anterior, puede cargar sus
+		propias redes cerebrales, gestionar sus \textit{conjuntos de datos} privados y exportar los
+		resultados (visualizaciones y métricas).
+	\item[\textbf{[A] Administrador.}] Rol único de moderación. Además de todo lo anterior, gestiona el
+		catálogo de redes públicas disponibles para todos (altas, ediciones y bajas) y gestiona los
+		usuarios del sistema: da de alta y de baja usuarios y les asigna o revoca el rol de
+		investigador.
+\end{description}
+
+De igual forma que en otros sistemas con roles, las funciones de cada rol se ven recogidas y
+ampliadas (herencia) por el rol de mayor relevancia, siendo el orden principal \textbf{Administrador
+-- Investigador -- Visitante}. Es decir, el investigador puede hacer todo lo que hace un visitante, y
+el administrador todo lo que hace un investigador, más sus funciones específicas.
+
+\section{Requisitos}
+
+A continuación se describen las funcionalidades de la aplicación. En primer lugar, los requisitos
+funcionales, es decir, las funciones de la aplicación cuando el usuario la utiliza; se distinguen
+funcionalidades generales y funcionalidades propias de cada rol. En segundo lugar, los requisitos no
+funcionales, que recogen aspectos de rendimiento, seguridad y usabilidad. Por último, los requisitos
+de información, que describen los datos que el sistema debe almacenar y gestionar.
+
+Cada requisito se prioriza, ya que los requisitos se implementan por \textit{sprints} en orden de
+prioridad: si al finalizar el proyecto no se llegaran a implementar todos, los pendientes serían
+siempre los de menor prioridad. La prioridad~1 identifica los requisitos que constituyen el
+\textbf{producto mínimo viable} (o MVP, del inglés \textit{Minimum Viable Product}): el conjunto
+mínimo de funcionalidades sin las cuales el sistema no sería viable. La tabla~\ref{tab:prioridades}
+recoge la correspondencia entre el nivel de prioridad y el sprint en el que se implementa.
+
+\begin{table}[H]
+	\centering
+	\caption{Niveles de prioridad de los requisitos funcionales.}
+	\label{tab:prioridades}
+	\begin{tabularx}{\textwidth}{>{\centering\arraybackslash}p{2.2cm} l >{\centering\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}X}
+		\toprule
+		\textbf{Prioridad} & \textbf{Nivel} & \textbf{Sprint} & \textbf{Significado} \\
+		\midrule
+		1 & Crítica & 1 & Imprescindible; constituye el producto mínimo viable del sistema. \\
+		2 & Alta    & 2 & Aporta el valor principal de exploración interactiva. \\
+		3 & Media   & 3 & Análisis de red; distingue la herramienta de un simple visor. \\
+		4 & Baja    & 4 & Cuentas de usuario, gestión de datos y administración. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\subsection{Requisitos funcionales}
+
+\subsubsection*{Funcionalidades generales (rol visitante [V] o superior)}
+
+\noindent\textbf{[RF 1]} Cualquier usuario podrá acceder a la aplicación y explorar las redes
+cerebrales públicas precargadas sin necesidad de registro, actuando como visitante [V].
+
+\noindent\textbf{[RF 2]} El usuario podrá visualizar la red cerebral seleccionada renderizada en un
+espacio 3D interactivo, con los nodos situados en sus coordenadas anatómicas y las aristas ponderadas
+entre ellos.
+\begin{itemize}
+	\item \textbf{[RF 2.1]} El sistema procesará en el servidor los ficheros de la red (nodos y matriz
+		de adyacencia), construirá el grafo y lo pondrá a disposición del cliente a través de una
+		interfaz de programación (API).
+\end{itemize}
+
+\noindent\textbf{[RF 3]} El usuario podrá navegar por la escena mediante controles de cámara orbital:
+rotar, hacer zoom y desplazar (paneo).
+
+\noindent\textbf{[RF 4]} El usuario dispondrá de un panel de estadísticas globales (HUD) con el
+número de nodos, aristas y grupos de la red activa.
+
+\noindent\textbf{[RF 5]} El usuario podrá filtrar dinámicamente las aristas visibles mediante un
+umbral de peso ajustable en tiempo real.
+
+\noindent\textbf{[RF 6]} El usuario podrá seleccionar un nodo haciendo clic sobre él, que quedará
+resaltado, y consultar su información detallada (etiqueta, coordenadas, grado y grupo).
+\begin{itemize}
+	\item \textbf{[RF 6.1]} La información del nodo se ampliará con sus métricas de centralidad
+		(grado, intermediación y cercanía).
+\end{itemize}
+
+\noindent\textbf{[RF 7]} El usuario podrá colorear los nodos según su grupo o lóbulo anatómico, con
+una leyenda de colores asociada.
+
+\noindent\textbf{[RF 8]} El usuario podrá consultar las métricas globales de la red (densidad, grado
+medio, coeficiente de \textit{clustering} y número de componentes conexas), calculadas en el
+servidor.
+
+\noindent\textbf{[RF 9]} El usuario podrá cambiar el criterio visual de los nodos, haciendo que su
+tamaño o color dependa de una métrica seleccionada.
+
+\noindent\textbf{[RF 10]} El usuario podrá buscar un nodo por su etiqueta y el sistema centrará la
+cámara sobre él.
+
+\noindent\textbf{[RF 11]} El usuario podrá personalizar la visualización (tamaño de nodos, opacidad
+de aristas, ejes de referencia, rotación automática y tema) y restablecerla a su estado inicial.
+
+\noindent\textbf{[RF 12]} El usuario podrá exportar la visualización actual como imagen.
+
+\subsubsection*{Funcionalidades del rol investigador [I]}
+
+\noindent\textbf{[RF 13]} Un investigador podrá registrarse e iniciar sesión para acceder a las
+funcionalidades de gestión de datos.
+
+\noindent\textbf{[RF 14]} Un investigador podrá cargar sus propias redes cerebrales mediante la
+subida simultánea de los dos ficheros que describen una red: uno con las coordenadas y los atributos
+de los nodos, y otro con la matriz de conexiones (definidos en [RI 1] y [RI 2]).
+\begin{itemize}
+	\item \textbf{[RF 14.1]} El sistema validará el formato y la consistencia dimensional de los
+		ficheros antes de cargar la red, informando de cualquier error.
+\end{itemize}
+
+\noindent\textbf{[RF 15]} Un investigador podrá gestionar sus propios conjuntos de datos: guardarlos,
+listarlos y eliminarlos.
+
+\noindent\textbf{[RF 16]} Un investigador podrá exportar las métricas calculadas de una red en un
+formato de intercambio de datos.
+
+\subsubsection*{Funcionalidades del rol administrador [A]}
+
+\noindent\textbf{[RF 17]} Un administrador podrá gestionar el catálogo de redes públicas, añadiendo,
+editando o eliminando las redes precargadas disponibles para todos los usuarios.
+
+\noindent\textbf{[RF 18]} Un administrador podrá gestionar los usuarios registrados: consultarlos,
+editar su rol o eliminarlos.
+\begin{itemize}
+	\item \textbf{[RF 18.1]} El administrador podrá asignar o revocar el rol de investigador a un
+		usuario.
+\end{itemize}
+
+\vspace{0.4cm}
+La tabla~\ref{tab:priorizacion} resume todos los requisitos funcionales, el rol mínimo que puede
+ejecutarlos y su prioridad.
+
+\begin{table}[H]
+	\centering
+	\caption{Priorización de los requisitos funcionales.}
+	\label{tab:priorizacion}
+	\small
+	\begin{tabularx}{\textwidth}{>{\centering\arraybackslash}p{1.4cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{2.6cm} >{\centering\arraybackslash}p{1.4cm}}
+		\toprule
+		\textbf{RF} & \textbf{Resumen de funcionalidad} & \textbf{Rol mínimo} & \textbf{Prior.} \\
+		\midrule
+		RF 1  & Acceso como visitante y exploración de redes públicas. & Visitante & 1 \\
+		RF 2  & Visualización 3D de la red (nodos y aristas). & Visitante & 1 \\
+		RF 2.1 & Procesamiento en el servidor y exposición mediante una API. & Visitante & 1 \\
+		RF 3  & Navegación con cámara orbital. & Visitante & 1 \\
+		RF 4  & Panel de estadísticas globales (HUD). & Visitante & 1 \\
+		\addlinespace
+		RF 5  & Filtrado de aristas por umbral de peso. & Visitante & 2 \\
+		RF 6  & Selección e inspección de un nodo. & Visitante & 2 \\
+		RF 7  & Coloreado de nodos por grupo/lóbulo. & Visitante & 2 \\
+		\addlinespace
+		RF 6.1 & Métricas de centralidad por nodo. & Visitante & 3 \\
+		RF 8  & Métricas globales de la red (en el servidor). & Visitante & 3 \\
+		RF 9  & Mapeo visual de métricas (tamaño/color). & Visitante & 3 \\
+		RF 10 & Búsqueda de nodo por etiqueta. & Visitante & 3 \\
+		\addlinespace
+		RF 11 & Personalización y restablecimiento de la vista. & Visitante & 4 \\
+		RF 12 & Exportación de la vista como imagen. & Visitante & 4 \\
+		RF 13 & Registro e inicio de sesión. & Investigador & 4 \\
+		RF 14 & Carga de redes propias. & Investigador & 4 \\
+		RF 14.1 & Validación de los ficheros cargados. & Investigador & 4 \\
+		RF 15 & Gestión de conjuntos de datos propios. & Investigador & 4 \\
+		RF 16 & Exportación de métricas. & Investigador & 4 \\
+		RF 17 & Gestión del catálogo de redes públicas. & Administrador & 4 \\
+		RF 18 & Gestión de usuarios. & Administrador & 4 \\
+		RF 18.1 & Asignación/revocación del rol investigador. & Administrador & 4 \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\subsection{Requisitos no funcionales}
+
+\noindent\textbf{[RNF 1]} La aplicación deberá garantizar un rendimiento gráfico fluido en la
+manipulación del modelo 3D, apoyándose en la aceleración gráfica por hardware, con una tasa de
+fotogramas estable (objetivo: $\geq 60$~FPS con redes de hasta unos 500 nodos y $\geq 30$~FPS hasta
+unos 1000 nodos).
+
+\noindent\textbf{[RNF 2]} La aplicación deberá garantizar la confidencialidad de los datos: los
+conjuntos de datos privados de un investigador solo serán accesibles por él mismo y por el
+administrador. Ningún otro usuario podrá acceder a la información privada de otro.
+
+\noindent\textbf{[RNF 3]} La aplicación deberá avisar al usuario cuando surja algún tipo de error que
+no dependa de él (por ejemplo, dimensiones incongruentes entre los ficheros de entrada), siendo lo
+más transparente posible en cada caso e indicando qué falla y por qué.
+
+\noindent\textbf{[RNF 4]} La interfaz de navegación deberá ser suficientemente intuitiva para que
+cada usuario sepa en cada momento cómo interactuar con el modelo 3D y qué está visualizando, sin
+necesidad de una fuente de información externa.
+
+\noindent\textbf{[RNF 5]} El sistema deberá empaquetarse en contenedores y poder levantarse con un
+único comando, garantizando la reproducibilidad del entorno con independencia del sistema operativo
+anfitrión.
+
+\noindent\textbf{[RNF 6]} La aplicación deberá funcionar en los navegadores web modernos más
+habituales, sin necesidad de instalar complementos adicionales.
+
+\subsection{Requisitos de información}
+
+\noindent\textbf{[RI 1]} El documento para introducir la topología de los nodos debe ser un fichero
+de texto plano con las columnas \texttt{x  y  z  color\_id  size  label}, siendo obligatorias las
+coordenadas $(x, y, z)$ y opcionales el identificador de grupo, el tamaño y la etiqueta; el separador
+es uno o más espacios o tabuladores. Este formato sigue la convención de \textit{BrainNet
+Viewer}~\cite{brainnet}.
+
+\noindent\textbf{[RI 2]} El documento para introducir las conexiones debe ser un fichero de texto
+plano que contenga una matriz de adyacencia cuadrada $N \times N$. Cada valor representa el peso de
+la conexión entre dos nodos, siendo \textbf{0} la ausencia de conexión; los pesos son valores
+numéricos y no se asume que estén normalizados. La matriz será simétrica (grafo no dirigido) y con
+diagonal a cero.
+
+\noindent\textbf{[RI 3]} Cualquier dato introducido a través de los ficheros o formularios de la
+aplicación deberá recogerse en formato de codificación estándar UTF-8.
+
+\noindent\textbf{[RI 4]} La aplicación deberá almacenar de forma consistente y privada los datos de
+cada entidad que interactúe con el sistema.
+\begin{itemize}
+	\item \textbf{[RI 4.1]} De cada usuario se almacenará su identificador, sus credenciales y su rol;
+		solo podrán ser modificados por el propio usuario o por un administrador.
+	\item \textbf{[RI 4.2]} De cada conjunto de datos se almacenará su nombre, su propietario, su
+		visibilidad (público o privado) y los ficheros de la red asociada.
+\end{itemize}
+
+\section{Casos de uso}
+
+En este apartado se describen los casos de uso de la aplicación desde la perspectiva de los usuarios
+que interactúan con ella de forma directa. En una primera fase se presentan los diagramas de casos
+de uso, que ofrecen una representación gráfica de la relación entre los casos de uso y los
+participantes (denominados \textit{actores}). Posteriormente se realiza una descripción detallada de
+los pasos, acciones y resultados esperados de cada caso de uso.
+
+Se emplean las siguientes siglas para abreviar:
+\begin{itemize}
+	\item \textbf{CU:} Caso de Uso.
+	\item \textbf{Diagrama CU:} Diagrama de Caso de Uso.
+	\item \textbf{CU-XX:} Caso de Uso -- número de caso de uso.
+\end{itemize}
+
+\subsection{Diagramas de casos de uso}
+
+En las figuras~\ref{fig:cu-visitante}, \ref{fig:cu-investigador} y \ref{fig:cu-administrador} se
+muestran los diagramas de casos de uso, uno por perfil de usuario. Cada diagrama recoge las tareas
+que puede realizar el rol correspondiente; al existir herencia entre roles, cada diagrama incluye
+implícitamente los casos de uso de los roles inferiores.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[height=14cm]{imagenes/cu_visitante}
+	\caption{Diagrama de casos de uso del rol Visitante [V].}
+	\label{fig:cu-visitante}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[height=12cm]{imagenes/cu_investigador}
+	\caption{Diagrama de casos de uso del rol Investigador [I].}
+	\label{fig:cu-investigador}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[height=6cm]{imagenes/cu_administrador}
+	\caption{Diagrama de casos de uso del rol Administrador [A].}
+	\label{fig:cu-administrador}
+\end{figure}
+
+\subsection{Descripción de los casos de uso}
+
+Cada caso de uso se describe mediante una ficha detallada que recoge su actor, sus dependencias con
+los requisitos funcionales, precondiciones, tipo, descripción, secuencia de pasos, postcondición y
+excepciones (tablas~\ref{cu:01} a~\ref{cu:15}). Previamente, la tabla~\ref{tab:cu-resumen} muestra un
+resumen con los casos de uso, su actor y los requisitos funcionales que implementan, poniendo de
+manifiesto la trazabilidad entre requisitos y casos de uso.
+
+\begin{table}[H]
+	\centering
+	\caption{Casos de uso y requisitos asociados.}
+	\label{tab:cu-resumen}
+	\small
+	\begin{tabularx}{\textwidth}{>{\centering\arraybackslash}p{1.3cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{2.5cm} >{\raggedright\arraybackslash}p{2.7cm}}
+		\toprule
+		\textbf{CU} & \textbf{Nombre} & \textbf{Actor} & \textbf{RF asociados} \\
+		\midrule
+		CU-01 & Explorar una red pública & Visitante & RF 2, RF 2.1 \\
+		CU-02 & Navegar por la escena 3D & Visitante & RF 3 \\
+		CU-03 & Filtrar aristas por umbral & Visitante & RF 5 \\
+		CU-04 & Inspeccionar un nodo & Visitante & RF 6, RF 6.1 \\
+		CU-05 & Consultar métricas de la red & Visitante & RF 8 \\
+		CU-06 & Buscar un nodo & Visitante & RF 10 \\
+		CU-07 & Personalizar la visualización & Visitante & RF 7, RF 9, RF 11 \\
+		CU-08 & Exportar la visualización como imagen & Visitante & RF 12 \\
+		\addlinespace
+		CU-09 & Registrarse e iniciar sesión & Investigador & RF 13 \\
+		CU-10 & Cerrar sesión & Investigador & RF 13 \\
+		CU-11 & Cargar una red propia & Investigador & RF 14, RF 14.1 \\
+		CU-12 & Gestionar mis conjuntos de datos & Investigador & RF 15 \\
+		CU-13 & Exportar métricas & Investigador & RF 16 \\
+		\addlinespace
+		CU-14 & Gestionar el catálogo de redes públicas & Administrador & RF 17 \\
+		CU-15 & Gestionar usuarios & Administrador & RF 18, RF 18.1 \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\input{secciones/casos_uso}
+
+\section{Asignación de requisitos a los sprints y criterios de validación}
+
+Antes de abordar la validación conviene fijar en qué sprint se implementará cada requisito. La
+tabla~\ref{tab:validacion} muestra la asignación de los requisitos a cada uno de los sprints del
+proyecto, junto con las pruebas de validación previstas para cada uno. Esta asignación sigue el orden
+de prioridad establecido en la tabla~\ref{tab:priorizacion}.
+
+La validación de la aplicación se llevará a cabo considerando el grado de cumplimiento de los
+requisitos funcionales, no funcionales y de información, así como la implementación directa de los
+distintos casos de uso. A lo largo del desarrollo se realizarán pruebas de software al finalizar cada
+parte desarrollada, que abarcarán desde pruebas unitarias y de integración, destinadas a verificar el
+funcionamiento del código, hasta pruebas de validación que aseguren el cumplimiento de los
+requisitos. Además, al finalizar cada sprint se realizará una validación por parte del cliente ---en
+este caso, el director del proyecto---, para lo cual la aplicación se desplegará en un servidor
+accesible.
+
+\begin{table}[H]
+	\centering
+	\caption{Asignación de requisitos a los sprints y pruebas de validación.}
+	\label{tab:validacion}
+	\begin{tabularx}{\textwidth}{>{\centering\arraybackslash}p{1.4cm} >{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}X}
+		\toprule
+		\textbf{Sprint} & \textbf{Requisitos} & \textbf{Pruebas de validación} \\
+		\midrule
+		1 & RF 1 -- RF 4 &
+			Carga de una red pública; renderizado 3D correcto; navegación fluida [RNF 1]; el HUD
+			muestra las cifras de la red. \\
+		\addlinespace
+		2 & RF 5 -- RF 7 &
+			El control deslizante filtra aristas y el contador se actualiza; el clic selecciona un
+			nodo y muestra su información; coloreado por grupo con leyenda. \\
+		\addlinespace
+		3 & RF 6.1, RF 8 -- RF 10 &
+			Métricas globales y por nodo correctas (contraste manual con una implementación de
+			referencia); mapeo visual por métrica; la búsqueda centra la cámara en el nodo. \\
+		\addlinespace
+		4 & RF 11 -- RF 18 &
+			Registro e inicio de sesión; subida y validación de ficheros; gestión de conjuntos de
+			datos; confidencialidad de datos privados [RNF 2]; gestión de catálogo y usuarios por el
+			administrador; exportación. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+La planificación temporal de cada sprint, así como los recursos y el coste asociados, se describen en
+el capítulo correspondiente.

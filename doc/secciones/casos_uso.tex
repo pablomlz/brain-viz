@@ -1,0 +1,395 @@
+% Fichas de casos de uso. Se usa xltabular para permitir el corte entre páginas.
+% Columna 1: etiqueta del campo; Columna 2: contenido / acción.
+\newcolumntype{K}{>{\raggedright\arraybackslash}p{3.3cm}}
+\newcolumntype{V}{>{\raggedright\arraybackslash}X}
+\setlength{\extrarowheight}{1.5pt}
+
+% ------------------------------------------------------------------ CU-01
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-01. Explorar una red pública.}\label{cu:01}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-01} & \textbf{Explorar una red pública} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-01} & \textbf{Explorar una red pública (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Visitante [V] \\ \hline
+\textbf{Dependencias} & RF 2, RF 2.1 \\ \hline
+\textbf{Precondición} & La aplicación está desplegada y existe al menos una red pública disponible. \\ \hline
+\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Descripción} & El visitante selecciona una red pública y el sistema la procesa y la renderiza en 3D. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1  & El visitante accede a la aplicación. \\ \hline
+2  & El sistema muestra una red por defecto ya renderizado y la lista de redes disponibles. \\ \hline
+3  & El visitante selecciona una red de la lista. \\ \hline
+3a & El \textit{backend} procesa la red y la devuelve; el sistema la renderiza en 3D. \\ \hline
+3b & La red no se puede cargar; se informa del error y se mantiene la anterior. \\ \hline
+\textbf{Postcondición} & La red seleccionada queda visualizada en la escena 3D. \\ \hline
+\textbf{Excepciones} & La red seleccionada no existe o está corrupto. \\ \hline
+\textbf{Comentarios} & No aplica. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-02
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-02. Navegar por la escena 3D.}\label{cu:02}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-02} & \textbf{Navegar por la escena 3D} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-02} & \textbf{Navegar por la escena 3D (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Visitante [V] \\ \hline
+\textbf{Dependencias} & RF 3 \\ \hline
+\textbf{Precondición} & Existe una red renderizada en la escena. \\ \hline
+\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Descripción} & El usuario explora la red rotando, haciendo zoom y desplazando la cámara. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1 & El usuario arrastra, gira la rueda o desplaza sobre la escena. \\ \hline
+2 & El sistema actualiza la cámara en tiempo real de forma fluida. \\ \hline
+\textbf{Postcondición} & La vista de la cámara queda actualizada. \\ \hline
+\textbf{Excepciones} & Fallo o falta de recursos gráficos en el dispositivo. \\ \hline
+\textbf{Comentarios} & No aplica. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-03
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-03. Filtrar aristas por umbral.}\label{cu:03}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-03} & \textbf{Filtrar aristas por umbral} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-03} & \textbf{Filtrar aristas por umbral (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Visitante [V] \\ \hline
+\textbf{Dependencias} & RF 5 \\ \hline
+\textbf{Precondición} & Existe una red renderizada con aristas ponderadas. \\ \hline
+\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Descripción} & El usuario ajusta un umbral y el sistema muestra solo las aristas con peso mayor o igual a él. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1 & El usuario mueve el control deslizante de umbral. \\ \hline
+2 & El sistema recalcula las aristas visibles y actualiza la escena y el contador. \\ \hline
+\textbf{Postcondición} & Solo se muestran las aristas con peso por encima del umbral. \\ \hline
+\textbf{Excepciones} & Ninguna. \\ \hline
+\textbf{Comentarios} & Con el umbral en su valor mínimo se muestran todas las aristas de la red. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-04
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-04. Inspeccionar un nodo.}\label{cu:04}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-04} & \textbf{Inspeccionar un nodo} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-04} & \textbf{Inspeccionar un nodo (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Visitante [V] \\ \hline
+\textbf{Dependencias} & RF 6, RF 6.1 \\ \hline
+\textbf{Precondición} & Existe una red renderizada. \\ \hline
+\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Descripción} & El usuario selecciona un nodo con un clic y consulta su información detallada y sus métricas de centralidad. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1 & El usuario hace clic sobre un nodo. \\ \hline
+2 & El sistema resalta el nodo y muestra su panel de información (etiqueta, coordenadas, grado, grupo y centralidades). \\ \hline
+3 & El usuario hace clic en el espacio vacío para deseleccionar. \\ \hline
+\textbf{Postcondición} & El nodo seleccionado queda resaltado y su información visible. \\ \hline
+\textbf{Excepciones} & Ninguna. \\ \hline
+\textbf{Comentarios} & Solo puede haber un nodo seleccionado a la vez. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-05
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-05. Consultar métricas de la red.}\label{cu:05}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-05} & \textbf{Consultar métricas de la red} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-05} & \textbf{Consultar métricas de la red (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Visitante [V] \\ \hline
+\textbf{Dependencias} & RF 8 \\ \hline
+\textbf{Precondición} & Existe una red cargada en el sistema. \\ \hline
+\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Descripción} & El usuario consulta las métricas globales de la red calculadas en el \textit{backend}. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1 & El usuario abre el panel de métricas de red. \\ \hline
+2 & El sistema muestra densidad, grado medio, coeficiente de \textit{clustering} y componentes conexas. \\ \hline
+\textbf{Postcondición} & Las métricas globales de la red quedan visibles. \\ \hline
+\textbf{Excepciones} & Ninguna. \\ \hline
+\textbf{Comentarios} & No aplica. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-06
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-06. Buscar un nodo.}\label{cu:06}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-06} & \textbf{Buscar un nodo} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-06} & \textbf{Buscar un nodo (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Visitante [V] \\ \hline
+\textbf{Dependencias} & RF 10 \\ \hline
+\textbf{Precondición} & Existe una red renderizada. \\ \hline
+\textbf{Tipo} & Secundario -- Esencial \\ \hline
+\textbf{Descripción} & El usuario busca un nodo por su etiqueta y la cámara se centra en él. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1 & El usuario escribe un término en el campo de búsqueda. \\ \hline
+2 & El sistema muestra las coincidencias por etiqueta. \\ \hline
+3 & El usuario elige un resultado. \\ \hline
+4 & El sistema resalta el nodo y centra la cámara sobre él. \\ \hline
+\textbf{Postcondición} & La cámara queda centrada en el nodo encontrado. \\ \hline
+\textbf{Excepciones} & No existen coincidencias para el término buscado. \\ \hline
+\textbf{Comentarios} & No aplica. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-07
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-07. Personalizar la visualización.}\label{cu:07}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-07} & \textbf{Personalizar la visualización} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-07} & \textbf{Personalizar la visualización (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Visitante [V] \\ \hline
+\textbf{Dependencias} & RF 7, RF 9, RF 11 \\ \hline
+\textbf{Precondición} & Existe una red renderizada. \\ \hline
+\textbf{Tipo} & Secundario -- Esencial \\ \hline
+\textbf{Descripción} & El usuario ajusta el esquema de coloreado y tamaño de los nodos y otros parámetros visuales, y puede restablecer la vista. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1  & El usuario ajusta el esquema de color/tamaño y los parámetros visuales. \\ \hline
+2  & El sistema actualiza la escena de inmediato. \\ \hline
+3a & (Flujo alternativo) El usuario pulsa ``restablecer'' y el sistema devuelve la vista a sus valores por defecto. \\ \hline
+\textbf{Postcondición} & La escena refleja los ajustes elegidos por el usuario. \\ \hline
+\textbf{Excepciones} & Ninguna. \\ \hline
+\textbf{Comentarios} & El restablecimiento es un flujo alternativo, no un caso de uso independiente. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-08
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-08. Exportar la visualización como imagen.}\label{cu:08}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-08} & \textbf{Exportar la visualización como imagen} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-08} & \textbf{Exportar la visualización como imagen (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Visitante [V] \\ \hline
+\textbf{Dependencias} & RF 12 \\ \hline
+\textbf{Precondición} & Existe una red renderizada en la escena. \\ \hline
+\textbf{Tipo} & Secundario -- Deseable \\ \hline
+\textbf{Descripción} & El usuario exporta la vista actual de la escena 3D como una imagen PNG. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1 & El usuario pulsa ``exportar imagen''. \\ \hline
+2 & El sistema genera y descarga una imagen PNG de la escena. \\ \hline
+\textbf{Postcondición} & Se descarga una imagen PNG con la vista actual. \\ \hline
+\textbf{Excepciones} & Ninguna. \\ \hline
+\textbf{Comentarios} & No aplica. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-09
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-09. Registrarse e iniciar sesión.}\label{cu:09}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-09} & \textbf{Registrarse e iniciar sesión} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-09} & \textbf{Registrarse e iniciar sesión (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Investigador [I] \\ \hline
+\textbf{Dependencias} & RF 13 \\ \hline
+\textbf{Precondición} & El usuario se encuentra en la pantalla de acceso y no ha iniciado sesión previamente. \\ \hline
+\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Descripción} & El usuario se registra o inicia sesión para acceder a las funcionalidades de investigador. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1  & El usuario abre el formulario de acceso. \\ \hline
+2  & El sistema solicita las credenciales o el registro. \\ \hline
+3  & El usuario introduce sus credenciales. \\ \hline
+3a & Credenciales correctas: se inicia sesión con el rol investigador. \\ \hline
+3b & Credenciales incorrectas: se informa y vuelve al paso 2. \\ \hline
+\textbf{Postcondición} & El usuario accede a la aplicación con su rol y las funciones asociadas. \\ \hline
+\textbf{Excepciones} & El usuario no está registrado; credenciales inválidas. \\ \hline
+\textbf{Comentarios} & No aplica. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-10
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-10. Cerrar sesión.}\label{cu:10}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-10} & \textbf{Cerrar sesión} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-10} & \textbf{Cerrar sesión (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Investigador [I] \\ \hline
+\textbf{Dependencias} & RF 13 \\ \hline
+\textbf{Precondición} & El usuario ha iniciado sesión previamente. \\ \hline
+\textbf{Tipo} & Secundario -- Esencial \\ \hline
+\textbf{Descripción} & El usuario cierra su sesión y vuelve a actuar como visitante. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1 & El usuario pulsa ``cerrar sesión''. \\ \hline
+2 & El sistema finaliza la sesión y devuelve al usuario al estado no autenticado. \\ \hline
+\textbf{Postcondición} & La sesión queda cerrada; el usuario pasa a actuar como visitante. \\ \hline
+\textbf{Excepciones} & Ninguna. \\ \hline
+\textbf{Comentarios} & Garantiza la seguridad al abandonar la aplicación, especialmente en equipos compartidos. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-11
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-11. Cargar una red propia.}\label{cu:11}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-11} & \textbf{Cargar una red propia} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-11} & \textbf{Cargar una red propia (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Investigador [I] \\ \hline
+\textbf{Dependencias} & RF 14, RF 14.1, RI 1, RI 2 \\ \hline
+\textbf{Precondición} & El investigador se ha autenticado correctamente. \\ \hline
+\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Descripción} & El investigador sube sus ficheros \texttt{.node} y \texttt{.edge} para visualizar su propia red. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1  & El investigador selecciona ``cargar red propia''. \\ \hline
+2  & El sistema solicita los ficheros \texttt{.node} y \texttt{.edge}. \\ \hline
+3  & El investigador sube ambos ficheros. \\ \hline
+4  & El sistema valida el formato y la consistencia dimensional. \\ \hline
+4a & Ficheros válidos: se procesa y se renderiza la red. \\ \hline
+4b & Ficheros inválidos: se informa del error y vuelve al paso 2. \\ \hline
+\textbf{Postcondición} & La red del investigador queda cargada y disponible para guardarse en sus \textit{conjuntos de datos}. \\ \hline
+\textbf{Excepciones} & Dimensiones incongruentes entre ficheros; formato incorrecto; codificación inválida. \\ \hline
+\textbf{Comentarios} & No aplica. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-12
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-12. Gestionar mis conjuntos de datos.}\label{cu:12}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-12} & \textbf{Gestionar mis conjuntos de datos} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-12} & \textbf{Gestionar mis conjuntos de datos (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Investigador [I] \\ \hline
+\textbf{Dependencias} & RF 15 \\ \hline
+\textbf{Precondición} & El investigador se ha autenticado correctamente. \\ \hline
+\textbf{Tipo} & Secundario -- Esencial \\ \hline
+\textbf{Descripción} & El investigador consulta, guarda, carga o elimina sus \textit{conjuntos de datos} privados. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1  & El investigador abre la sección ``mis datasets''. \\ \hline
+2  & El sistema muestra la lista de sus \textit{conjuntos de datos}. \\ \hline
+3  & El investigador selecciona una acción. \\ \hline
+3a & Guardar la red actual como un nuevo \textit{conjunto de datos}. \\ \hline
+3b & Cargar un \textit{conjunto de datos} guardado para visualizarlo. \\ \hline
+3c & Eliminar un \textit{conjunto de datos} existente. \\ \hline
+4  & El sistema actualiza la lista de \textit{conjuntos de datos} del investigador. \\ \hline
+\textbf{Postcondición} & La lista de \textit{conjuntos de datos} del investigador queda actualizada. \\ \hline
+\textbf{Excepciones} & Ninguna. \\ \hline
+\textbf{Comentarios} & Reúne las operaciones de guardar, listar, cargar y eliminar (CRUD) sobre los \textit{conjuntos de datos} propios. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-13
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-13. Exportar métricas.}\label{cu:13}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-13} & \textbf{Exportar métricas} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-13} & \textbf{Exportar métricas (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Investigador [I] \\ \hline
+\textbf{Dependencias} & RF 16 \\ \hline
+\textbf{Precondición} & El investigador está autenticado y hay una red con métricas calculadas. \\ \hline
+\textbf{Tipo} & Secundario -- Esencial \\ \hline
+\textbf{Descripción} & El investigador exporta las métricas de la red en formato CSV o JSON. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1 & El investigador pulsa ``exportar métricas''. \\ \hline
+2 & El sistema solicita el formato (CSV o JSON). \\ \hline
+3 & El investigador elige el formato. \\ \hline
+4 & El sistema genera y descarga el fichero de métricas. \\ \hline
+\textbf{Postcondición} & Se descarga el fichero de métricas en el formato elegido. \\ \hline
+\textbf{Excepciones} & Ninguna. \\ \hline
+\textbf{Comentarios} & No aplica. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-14
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-14. Gestionar el catálogo de redes públicas.}\label{cu:14}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-14} & \textbf{Gestionar el catálogo de redes públicas} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-14} & \textbf{Gestionar el catálogo de redes públicas (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Administrador [A] \\ \hline
+\textbf{Dependencias} & RF 17 \\ \hline
+\textbf{Precondición} & El administrador se ha autenticado correctamente. \\ \hline
+\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Descripción} & El administrador añade, edita o elimina las redes públicas disponibles para todos los usuarios. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1  & El administrador abre la gestión del catálogo. \\ \hline
+2  & El sistema muestra las redes públicas actuales. \\ \hline
+3  & El administrador selecciona una acción. \\ \hline
+3a & Añadir una red subiendo sus ficheros. \\ \hline
+3b & Editar los metadatos de una red existente. \\ \hline
+3c & Eliminar una red existente. \\ \hline
+4  & El sistema valida los datos y actualiza el catálogo público. \\ \hline
+\textbf{Postcondición} & El catálogo de redes públicas queda actualizado para todos los usuarios. \\ \hline
+\textbf{Excepciones} & Ficheros de la red inválidos; la red ya está registrada. \\ \hline
+\textbf{Comentarios} & Reúne las operaciones de añadir, editar y eliminar (CRUD) sobre el catálogo público. \\ \hline
+\end{xltabular}
+}
+
+% ------------------------------------------------------------------ CU-15
+{\small
+\begin{xltabular}{\textwidth}{|K|V|}
+\caption{CU-15. Gestionar usuarios.}\label{cu:15}\\
+\hline
+\rowcolor[gray]{0.88}\textbf{CU-15} & \textbf{Gestionar usuarios} \\ \hline
+\endfirsthead
+\hline \rowcolor[gray]{0.88}\textbf{CU-15} & \textbf{Gestionar usuarios (cont.)} \\ \hline
+\endhead
+\textbf{Actor principal} & Administrador [A] \\ \hline
+\textbf{Dependencias} & RF 18, RF 18.1 \\ \hline
+\textbf{Precondición} & El administrador se ha autenticado correctamente. \\ \hline
+\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Descripción} & El administrador consulta los usuarios, cambia su rol o los elimina. \\ \hline
+\rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
+\textbf{Paso} & \textbf{Acción} \\ \hline
+1  & El administrador abre la gestión de usuarios. \\ \hline
+2  & El sistema muestra la lista de usuarios y sus roles. \\ \hline
+3  & El administrador selecciona una acción. \\ \hline
+3a & Asignar o revocar el rol de investigador a un usuario. \\ \hline
+3b & Eliminar un usuario. \\ \hline
+4  & El sistema actualiza los usuarios y sus roles. \\ \hline
+\textbf{Postcondición} & Los usuarios y sus roles quedan actualizados correctamente. \\ \hline
+\textbf{Excepciones} & Ninguna. \\ \hline
+\textbf{Comentarios} & Reúne las operaciones de listar, editar el rol y eliminar usuarios. \\ \hline
+\end{xltabular}
+}

@@ -1,0 +1,21 @@
+@startuml cu_administrador
+' Diagrama de casos de uso del rol Administrador [III]
+' Administrador --|> Investigador : hereda los casos de uso del investigador (y del visitante).
+left to right direction
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FEFEFE
+  BorderColor #444444
+}
+skinparam ArrowColor #333333
+
+actor "Investigador" as I
+actor "Administrador" as A
+A --|> I
+
+usecase "CU-14\nGestionar el catálogo\nde redes públicas" as UC14
+usecase "CU-15\nGestionar\nusuarios" as UC15
+
+A --> UC14
+A --> UC15
+@enduml

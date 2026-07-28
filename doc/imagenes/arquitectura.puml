@@ -1,0 +1,31 @@
+@startuml arquitectura
+' Arquitectura general del sistema (cliente-servidor desacoplado, contenedores)
+skinparam shadowing false
+skinparam defaultFontSize 17
+skinparam componentStyle rectangle
+skinparam defaultTextAlignment center
+
+actor Usuario as U
+
+node "Navegador web\n(WebGL)" as BROWSER {
+  component "Cliente 3D\nReact + Three.js" as FE
+}
+
+node "Docker Compose  ·  red brain-net" as DOCKER {
+  node "Contenedor frontend\n(Vite, puerto 5173)" as CFE {
+    component "Servidor Vite\n+ proxy" as VITE
+  }
+  node "Contenedor backend\n(Flask, puerto 5000)" as CBE {
+    component "API REST\napp.py" as API
+    component "graph_parser.py\nNetworkX" as GP
+    database "Ficheros de red\n.node / .edge" as DATA
+  }
+}
+
+U --> FE
+FE --> VITE : HTTP
+VITE --> API : proxy /api, /health
+API --> GP : procesa la red
+GP --> DATA : lee
+API --> FE : JSON {nodes, links, meta}
+@enduml

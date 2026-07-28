@@ -1,0 +1,48 @@
+@startuml sec_interaccion_sprint2
+' Diagrama de secuencia de las interacciones del Sprint 2:
+' filtrado por umbral (RF 5) y selección de nodo (RF 6).
+' Ambas se resuelven en el cliente, sin nuevas peticiones al servidor.
+skinparam shadowing false
+skinparam defaultFontSize 15
+
+actor Usuario as U
+participant "Panel de\ncontroles" as CTRL
+participant "Estado de la\naplicación" as ST
+participant "Escena 3D" as SC
+participant "Panel del\nnodo" as INFO
+
+== RF 5: filtrado por umbral ==
+U -> CTRL : mueve el control de umbral
+activate CTRL
+CTRL -> ST : actualiza umbral
+activate ST
+ST -> ST : localiza cuántas aristas\nsuperan el umbral\n(búsqueda binaria)
+ST -> SC : nº de aristas visibles
+deactivate CTRL
+activate SC
+SC -> SC : ajusta el rango de dibujado\n(sin reconstruir la geometría)
+SC --> U : escena filtrada
+deactivate SC
+ST --> U : contador "visibles / totales"
+deactivate ST
+
+== RF 6: selección de un nodo ==
+U -> SC : clic sobre un nodo
+activate SC
+SC -> SC : determina el nodo\nbajo el cursor
+SC -> ST : nodo seleccionado
+deactivate SC
+activate ST
+ST -> SC : resalta el nodo\n(color de acento y mayor tamaño)
+ST -> INFO : datos del nodo
+deactivate ST
+activate INFO
+INFO --> U : etiqueta, identificador, grupo,\ngrado y coordenadas
+deactivate INFO
+
+U -> SC : clic fuera de un nodo
+activate SC
+SC -> ST : deselecciona
+deactivate SC
+ST -> INFO : cierra el panel
+@enduml

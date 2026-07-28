@@ -1,0 +1,27 @@
+@startuml cu_investigador
+' Diagrama de casos de uso del rol Investigador [II]
+' Investigador --|> Visitante : hereda todos los casos de uso del visitante.
+left to right direction
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FEFEFE
+  BorderColor #444444
+}
+skinparam ArrowColor #333333
+
+actor "Visitante" as V
+actor "Investigador" as I
+I --|> V
+
+usecase "CU-09\nRegistrarse e\niniciar sesión" as UC09
+usecase "CU-10\nCerrar sesión" as UC10
+usecase "CU-11\nCargar una\nred propia" as UC11
+usecase "CU-12\nGestionar\nmis datasets" as UC12
+usecase "CU-13\nExportar\nmétricas" as UC13
+
+I --> UC09
+I --> UC10
+I --> UC11
+I --> UC12
+I --> UC13
+@enduml

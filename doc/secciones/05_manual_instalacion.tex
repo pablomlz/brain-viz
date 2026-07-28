@@ -1,0 +1,139 @@
+\chapter{Manual de instalación}
+
+En este capítulo se detalla el procedimiento para instalar y ejecutar la aplicación. Gracias al uso
+de contenedores, el despliegue es reproducible y no requiere instalar manualmente las dependencias
+de Python ni de Node.js: basta con disponer de Docker.
+
+El proyecto contempla dos formas de ejecución, pensadas para propósitos distintos. La
+\textbf{ejecución en local} (secciones~\ref{sec:requisitos} y~\ref{sec:lanzamiento}) levanta los dos
+servicios por separado con Docker Compose y recarga en caliente, que es lo adecuado durante el
+desarrollo. El \textbf{despliegue en un servidor público} (sección~\ref{sec:despliegue}) emplea, en
+cambio, una única imagen autocontenida pensada para producción.
+
+\section{Requisitos previos}
+\label{sec:requisitos}
+
+Para ejecutar la aplicación es necesario contar con:
+
+\begin{itemize}
+	\item \textbf{Docker}~\cite{docker} y \textbf{Docker Compose} instalados y en ejecución. En Windows y macOS
+		se recomienda instalar \textit{Docker Desktop}; en Linux, el motor de Docker junto con el
+		\textit{plugin} de Compose.
+	\item Los \textbf{ficheros de datos} del atlas de ejemplo (\texttt{AAL90.node} y
+		\texttt{AAL90.edge}) ubicados en el directorio \texttt{backend/data/} del proyecto.
+	\item Un \textbf{navegador moderno} con soporte de WebGL 2.0 (Chrome, Firefox o Edge).
+\end{itemize}
+
+Puede comprobarse que Docker está correctamente instalado con:
+
+\begin{verbatim}
+docker --version
+docker compose version
+\end{verbatim}
+
+\section{Instalación y lanzamiento en local}
+\label{sec:lanzamiento}
+
+Una vez clonado o descargado el repositorio, se accede a su directorio raíz y se construyen y
+levantan los contenedores.
+
+\subsection{Alternativa 1: recomendada}
+
+Se emplea el \textit{script} auxiliar incluido en el proyecto, que levanta los servicios y muestra
+por consola los puertos asignados automáticamente:
+
+\begin{verbatim}
+./up-brain-viz.sh
+\end{verbatim}
+
+\subsection{Alternativa 2}
+
+De forma equivalente, se pueden construir y levantar los contenedores directamente con Docker
+Compose:
+
+\begin{verbatim}
+docker compose up --build
+\end{verbatim}
+
+\subsection{Post-ejecución y resumen}
+
+Los servicios de \textit{backend} y \textit{frontend} exponen sus puertos internos (5000 y 5173,
+respectivamente) en puertos del anfitrión asignados automáticamente, evitando conflictos con otros
+procesos. Para conocer los puertos publicados se ejecuta:
+
+\begin{verbatim}
+docker compose ps
+\end{verbatim}
+
+A partir de la columna de puertos publicados se obtiene la dirección de acceso; por ejemplo, el
+frontend estará disponible en \texttt{http://localhost:<puerto>}. Para detener la aplicación:
+
+\begin{verbatim}
+docker compose down
+\end{verbatim}
+
+\subsection{Consideraciones}
+
+\begin{itemize}
+	\item El navegador se comunica únicamente con el \textit{frontend}; las peticiones a
+		\texttt{/api} y \texttt{/health} se redirigen internamente al \textit{backend} dentro de la
+		red de contenedores.
+	\item El entorno está configurado para desarrollo con recarga en caliente
+		(\textit{hot-reload}): los cambios en el código fuente se reflejan sin reconstruir la imagen.
+	\item El \textit{script} \texttt{get-docker.sh} incluido en el repositorio es un instalador de
+		Docker para Linux; en macOS y Windows debe usarse Docker Desktop.
+\end{itemize}
+
+\section{Despliegue en un servidor público}
+\label{sec:despliegue}
+
+Además de la ejecución en local, la aplicación se despliega en un servidor accesible desde Internet
+para que el director del proyecto pueda validar cada \textit{sprint} y para que el tribunal pueda
+probarla sin necesidad de instalar nada.
+
+\subsection{Imagen de producción}
+
+El modo de desarrollo descrito en la sección anterior no es adecuado para un servidor público por dos
+motivos: emplea servidores de desarrollo ---tanto el de Vite como el integrado de Flask, que no están
+pensados para producción y no deben ejecutarse con el modo de depuración activo en una dirección
+pública--- y reparte la aplicación en dos servicios que se comunican mediante un nombre interno de la
+red de Docker Compose, inexistente fuera de ella.
+
+Por ello se ha añadido un \texttt{Dockerfile} en la raíz del proyecto que genera una \textbf{imagen
+única de producción} en dos etapas:
+
+\begin{enumerate}
+	\item En la primera etapa se compila la aplicación de React, obteniendo un conjunto de ficheros
+		estáticos optimizados.
+	\item En la segunda, esos ficheros se copian a la imagen de Python, donde el propio servidor sirve
+		tanto la interfaz como la API.
+\end{enumerate}
+
+De este modo todo el sistema queda en un solo contenedor, desaparece la necesidad de un \textit{proxy}
+entre servicios y la imagen puede desplegarse en cualquier plataforma que admita contenedores. La
+aplicación se ejecuta con \textbf{gunicorn}, un servidor WSGI de producción, escuchando en todas las
+interfaces y en el puerto que indique la variable de entorno \texttt{PORT}, tal y como esperan las
+plataformas de despliegue habituales. La imagen puede construirse y probarse en local con:
+
+\begin{verbatim}
+docker build -t brain-viz:prod .
+docker run -p 8080:8080 brain-viz:prod
+\end{verbatim}
+
+\subsection{Publicación}
+
+El repositorio incluye un fichero \texttt{render.yaml} que describe el servicio, de forma que la
+plataforma de despliegue detecta la configuración automáticamente a partir del repositorio: tipo de
+servicio, ruta del \texttt{Dockerfile}, región y ruta de comprobación de estado (\texttt{/health}).
+Cada nueva versión publicada en la rama principal del repositorio desencadena un nuevo despliegue.
+
+% NOTA: insertar aquí la URL pública una vez completado el despliegue.
+
+\subsection{Consideraciones del entorno gratuito}
+
+El servicio se aloja en un plan gratuito, lo que conlleva una limitación que conviene conocer: la
+instancia se suspende tras un periodo de inactividad, de modo que la primera petición tras ese
+periodo puede tardar aproximadamente un minuto mientras el servicio se reactiva; las siguientes se
+atienden con normalidad. Para reducir este efecto durante los periodos de evaluación se emplea un
+servicio externo de comprobación periódica que consulta el \textit{endpoint} \texttt{/health} a
+intervalos regulares, manteniendo la instancia activa.

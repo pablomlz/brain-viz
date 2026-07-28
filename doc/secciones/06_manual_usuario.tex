@@ -1,0 +1,36 @@
+\chapter{Manual de usuario}
+
+Este capítulo explica cómo utilizar la aplicación una vez desplegada. Dado que el sistema cuenta con
+un único rol de usuario, el manual se organiza en función de las tareas que este puede realizar, en
+lugar de por perfiles. El contenido se irá ampliando a medida que se completen los sucesivos
+\textit{sprints}.
+
+\section{Acceso y visión general}
+
+Al abrir la aplicación en el navegador se muestra una pantalla de acceso de carácter presentacional.
+Tras acceder, se presenta la red cerebral de ejemplo (atlas AAL90) ya renderizada en el lienzo 3D,
+junto con los paneles de información y control superpuestos.
+
+% NOTA: incluir captura de la pantalla de acceso y de la vista general.
+
+\section{Navegación por la escena 3D}
+
+El usuario puede explorar la red mediante los controles de cámara:
+
+\begin{itemize}
+	\item \textbf{Rotar (orbitar):} arrastrar con el botón izquierdo del ratón.
+	\item \textbf{Zoom:} rueda del ratón o gesto de pellizco en dispositivos táctiles.
+	\item \textbf{Desplazar (paneo):} arrastrar con el botón derecho o con dos dedos.
+\end{itemize}
+
+\section{Interpretación de la visualización}
+
+Cada nodo representa una región cerebral situada en sus coordenadas anatómicas, y su color indica el
+grupo o lóbulo al que pertenece, según la leyenda mostrada en la interfaz. Las líneas entre nodos
+representan las conexiones de la red. El panel de estadísticas muestra el número de nodos,
+conexiones y grupos de la red activa.
+
+% NOTA: a medida que avancen los sprints, documentar aquí el filtrado por umbral (RF 5), la
+% selección e inspección de nodos (RF 6, RF 6.1), la consulta de métricas (RF 8), la búsqueda
+% (RF 10), y las funciones de investigador/administrador: registro (RF 13), carga de datasets
+% propios (RF 14), gestión de datasets (RF 15) y exportación (RF 12, RF 16).
