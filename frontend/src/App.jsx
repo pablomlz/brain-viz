@@ -1,44 +1,52 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Html, Stars } from '@react-three/drei';
+import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
-import Login from './Login';
+// NOTA: el componente Login existe en el proyecto pero todavía no se utiliza.
+// El acceso de usuarios (registro, inicio y cierre de sesión) corresponde al
+// Sprint 4; hasta entonces la aplicación es de acceso libre (rol visitante).
 
 const API_BASE_URL = ''; // Las peticiones van al mismo host; Vite proxy las redirige al backend
 
+// Paleta categórica sobria para los grupos/lóbulos (no neón).
 const GROUP_PALETTE = [
-  '#7dd3fc', '#a78bfa', '#f472b6', '#fbbf24',
-  '#34d399', '#f87171', '#60a5fa', '#c084fc',
-  '#fb923c', '#22d3ee',
+  '#6e9bf0', '#58c4a3', '#e0a458', '#d6685e', '#7fb3d5',
+  '#a98bd0', '#e0894b', '#4fa3a0', '#8a94a6', '#c77ba6',
 ];
-
 const groupColor = (g) => GROUP_PALETTE[(g ?? 0) % GROUP_PALETTE.length];
 
-function BrainVis({ setMeta, hovered, setHovered, settings }) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const groupRef = useRef();
+const ACCENT = '#4c7df0'; // Color de acento para el nodo seleccionado (RF 6)
 
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/brain-data`)
-      .then((res) => res.json())
-      .then((brainData) => {
-        if (brainData?.error) {
-          setError(brainData.error);
-        } else {
-          setData(brainData);
-          const groups = new Set(brainData.nodes.map((n) => n.group));
-          setMeta({
-            nodes: brainData.meta?.total_nodes ?? brainData.nodes?.length ?? 0,
-            edges: brainData.meta?.total_edges ?? brainData.links?.length ?? 0,
-            groups: Array.from(groups).sort((a, b) => a - b),
-          });
-        }
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+// Nº de aristas cuyo peso alcanza el umbral (RF 5). Como la lista llega
+// ordenada por peso descendente, ese número es la posición de la primera arista
+// que ya no lo alcanza, y se localiza con una búsqueda binaria en O(log E) en
+// lugar de recorrer toda la lista.
+function contarVisibles(links, umbral) {
+  let ini = 0;
+  let fin = links.length;
+  while (ini < fin) {
+    const medio = (ini + fin) >> 1;
+    if (links[medio].value >= umbral) ini = medio + 1;
+    else fin = medio;
+  }
+  return ini;
+}
+
+function Mark({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flex: 'none' }}>
+      <line x1="5" y1="17" x2="13" y2="6" stroke="#31363d" strokeWidth="1.2" />
+      <line x1="13" y1="6" x2="19" y2="14" stroke="#31363d" strokeWidth="1.2" />
+      <line x1="5" y1="17" x2="19" y2="14" stroke="#31363d" strokeWidth="1.2" />
+      <circle cx="5" cy="17" r="2.6" fill="#4c7df0" />
+      <circle cx="13" cy="6" r="2.6" fill="#e8e9eb" />
+      <circle cx="19" cy="14" r="2.6" fill="#8e949d" />
+    </svg>
+  );
+}
+
+function BrainVis({ data, hovered, setHovered, selected, setSelected, settings }) {
+  const groupRef = useRef();
 
   useFrame((_, dt) => {
     if (groupRef.current && settings.autoRotate) {
@@ -46,6 +54,10 @@ function BrainVis({ setMeta, hovered, setHovered, settings }) {
     }
   });
 
+  // Geometría de las aristas. El backend las envía ordenadas por peso
+  // descendente, así que se construye UNA sola vez y el filtrado por umbral
+  // (RF 5) se resuelve dibujando solo el prefijo correspondiente mediante
+  // setDrawRange, sin reconstruir la geometría en cada cambio del control.
   const linesGeometry = useMemo(() => {
     if (!data) return null;
     const positions = [];
@@ -65,29 +77,34 @@ function BrainVis({ setMeta, hovered, setHovered, settings }) {
     return g;
   }, [data]);
 
-  if (loading) return <StatusOverlay><Loader label="Cargando conectoma..." /></StatusOverlay>;
-  if (error || !data) return <StatusOverlay><ErrorCard message={error || 'No hay datos'} /></StatusOverlay>;
+  // Aplica el umbral: como los enlaces están ordenados de mayor a menor peso,
+  // los visibles son siempre los primeros `visibleLinks` (2 vértices por arista).
+  useEffect(() => {
+    if (linesGeometry) linesGeometry.setDrawRange(0, settings.visibleLinks * 2);
+  }, [linesGeometry, settings.visibleLinks]);
 
   return (
     <group ref={groupRef} rotation={[-Math.PI / 2, 0, 0]}>
       {data.nodes.map((node, i) => {
         const isHovered = hovered === i;
-        const color = groupColor(node.group);
+        const isSelected = selected === i;
+        const color = isSelected ? ACCENT : groupColor(node.group);
         return (
           <mesh
             key={i}
             position={[node.x, node.y, node.z]}
             onPointerOver={(e) => { e.stopPropagation(); setHovered(i); document.body.style.cursor = 'pointer'; }}
             onPointerOut={() => { setHovered(null); document.body.style.cursor = 'default'; }}
-            scale={isHovered ? 1.8 : 1}
+            onClick={(e) => { e.stopPropagation(); setSelected(i === selected ? null : i); }}
+            scale={isSelected ? 2 : isHovered ? 1.6 : 1}
           >
             <sphereGeometry args={[1.6, 24, 24]} />
             <meshStandardMaterial
               color={color}
               emissive={color}
-              emissiveIntensity={isHovered ? 1.2 : 0.55}
-              roughness={0.3}
-              metalness={0.2}
+              emissiveIntensity={isSelected ? 1.1 : isHovered ? 0.9 : 0.32}
+              roughness={0.5}
+              metalness={0.1}
             />
           </mesh>
         );
@@ -99,7 +116,6 @@ function BrainVis({ setMeta, hovered, setHovered, settings }) {
             vertexColors
             transparent
             opacity={settings.linkOpacity}
-            blending={THREE.AdditiveBlending}
             depthWrite={false}
           />
         </lineSegments>
@@ -110,13 +126,9 @@ function BrainVis({ setMeta, hovered, setHovered, settings }) {
           position={[data.nodes[hovered].x, data.nodes[hovered].y, data.nodes[hovered].z]}
           style={{ pointerEvents: 'none', transform: 'translate(12px, -50%)' }}
         >
-          <div style={tooltipStyle}>
-            <div style={{ fontWeight: 600, fontSize: 12 }}>
-              {data.nodes[hovered].name || `Nodo #${hovered}`}
-            </div>
-            <div style={{ fontSize: 10, color: '#8b93a7', marginTop: 2 }}>
-              Grupo {data.nodes[hovered].group}
-            </div>
+          <div className="tip">
+            <div className="tip-t">{data.nodes[hovered].label || `Nodo #${hovered}`}</div>
+            <div className="tip-s">NODO {String(hovered).padStart(2, '0')} · GRUPO {data.nodes[hovered].group}</div>
           </div>
         </Html>
       )}
@@ -126,50 +138,89 @@ function BrainVis({ setMeta, hovered, setHovered, settings }) {
 
 function Loader({ label }) {
   return (
-    <div style={loaderStyle}>
-      <div style={spinnerStyle} />
-      <div style={{ fontSize: 12, color: '#8b93a7', letterSpacing: 0.3 }}>{label}</div>
+    <div className="loader">
+      <div className="loader-bar"><span /></div>
+      <div className="loader-lab">{label}</div>
     </div>
   );
 }
 
 function ErrorCard({ message }) {
   return (
-    <div style={errorStyle}>
-      <div style={{ fontSize: 12, color: '#fb7185', fontWeight: 600, marginBottom: 4 }}>⚠ Error</div>
-      <div style={{ fontSize: 12, color: '#e6e9ef' }}>{message}</div>
+    <div className="err">
+      <div className="err-t">Error</div>
+      <div className="err-m">{message}</div>
     </div>
   );
 }
 
-function StatusOverlay({ children }) {
-  return <Html center>{children}</Html>;
-}
-
 export default function App() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [meta, setMeta] = useState({ nodes: 0, edges: 0, groups: [] });
   const [hovered, setHovered] = useState(null);
-  const [authenticated, setAuthenticated] = useState(false);
+  const [selected, setSelected] = useState(null);
   const [settings, setSettings] = useState({
     showLinks: true,
     linkOpacity: 0.25,
     autoRotate: false,
     showAxes: false,
+    threshold: 0,       // Umbral de peso mínimo (RF 5)
+    visibleLinks: 0,    // Nº de aristas que superan el umbral
   });
 
-  if (!authenticated) {
-    return <Login onLogin={() => setAuthenticated(true)} />;
-  }
+  // Carga de la red (RF 1, RF 2)
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/brain-data`)
+      .then((res) => res.json())
+      .then((brainData) => {
+        if (brainData?.error) {
+          setError(brainData.error);
+          return;
+        }
+        setData(brainData);
+        const groups = new Set(brainData.nodes.map((n) => n.group));
+        setMeta({
+          nodes: brainData.meta?.total_nodes ?? brainData.nodes.length,
+          edges: brainData.meta?.total_edges ?? brainData.links.length,
+          groups: Array.from(groups).sort((a, b) => a - b),
+          minWeight: brainData.meta?.min_weight ?? 0,
+          maxWeight: brainData.meta?.max_weight ?? 1,
+        });
+        // Se respeta el umbral que el usuario pudiera haber fijado mientras la
+        // red se estaba cargando; si no tocó nada (umbral 0), se muestran todas.
+        setSettings((s) => ({
+          ...s,
+          visibleLinks: contarVisibles(brainData.links, s.threshold),
+        }));
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const onThresholdChange = (value) => {
+    const visibles = data ? contarVisibles(data.links, value) : 0;
+    setSettings((s) => ({ ...s, threshold: value, visibleLinks: visibles }));
+  };
+
+  const selectedNode = selected != null && data ? data.nodes[selected] : null;
+  // Peso máximo de la red; el `|| 1` evita divisiones por cero y un control
+  // degenerado si la red no tuviera ninguna arista.
+  const maxWeight = meta.maxWeight || 1;
 
   return (
-    <div style={{ width: '100vw', height: '100vh', position: 'relative', zIndex: 2 }}>
-      <Canvas camera={{ position: [0, 100, 180], fov: 45 }} dpr={[1, 2]}>
-        <color attach="background" args={[0]} />
-        <fog attach="fog" args={['#070a10', 180, 420]} />
-        <ambientLight intensity={0.35} />
-        <pointLight position={[80, 120, 80]} intensity={1.1} color="#7dd3fc" />
-        <pointLight position={[-80, -40, -80]} intensity={0.7} color="#a78bfa" />
-        <Stars radius={260} depth={60} count={1200} factor={3} saturation={0} fade speed={0.4} />
+    <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+      <Canvas
+        camera={{ position: [0, 100, 180], fov: 45 }}
+        dpr={[1, 2]}
+        onPointerMissed={() => setSelected(null)} /* clic en vacío: deselecciona (RF 6) */
+      >
+        <color attach="background" args={['#0b0c0e']} />
+        <fog attach="fog" args={['#0b0c0e', 260, 520]} />
+        <ambientLight intensity={0.6} />
+        <pointLight position={[100, 120, 80]} intensity={0.8} color="#ffffff" />
+        <pointLight position={[-80, -40, -80]} intensity={0.35} color="#ffffff" />
 
         <OrbitControls
           enableDamping
@@ -179,94 +230,171 @@ export default function App() {
           maxDistance={360}
         />
 
-        <BrainVis
-          setMeta={setMeta}
-          hovered={hovered}
-          setHovered={setHovered}
-          settings={settings}
-        />
+        {data && (
+          <BrainVis
+            data={data}
+            hovered={hovered}
+            setHovered={setHovered}
+            selected={selected}
+            setSelected={setSelected}
+            settings={settings}
+          />
+        )}
 
-        {settings.showAxes && <axesHelper args={[50]} />}
+        {loading && <Html center><Loader label="Cargando conectoma" /></Html>}
+        {error && <Html center><ErrorCard message={error} /></Html>}
+
+        {settings.showAxes && <axesHelper args={[70]} />}
       </Canvas>
 
-      {/* Top-left: brand + stats */}
-      <div style={hudTop}>
-        <div style={brandRow}>
-          <div style={brandOrb} />
+      {/* Arriba izquierda: marca + estadísticas */}
+      <div className="panel panel-tl">
+        <div className="brand">
+          <Mark size={24} />
           <div>
-            <div style={brandTitle}>Brain Viz</div>
-            <div style={brandSub}>Connectome Explorer</div>
+            <h1>Brain&nbsp;Viz</h1>
+            <p>Connectome&nbsp;Explorer</p>
           </div>
         </div>
-        <div style={statGrid}>
+        <div className="panel-hd">
+          <span className="panel-ttl">Red activa</span>
+          <span className="panel-idx">AAL90</span>
+        </div>
+        <div className="panel-bd" style={{ paddingTop: 4, paddingBottom: 4 }}>
           <Stat label="Nodos" value={meta.nodes} />
-          <Stat label="Conexiones" value={meta.edges} />
+          <Stat
+            label="Conexiones"
+            value={`${settings.visibleLinks} / ${meta.edges}`}  /* visibles / totales (RF 5) */
+          />
           <Stat label="Grupos" value={meta.groups.length} />
         </div>
       </div>
 
-      {/* Top-right: controls */}
-      <div style={hudRight}>
-        <PanelTitle>Controles</PanelTitle>
-        <Toggle
-          label="Mostrar conexiones"
-          value={settings.showLinks}
-          onChange={(v) => setSettings((s) => ({ ...s, showLinks: v }))}
-        />
-        <Toggle
-          label="Rotación automática"
-          value={settings.autoRotate}
-          onChange={(v) => setSettings((s) => ({ ...s, autoRotate: v }))}
-        />
-        <Toggle
-          label="Ejes de referencia"
-          value={settings.showAxes}
-          onChange={(v) => setSettings((s) => ({ ...s, showAxes: v }))}
-        />
-        <div style={{ marginTop: 10 }}>
-          <div style={sliderLabel}>
-            <span>Opacidad conexiones</span>
-            <span style={{ color: '#8b93a7', fontFamily: 'JetBrains Mono, monospace' }}>
-              {settings.linkOpacity.toFixed(2)}
-            </span>
+      {/* Columna derecha: controles y, si procede, el nodo seleccionado.
+          Se apilan en una columna flexible para que nunca se solapen. */}
+      <div className="stack-tr">
+      <div className="panel">
+        <div className="panel-hd">
+          <span className="panel-ttl">Controles</span>
+          <span className="panel-idx">02</span>
+        </div>
+        <div className="panel-bd">
+          {/* Umbral de peso (RF 5). El rango del control se calibra con los
+              pesos reales de la red, de modo que funcione con cualquier
+              conjunto de datos y no solo con pesos normalizados en [0, 1]. */}
+          <div className="slider-row">
+            <div className="slider-lab">
+              <span>Umbral de peso</span>
+              <span className="slider-val">{settings.threshold.toFixed(2)}</span>
+            </div>
+            <input
+              className="rng"
+              type="range"
+              min={0}
+              max={maxWeight}
+              step={maxWeight / 100}
+              value={settings.threshold}
+              onChange={(e) => onThresholdChange(parseFloat(e.target.value))}
+              style={{
+                background: `linear-gradient(90deg, var(--accent) ${(settings.threshold / maxWeight) * 100}%, var(--line-2) ${(settings.threshold / maxWeight) * 100}%)`,
+              }}
+            />
+            <div className="rng-range">
+              <span>0.00</span>
+              <span>{maxWeight.toFixed(2)}</span>
+            </div>
           </div>
-          <input
-            type="range" min={0} max={1} step={0.01}
-            value={settings.linkOpacity}
-            onChange={(e) => setSettings((s) => ({ ...s, linkOpacity: parseFloat(e.target.value) }))}
-            style={sliderStyle}
+          <Toggle
+            label="Mostrar conexiones"
+            value={settings.showLinks}
+            onChange={(v) => setSettings((s) => ({ ...s, showLinks: v }))}
           />
+          <Toggle
+            label="Rotación automática"
+            value={settings.autoRotate}
+            onChange={(v) => setSettings((s) => ({ ...s, autoRotate: v }))}
+          />
+          <Toggle
+            label="Ejes de referencia"
+            value={settings.showAxes}
+            onChange={(v) => setSettings((s) => ({ ...s, showAxes: v }))}
+          />
+          <div className="slider-row">
+            <div className="slider-lab">
+              <span>Opacidad conexiones</span>
+              <span className="slider-val">{settings.linkOpacity.toFixed(2)}</span>
+            </div>
+            <input
+              className="rng"
+              type="range" min={0} max={1} step={0.01}
+              value={settings.linkOpacity}
+              onChange={(e) => setSettings((s) => ({ ...s, linkOpacity: parseFloat(e.target.value) }))}
+              style={{
+                background: `linear-gradient(90deg, var(--accent) ${settings.linkOpacity * 100}%, var(--line-2) ${settings.linkOpacity * 100}%)`,
+              }}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Bottom-left: legend */}
+      {/* Información del nodo seleccionado (RF 6) */}
+      {selectedNode && (
+        <div className="panel">
+          <div className="panel-hd">
+            <span className="panel-ttl">Nodo seleccionado</span>
+            <button className="panel-x" onClick={() => setSelected(null)} aria-label="Cerrar">×</button>
+          </div>
+          <div className="panel-bd">
+            <div className="node-name">
+              <span className="sw-sq" style={{ background: groupColor(selectedNode.group) }} />
+              {selectedNode.label}
+            </div>
+            <Stat label="Identificador" value={selectedNode.id} />
+            <Stat label="Grupo" value={`G${selectedNode.group}`} />
+            <Stat label="Grado" value={selectedNode.degree ?? '—'} />
+            <Stat label="Coordenada X" value={selectedNode.x.toFixed(1)} />
+            <Stat label="Coordenada Y" value={selectedNode.y.toFixed(1)} />
+            <Stat label="Coordenada Z" value={selectedNode.z.toFixed(1)} />
+          </div>
+        </div>
+      )}
+      </div>{/* fin de la columna derecha */}
+
+      {/* Abajo izquierda: leyenda */}
       {meta.groups.length > 0 && (
-        <div style={hudLegend}>
-          <PanelTitle>Leyenda</PanelTitle>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {meta.groups.map((g) => (
-              <div key={g} style={legendChip}>
-                <span style={{ ...legendDot, background: groupColor(g) }} />
-                <span>G{g}</span>
-              </div>
-            ))}
+        <div className="panel panel-bl">
+          <div className="panel-hd">
+            <span className="panel-ttl">Leyenda</span>
+            <span className="panel-idx">GRUPOS</span>
+          </div>
+          <div className="panel-bd">
+            <div className="legend">
+              {meta.groups.map((g) => (
+                <span key={g} className="chip">
+                  <span className="sw-sq" style={{ background: groupColor(g) }} />
+                  G{g}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
-      {/* Bottom-right: quick links */}
-      <div style={hudBottomRight}>
-        <a href={`${API_BASE_URL}/health`} target="_blank" rel="noreferrer" style={linkStyle}>
-          <span style={{ ...pulse, background: '#4ade80' }} /> Health
+      {/* Abajo derecha: enlaces */}
+      <div className="links">
+        <a href={`${API_BASE_URL}/health`} target="_blank" rel="noreferrer" className="btn-ghost">
+          <span className="dot" /> Health
         </a>
-        <a href={`${API_BASE_URL}/api/brain-data?format=html`} target="_blank" rel="noreferrer" style={linkStyle}>
-          API Data
+        <a href={`${API_BASE_URL}/api/brain-data?format=html`} target="_blank" rel="noreferrer" className="btn-ghost">
+          API
         </a>
       </div>
 
-      {/* Bottom-center: hint */}
-      <div style={hintStyle}>
-        Arrastra para rotar · Rueda para zoom · Hover sobre nodos
+      {/* Abajo centro: pista */}
+      <div className="hint">
+        <span><b>Arrastra</b> rotar</span>
+        <span><b>Rueda</b> zoom</span>
+        <span><b>Clic</b> seleccionar</span>
       </div>
     </div>
   );
@@ -274,184 +402,18 @@ export default function App() {
 
 function Stat({ label, value }) {
   return (
-    <div style={statBox}>
-      <div style={statValue}>{value.toLocaleString()}</div>
-      <div style={statLabel}>{label}</div>
+    <div className="stat">
+      <span className="stat-l">{label}</span>
+      <span className="stat-v">{typeof value === 'number' ? value.toLocaleString() : value}</span>
     </div>
   );
 }
 
-function PanelTitle({ children }) {
-  return <div style={panelTitleStyle}>{children}</div>;
-}
-
 function Toggle({ label, value, onChange }) {
   return (
-    <label style={toggleRow}>
-      <span style={{ fontSize: 12, color: '#cbd1dd' }}>{label}</span>
-      <span
-        onClick={() => onChange(!value)}
-        style={{
-          ...toggleTrack,
-          background: value ? 'linear-gradient(135deg, #7dd3fc, #a78bfa)' : 'rgba(255,255,255,0.12)',
-        }}
-      >
-        <span style={{ ...toggleThumb, transform: value ? 'translateX(16px)' : 'translateX(0)' }} />
-      </span>
-    </label>
+    <div className="ctrl" onClick={() => onChange(!value)}>
+      <span className="ctrl-l">{label}</span>
+      <span className={`sw${value ? ' on' : ''}`} />
+    </div>
   );
 }
-
-/* ---------- styles ---------- */
-
-const panelBase = {
-  position: 'absolute',
-  padding: 14,
-  minWidth: 200,
-  color: '#e6e9ef',
-  fontFamily: 'Inter, system-ui, sans-serif',
-  fontSize: 12,
-  background: 'linear-gradient(160deg, rgba(24,29,40,0.82), rgba(14,18,26,0.72))',
-  border: '1px solid rgba(255,255,255,0.08)',
-  borderRadius: 14,
-  boxShadow: '0 20px 50px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)',
-  backdropFilter: 'blur(14px)',
-  WebkitBackdropFilter: 'blur(14px)',
-};
-
-const hudTop = { ...panelBase, top: 16, left: 16, minWidth: 240 };
-const hudRight = { ...panelBase, top: 16, right: 16, minWidth: 240 };
-const hudLegend = { ...panelBase, bottom: 16, left: 16, maxWidth: 280 };
-const hudBottomRight = {
-  position: 'absolute', bottom: 16, right: 16,
-  display: 'flex', gap: 8,
-};
-
-const brandRow = { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 };
-const brandOrb = {
-  width: 32, height: 32, borderRadius: '50%',
-  background: 'conic-gradient(from 200deg, #7dd3fc, #a78bfa, #f472b6, #7dd3fc)',
-  boxShadow: '0 6px 20px rgba(125,211,252,0.35)',
-};
-const brandTitle = {
-  fontSize: 15, fontWeight: 700, letterSpacing: -0.2,
-  background: 'linear-gradient(135deg, #fff, #7dd3fc)',
-  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-};
-const brandSub = { fontSize: 10, color: '#8b93a7', letterSpacing: 0.4, textTransform: 'uppercase' };
-
-const statGrid = { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 };
-const statBox = {
-  padding: '10px 8px', textAlign: 'center',
-  background: 'rgba(255,255,255,0.03)',
-  border: '1px solid rgba(255,255,255,0.06)',
-  borderRadius: 10,
-};
-const statValue = {
-  fontSize: 17, fontWeight: 700, letterSpacing: -0.3,
-  fontFamily: 'JetBrains Mono, monospace', color: '#fff',
-};
-const statLabel = {
-  fontSize: 9.5, color: '#8b93a7', marginTop: 2,
-  textTransform: 'uppercase', letterSpacing: 0.5,
-};
-
-const panelTitleStyle = {
-  fontSize: 10, fontWeight: 600, color: '#8b93a7',
-  textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 10,
-};
-
-const toggleRow = {
-  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-  padding: '6px 0', cursor: 'pointer',
-};
-const toggleTrack = {
-  position: 'relative', width: 34, height: 18, borderRadius: 20,
-  transition: 'background 0.2s ease', display: 'inline-block',
-};
-const toggleThumb = {
-  position: 'absolute', top: 2, left: 2, width: 14, height: 14,
-  borderRadius: '50%', background: '#fff',
-  boxShadow: '0 2px 6px rgba(0,0,0,0.35)',
-  transition: 'transform 0.2s ease',
-};
-
-const sliderLabel = { display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#cbd1dd', marginBottom: 6 };
-const sliderStyle = {
-  width: '100%', accentColor: '#7dd3fc',
-  height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 4,
-};
-
-const legendChip = {
-  display: 'flex', alignItems: 'center', gap: 6,
-  padding: '4px 8px', fontSize: 11,
-  background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.06)',
-  borderRadius: 20, color: '#cbd1dd',
-};
-const legendDot = { width: 8, height: 8, borderRadius: '50%', display: 'inline-block' };
-
-const linkStyle = {
-  display: 'inline-flex', alignItems: 'center', gap: 6,
-  color: '#e6e9ef', textDecoration: 'none',
-  fontSize: 11, fontWeight: 500,
-  padding: '8px 12px',
-  background: 'linear-gradient(160deg, rgba(24,29,40,0.82), rgba(14,18,26,0.72))',
-  border: '1px solid rgba(255,255,255,0.08)',
-  borderRadius: 10,
-  backdropFilter: 'blur(14px)',
-  WebkitBackdropFilter: 'blur(14px)',
-  boxShadow: '0 10px 24px rgba(0,0,0,0.3)',
-};
-const pulse = {
-  display: 'inline-block', width: 6, height: 6, borderRadius: '50%',
-  boxShadow: '0 0 8px currentColor',
-};
-
-const hintStyle = {
-  position: 'absolute', bottom: 20, left: '50%',
-  transform: 'translateX(-50%)',
-  fontSize: 11, color: '#6b7280', letterSpacing: 0.4,
-  padding: '6px 14px',
-  background: 'rgba(14,18,26,0.5)',
-  border: '1px solid rgba(255,255,255,0.05)',
-  borderRadius: 20,
-  backdropFilter: 'blur(8px)',
-  pointerEvents: 'none',
-};
-
-const tooltipStyle = {
-  padding: '8px 12px',
-  background: 'rgba(14,18,26,0.92)',
-  border: '1px solid rgba(255,255,255,0.12)',
-  borderRadius: 8,
-  color: '#e6e9ef',
-  fontFamily: 'Inter, system-ui, sans-serif',
-  whiteSpace: 'nowrap',
-  boxShadow: '0 10px 24px rgba(0,0,0,0.5)',
-};
-
-const loaderStyle = {
-  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14,
-  padding: '24px 32px',
-  background: 'rgba(14,18,26,0.85)',
-  border: '1px solid rgba(255,255,255,0.1)',
-  borderRadius: 14,
-  backdropFilter: 'blur(12px)',
-};
-const spinnerStyle = {
-  width: 32, height: 32, borderRadius: '50%',
-  border: '2px solid rgba(255,255,255,0.1)',
-  borderTopColor: '#7dd3fc',
-  borderRightColor: '#a78bfa',
-  animation: 'spin 0.9s linear infinite',
-};
-const errorStyle = {
-  padding: '14px 18px',
-  background: 'rgba(40,14,20,0.9)',
-  border: '1px solid rgba(251,113,133,0.4)',
-  borderRadius: 12,
-  color: '#e6e9ef',
-  fontFamily: 'Inter, system-ui, sans-serif',
-  maxWidth: 320,
-};
