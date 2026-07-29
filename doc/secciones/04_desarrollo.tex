@@ -420,8 +420,11 @@ medición del rendimiento gráfico (FPS) para verificar el requisito no funciona
 Al finalizar el \textit{sprint} se realiza la prueba fundamental de todo desarrollo ágil: la
 validación por parte del cliente, cuyo papel asume el director del proyecto. Para que pueda probar la
 aplicación de forma cómoda ---y, más adelante, también el tribunal---, el Sprint~1 se despliega en un
-servidor público accesible y se le facilita su URL.
-% NOTA: insertar aquí la URL del despliegue una vez publicado el Sprint 1 en el servidor.
+servidor público accesible en la siguiente dirección:
+
+\begin{center}
+	\url{https://brain-viz.onrender.com/}
+\end{center}
 
 \section{Sprint 2}
 
@@ -800,4 +803,14 @@ mediante un servidor WSGI de producción. Esta decisión simplifica el despliegu
 dependencia de la red interna de contenedores y evita ejecutar servidores de desarrollo ---o el modo
 de depuración--- en una dirección pública. El procedimiento completo se detalla en el manual de
 instalación.
-% NOTA: insertar aquí la URL pública del despliegue.
+
+La versión resultante de este \textit{sprint} está disponible en:
+
+\begin{center}
+	\url{https://brain-viz.onrender.com/}
+\end{center}
+
+Conviene advertir que, al tratarse de un plan de alojamiento gratuito, la instancia se suspende tras
+un periodo prolongado de inactividad; en ese caso la primera carga puede demorarse mientras el
+servicio se reactiva. Para evitarlo durante los periodos de revisión se ha configurado una
+comprobación periódica del \textit{endpoint} \texttt{/health} que mantiene la instancia activa.
