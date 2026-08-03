@@ -148,6 +148,13 @@ function BrainVis({ data, hovered, setHovered, selected, setSelected, settings }
     linesMaterial.opacity = settings.linkOpacity;
   }, [linesMaterial, settings.linkOpacity]);
 
+  // Los materiales también reservan recursos gráficos y se crean una sola vez,
+  // así que se liberan cuando el componente deja de usarse.
+  useEffect(() => () => {
+    linesMaterial.dispose();
+    nodeLinesMaterial.dispose();
+  }, [linesMaterial, nodeLinesMaterial]);
+
   // Los objetos de escena se crean una sola vez por geometría; si se crearan en
   // cada repintado, se acumularían objetos en la escena innecesariamente.
   const linesObject = useMemo(
