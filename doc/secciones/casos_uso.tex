@@ -16,7 +16,7 @@
 \textbf{Actor principal} & Visitante [V] \\ \hline
 \textbf{Dependencias} & RF 2, RF 2.1 \\ \hline
 \textbf{Precondición} & La aplicación está desplegada y existe al menos una red pública disponible. \\ \hline
-\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Tipo} & Primario / Esencial \\ \hline
 \textbf{Descripción} & El visitante selecciona una red pública y el sistema la procesa y la renderiza en 3D. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -43,7 +43,7 @@
 \textbf{Actor principal} & Visitante [V] \\ \hline
 \textbf{Dependencias} & RF 3 \\ \hline
 \textbf{Precondición} & Existe una red renderizada en la escena. \\ \hline
-\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Tipo} & Primario / Esencial \\ \hline
 \textbf{Descripción} & El usuario explora la red rotando, haciendo zoom y desplazando la cámara. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -67,7 +67,7 @@
 \textbf{Actor principal} & Visitante [V] \\ \hline
 \textbf{Dependencias} & RF 5 \\ \hline
 \textbf{Precondición} & Existe una red renderizada con aristas ponderadas. \\ \hline
-\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Tipo} & Primario / Esencial \\ \hline
 \textbf{Descripción} & El usuario ajusta un umbral y el sistema muestra solo las aristas con peso mayor o igual a él. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -91,7 +91,7 @@
 \textbf{Actor principal} & Visitante [V] \\ \hline
 \textbf{Dependencias} & RF 6, RF 6.1 \\ \hline
 \textbf{Precondición} & Existe una red renderizada. \\ \hline
-\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Tipo} & Primario / Esencial \\ \hline
 \textbf{Descripción} & El usuario selecciona un nodo con un clic y consulta su información detallada y sus métricas de centralidad. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -116,7 +116,7 @@
 \textbf{Actor principal} & Visitante [V] \\ \hline
 \textbf{Dependencias} & RF 8 \\ \hline
 \textbf{Precondición} & Existe una red cargada en el sistema. \\ \hline
-\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Tipo} & Primario / Esencial \\ \hline
 \textbf{Descripción} & El usuario consulta las métricas globales de la red calculadas en el \textit{backend}. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -140,7 +140,7 @@
 \textbf{Actor principal} & Visitante [V] \\ \hline
 \textbf{Dependencias} & RF 10 \\ \hline
 \textbf{Precondición} & Existe una red renderizada. \\ \hline
-\textbf{Tipo} & Secundario -- Esencial \\ \hline
+\textbf{Tipo} & Secundario / Esencial \\ \hline
 \textbf{Descripción} & El usuario busca un nodo por su etiqueta y la cámara se centra en él. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -166,7 +166,7 @@
 \textbf{Actor principal} & Visitante [V] \\ \hline
 \textbf{Dependencias} & RF 7, RF 9, RF 11 \\ \hline
 \textbf{Precondición} & Existe una red renderizada. \\ \hline
-\textbf{Tipo} & Secundario -- Esencial \\ \hline
+\textbf{Tipo} & Secundario / Esencial \\ \hline
 \textbf{Descripción} & El usuario ajusta el esquema de coloreado y tamaño de los nodos y otros parámetros visuales, y puede restablecer la vista. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -191,7 +191,7 @@
 \textbf{Actor principal} & Visitante [V] \\ \hline
 \textbf{Dependencias} & RF 12 \\ \hline
 \textbf{Precondición} & Existe una red renderizada en la escena. \\ \hline
-\textbf{Tipo} & Secundario -- Deseable \\ \hline
+\textbf{Tipo} & Secundario / Deseable \\ \hline
 \textbf{Descripción} & El usuario exporta la vista actual de la escena 3D como una imagen PNG. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -215,7 +215,7 @@
 \textbf{Actor principal} & Investigador [I] \\ \hline
 \textbf{Dependencias} & RF 13 \\ \hline
 \textbf{Precondición} & El usuario se encuentra en la pantalla de acceso y no ha iniciado sesión previamente. \\ \hline
-\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Tipo} & Primario / Esencial \\ \hline
 \textbf{Descripción} & El usuario se registra o inicia sesión para acceder a las funcionalidades de investigador. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -242,7 +242,7 @@
 \textbf{Actor principal} & Investigador [I] \\ \hline
 \textbf{Dependencias} & RF 13 \\ \hline
 \textbf{Precondición} & El usuario ha iniciado sesión previamente. \\ \hline
-\textbf{Tipo} & Secundario -- Esencial \\ \hline
+\textbf{Tipo} & Secundario / Esencial \\ \hline
 \textbf{Descripción} & El usuario cierra su sesión y vuelve a actuar como visitante. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -266,7 +266,7 @@
 \textbf{Actor principal} & Investigador [I] \\ \hline
 \textbf{Dependencias} & RF 14, RF 14.1, RI 1, RI 2 \\ \hline
 \textbf{Precondición} & El investigador se ha autenticado correctamente. \\ \hline
-\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Tipo} & Primario / Esencial \\ \hline
 \textbf{Descripción} & El investigador sube sus ficheros \texttt{.node} y \texttt{.edge} para visualizar su propia red. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -294,7 +294,7 @@
 \textbf{Actor principal} & Investigador [I] \\ \hline
 \textbf{Dependencias} & RF 15 \\ \hline
 \textbf{Precondición} & El investigador se ha autenticado correctamente. \\ \hline
-\textbf{Tipo} & Secundario -- Esencial \\ \hline
+\textbf{Tipo} & Secundario / Esencial \\ \hline
 \textbf{Descripción} & El investigador consulta, guarda, carga o elimina sus \textit{conjuntos de datos} privados. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -323,7 +323,7 @@
 \textbf{Actor principal} & Investigador [I] \\ \hline
 \textbf{Dependencias} & RF 16 \\ \hline
 \textbf{Precondición} & El investigador está autenticado y hay una red con métricas calculadas. \\ \hline
-\textbf{Tipo} & Secundario -- Esencial \\ \hline
+\textbf{Tipo} & Secundario / Esencial \\ \hline
 \textbf{Descripción} & El investigador exporta las métricas de la red en formato CSV o JSON. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -349,7 +349,7 @@
 \textbf{Actor principal} & Administrador [A] \\ \hline
 \textbf{Dependencias} & RF 17 \\ \hline
 \textbf{Precondición} & El administrador se ha autenticado correctamente. \\ \hline
-\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Tipo} & Primario / Esencial \\ \hline
 \textbf{Descripción} & El administrador añade, edita o elimina las redes públicas disponibles para todos los usuarios. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
@@ -378,7 +378,7 @@
 \textbf{Actor principal} & Administrador [A] \\ \hline
 \textbf{Dependencias} & RF 18, RF 18.1 \\ \hline
 \textbf{Precondición} & El administrador se ha autenticado correctamente. \\ \hline
-\textbf{Tipo} & Primario -- Esencial \\ \hline
+\textbf{Tipo} & Primario / Esencial \\ \hline
 \textbf{Descripción} & El administrador consulta los usuarios, cambia su rol o los elimina. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline

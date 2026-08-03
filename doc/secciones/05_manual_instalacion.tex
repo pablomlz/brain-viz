@@ -94,10 +94,10 @@ probarla sin necesidad de instalar nada.
 \subsection{Imagen de producción}
 
 El modo de desarrollo descrito en la sección anterior no es adecuado para un servidor público por dos
-motivos: emplea servidores de desarrollo ---tanto el de Vite como el integrado de Flask, que no están
-pensados para producción y no deben ejecutarse con el modo de depuración activo en una dirección
-pública--- y reparte la aplicación en dos servicios que se comunican mediante un nombre interno de la
-red de Docker Compose, inexistente fuera de ella.
+motivos. Por un lado, emplea servidores de desarrollo, tanto el de Vite como el integrado de Flask,
+que no están pensados para producción y que no deben ejecutarse con el modo de depuración activo en
+una dirección pública. Por otro, reparte la aplicación en dos servicios que se comunican mediante un
+nombre interno de la red de Docker Compose, que no existe fuera de ella.
 
 Por ello se ha añadido un \texttt{Dockerfile} en la raíz del proyecto que genera una \textbf{imagen
 única de producción} en dos etapas:

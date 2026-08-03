@@ -182,8 +182,8 @@ mayoritariamente en paralelo al desarrollo, reservando los días finales para re
 defensa. Para representar gráficamente el cronograma y las dependencias entre tareas se utiliza el
 diagrama de Gantt de la figura~\ref{fig:gantt}, en el que se aprecian las tareas iniciales de
 ingeniería, los cuatro \textit{sprints} de desarrollo encadenados y la redacción de la memoria en
-paralelo al desarrollo. Para no ligar el cronograma a fechas concretas ---que no encajarían con un
-TFG que puede defenderse en distintas convocatorias--- se emplean meses genéricos (mes~1, mes~2,
+paralelo al desarrollo. Como un TFG puede defenderse en distintas convocatorias, ligar el cronograma
+a fechas concretas no tendría sentido, así que se emplean meses genéricos (mes~1, mes~2,
 etc.).
 
 \begin{figure}[H]
@@ -326,8 +326,8 @@ potencia el renderizado 3D usando Three.js.
 \subsection{Tecnología de visualización 3D}
 
 Para renderizar contenido 3D en el navegador existen distintas posibilidades a bajo nivel: el
-elemento \textit{canvas} 2D (insuficiente para 3D acelerado), \textbf{WebGL}~\cite{webgl} ---el
-estándar actual para el renderizado 3D acelerado por hardware en el navegador--- y el más reciente
+elemento \textit{canvas} 2D (insuficiente para 3D acelerado), \textbf{WebGL}~\cite{webgl}, que es el
+estándar actual para el renderizado 3D acelerado por hardware en el navegador, y el más reciente
 \textbf{WebGPU}~\cite{webgpu}, todavía en adopción y con soporte desigual entre navegadores. Por su
 madurez y compatibilidad, se opta por una solución basada en WebGL. Sobre esta base, la biblioteca de
 alto nivel elegida debe ser capaz de renderizar grafos y permitir una interacción fluida para una

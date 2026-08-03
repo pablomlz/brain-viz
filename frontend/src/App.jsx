@@ -1,7 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
+// WebGL no permite dibujar líneas de más de un píxel de grosor, así que las
+// aristas se dibujan con LineSegments2, que las representa como tiras de
+// triángulos y sí admite un grosor configurable.
+import { LineSegments2 } from 'three/examples/jsm/lines/LineSegments2.js';
+import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js';
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
 // NOTA: el componente Login existe en el proyecto pero todavía no se utiliza.
 // El acceso de usuarios (registro, inicio y cierre de sesión) corresponde al
 // Sprint 4; hasta entonces la aplicación es de acceso libre (rol visitante).
@@ -15,7 +21,13 @@ const GROUP_PALETTE = [
 ];
 const groupColor = (g) => GROUP_PALETTE[(g ?? 0) % GROUP_PALETTE.length];
 
-const ACCENT = '#4c7df0'; // Color de acento para el nodo seleccionado (RF 6)
+const ACCENT = '#4c7df0';    // Color de acento para el nodo seleccionado (RF 6)
+const ACCENT_HI = '#6f97f5'; // Color de sus conexiones, algo más claro
+
+// Grosor de las aristas en píxeles: el general y el de las conexiones del nodo
+// seleccionado, que se dibujan más marcadas para distinguirlas (RF 6).
+const LINK_WIDTH = 1.6;
+const LINK_WIDTH_SELECTED = 3.2;
 
 // Nº de aristas cuyo peso alcanza el umbral (RF 5). Como la lista llega
 // ordenada por peso descendente, ese número es la posición de la primera arista
@@ -54,10 +66,12 @@ function BrainVis({ data, hovered, setHovered, selected, setSelected, settings }
     }
   });
 
+  const { size } = useThree();
+
   // Geometría de las aristas. El backend las envía ordenadas por peso
   // descendente, así que se construye UNA sola vez y el filtrado por umbral
-  // (RF 5) se resuelve dibujando solo el prefijo correspondiente mediante
-  // setDrawRange, sin reconstruir la geometría en cada cambio del control.
+  // (RF 5) se resuelve limitando el número de segmentos dibujados, sin
+  // reconstruir la geometría en cada cambio del control.
   const linesGeometry = useMemo(() => {
     if (!data) return null;
     const positions = [];
@@ -71,17 +85,82 @@ function BrainVis({ data, hovered, setHovered, selected, setSelected, settings }
       const c2 = new THREE.Color(groupColor(t.group));
       colors.push(c1.r, c1.g, c1.b, c2.r, c2.g, c2.b);
     });
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    g.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    const g = new LineSegmentsGeometry();
+    g.setPositions(positions);
+    g.setColors(colors);
     return g;
   }, [data]);
 
+  // Aristas del nodo seleccionado que siguen siendo visibles con el umbral
+  // actual (RF 6). Se dibujan aparte para poder darles otro color y más grosor.
+  const nodeLinesGeometry = useMemo(() => {
+    if (!data || selected == null) return null;
+    const positions = [];
+    for (let i = 0; i < settings.visibleLinks; i++) {
+      const link = data.links[i];
+      if (link.source !== selected && link.target !== selected) continue;
+      const s = data.nodes[link.source];
+      const t = data.nodes[link.target];
+      if (!s || !t) continue;
+      positions.push(s.x, s.y, s.z, t.x, t.y, t.z);
+    }
+    if (positions.length === 0) return null;
+    const g = new LineSegmentsGeometry();
+    g.setPositions(positions);
+    return g;
+  }, [data, selected, settings.visibleLinks]);
+
+  // Las geometrías reservan memoria en la tarjeta gráfica, así que se liberan
+  // al reemplazarlas para no ir acumulando las de selecciones anteriores.
+  useEffect(() => () => linesGeometry?.dispose(), [linesGeometry]);
+  useEffect(() => () => nodeLinesGeometry?.dispose(), [nodeLinesGeometry]);
+
   // Aplica el umbral: como los enlaces están ordenados de mayor a menor peso,
-  // los visibles son siempre los primeros `visibleLinks` (2 vértices por arista).
+  // los visibles son siempre los primeros `visibleLinks`.
   useEffect(() => {
-    if (linesGeometry) linesGeometry.setDrawRange(0, settings.visibleLinks * 2);
+    if (linesGeometry) linesGeometry.instanceCount = settings.visibleLinks;
   }, [linesGeometry, settings.visibleLinks]);
+
+  // El grosor en píxeles necesita conocer el tamaño del lienzo.
+  const resolution = useMemo(() => new THREE.Vector2(size.width, size.height), [size]);
+
+  const linesMaterial = useMemo(() => new LineMaterial({
+    vertexColors: true,
+    transparent: true,
+    depthWrite: false,
+    linewidth: LINK_WIDTH,
+  }), []);
+
+  const nodeLinesMaterial = useMemo(() => new LineMaterial({
+    color: new THREE.Color(ACCENT_HI),
+    transparent: true,
+    depthWrite: false,
+    opacity: 0.95,
+    linewidth: LINK_WIDTH_SELECTED,
+  }), []);
+
+  useEffect(() => {
+    linesMaterial.resolution = resolution;
+    nodeLinesMaterial.resolution = resolution;
+  }, [linesMaterial, nodeLinesMaterial, resolution]);
+
+  useEffect(() => {
+    linesMaterial.opacity = settings.linkOpacity;
+  }, [linesMaterial, settings.linkOpacity]);
+
+  // Los objetos de escena se crean una sola vez por geometría; si se crearan en
+  // cada repintado, se acumularían objetos en la escena innecesariamente.
+  const linesObject = useMemo(
+    () => (linesGeometry ? new LineSegments2(linesGeometry, linesMaterial) : null),
+    [linesGeometry, linesMaterial],
+  );
+
+  const nodeLinesObject = useMemo(() => {
+    if (!nodeLinesGeometry) return null;
+    const obj = new LineSegments2(nodeLinesGeometry, nodeLinesMaterial);
+    obj.renderOrder = 1; // se dibujan después, para que queden por encima
+    return obj;
+  }, [nodeLinesGeometry, nodeLinesMaterial]);
 
   return (
     <group ref={groupRef} rotation={[-Math.PI / 2, 0, 0]}>
@@ -110,15 +189,13 @@ function BrainVis({ data, hovered, setHovered, selected, setSelected, settings }
         );
       })}
 
-      {settings.showLinks && linesGeometry && (
-        <lineSegments geometry={linesGeometry}>
-          <lineBasicMaterial
-            vertexColors
-            transparent
-            opacity={settings.linkOpacity}
-            depthWrite={false}
-          />
-        </lineSegments>
+      {settings.showLinks && linesObject && (
+        <primitive object={linesObject} dispose={null} />
+      )}
+
+      {/* Conexiones del nodo seleccionado, por encima del resto (RF 6) */}
+      {settings.showLinks && nodeLinesObject && (
+        <primitive object={nodeLinesObject} dispose={null} />
       )}
 
       {hovered != null && data.nodes[hovered] && (
@@ -205,6 +282,19 @@ export default function App() {
   };
 
   const selectedNode = selected != null && data ? data.nodes[selected] : null;
+
+  // Grado del nodo seleccionado contando solo sus conexiones visibles con el
+  // umbral actual. Si el usuario sube el umbral y algunas desaparecen de la
+  // escena, el grado que muestra el panel baja en consecuencia (RF 5, RF 6).
+  const gradoVisible = useMemo(() => {
+    if (!data || selected == null) return 0;
+    let n = 0;
+    for (let i = 0; i < settings.visibleLinks; i++) {
+      const link = data.links[i];
+      if (link.source === selected || link.target === selected) n++;
+    }
+    return n;
+  }, [data, selected, settings.visibleLinks]);
   // Peso máximo de la red; el `|| 1` evita divisiones por cero y un control
   // degenerado si la red no tuviera ninguna arista.
   const maxWeight = meta.maxWeight || 1;
@@ -351,7 +441,7 @@ export default function App() {
             </div>
             <Stat label="Identificador" value={selectedNode.id} />
             <Stat label="Grupo" value={`G${selectedNode.group}`} />
-            <Stat label="Grado" value={selectedNode.degree ?? '—'} />
+            <Stat label="Grado" value={`${gradoVisible} / ${selectedNode.degree ?? 0}`} />
             <Stat label="Coordenada X" value={selectedNode.x.toFixed(1)} />
             <Stat label="Coordenada Y" value={selectedNode.y.toFixed(1)} />
             <Stat label="Coordenada Z" value={selectedNode.z.toFixed(1)} />

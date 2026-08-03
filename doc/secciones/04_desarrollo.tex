@@ -144,9 +144,9 @@ adyacencia de $90 \times 90$ con los pesos de conectividad entre cada par de reg
 
 \textbf{Almacenamiento en el servidor.} En este primer \textit{sprint} el sistema \textit{no utiliza
 base de datos}: las redes públicas precargadas se almacenan directamente como los ficheros
-\texttt{.node} y \texttt{.edge} en el servidor. La persistencia mediante base de datos ---necesaria
-para las cuentas de usuario y los conjuntos de datos privados, descrita en el requisito de
-información [RI 4]--- se introducirá en el Sprint 4, junto con la gestión de usuarios.
+\texttt{.node} y \texttt{.edge} en el servidor. La persistencia mediante base de datos, necesaria
+para las cuentas de usuario y los conjuntos de datos privados que describe el requisito de
+información [RI 4], se introducirá en el Sprint 4 junto con la gestión de usuarios.
 
 \textbf{Modelo interno.} El sistema transforma estas dos fuentes de datos en un modelo interno que no
 es un fichero ni una base de datos, sino una \textbf{estructura de datos en memoria}: un grafo (objeto
@@ -237,10 +237,10 @@ secuencia de la figura~\ref{fig:secuencia}.
 	\label{fig:secuencia}
 \end{figure}
 
-Conviene señalar una limitación de este diseño inicial: tal y como está planteado, cada petición de
+Este diseño inicial tiene una limitación clara: tal y como está planteado, cada petición de
 una red reconstruye el grafo y su JSON desde los ficheros, de modo que visualizar la misma red muchas
 veces repite el mismo trabajo. Para las redes públicas, que no cambian, esto es ineficiente. Una
-mejora prevista ---que se abordará al introducir la persistencia en el Sprint 4--- es \textbf{construir
+mejora prevista, que se abordará al introducir la persistencia en el Sprint 4, es \textbf{construir
 la red y su JSON una sola vez y almacenar el resultado} (en una caché o en la base de datos) para
 reutilizarlo en las siguientes peticiones, evitando así el reprocesamiento.
 
@@ -339,7 +339,7 @@ código completo puede consultarse en el repositorio público del proyecto:
 La estrategia de pruebas de cada \textit{sprint} combina tres tipos de pruebas: pruebas de caja
 blanca (unitarias) sobre el código, pruebas de caja negra (de integración) sobre la comunicación
 entre servicios y pruebas de validación (o de aceptación) que comprueban el cumplimiento de los
-requisitos. Conviene recordar que, en ingeniería del software, una prueba se considera exitosa
+requisitos. Hay que tener presente que, en ingeniería del software, una prueba se considera exitosa
 cuando es capaz de \emph{descubrir un error}; por ello, al final de este apartado se describen
 algunos de los errores detectados y cómo se corrigieron.
 
@@ -419,7 +419,7 @@ medición del rendimiento gráfico (FPS) para verificar el requisito no funciona
 
 Al finalizar el \textit{sprint} se realiza la prueba fundamental de todo desarrollo ágil: la
 validación por parte del cliente, cuyo papel asume el director del proyecto. Para que pueda probar la
-aplicación de forma cómoda ---y, más adelante, también el tribunal---, el Sprint~1 se despliega en un
+aplicación de forma cómoda, y más adelante también el tribunal, el Sprint~1 se despliega en un
 servidor público accesible en la siguiente dirección:
 
 \begin{center}
@@ -438,9 +438,8 @@ su leyenda (RF 7).
 De los tres requisitos, el RF 7 ya quedó cubierto durante el Sprint~1, puesto que el coloreado por
 grupo y su leyenda eran necesarios para que la visualización inicial resultara legible; en este
 \textit{sprint} se da por consolidado y el esfuerzo se concentra en los otros dos. El desarrollo ha
-requerido modificar tanto el \textit{backend} ---que hasta ahora aplicaba un umbral fijo y no
-proporcionaba toda la información de cada nodo--- como el \textit{frontend}, donde reside la
-interacción.
+requerido modificar el \textit{backend}, que hasta ahora aplicaba un umbral fijo y no proporcionaba
+toda la información de cada nodo, y también el \textit{frontend}, donde reside la interacción.
 
 \subsection{Diseño de la interfaz}
 
@@ -523,11 +522,13 @@ el Sprint~1, ya que la información que enviaba el servidor resultaba insuficien
 \end{itemize}
 
 Un matiz importante del modelo de datos es que ahora se distingue entre \emph{existir} y \emph{ser
-visible}: una arista existe si su peso es mayor que cero en la matriz de adyacencia ---y como tal
-cuenta para el grado de los nodos---, mientras que su visibilidad depende del umbral que fije el
-usuario en cada momento. Por ello, el grado que muestra el panel de información se refiere siempre a
-la red completa y no varía al mover el control de umbral. La figura~\ref{fig:clases-s2} recoge el
-modelo de datos resultante, con los atributos añadidos en este \textit{sprint} destacados.
+visible}: una arista existe si su peso es mayor que cero en la matriz de adyacencia, y como tal
+cuenta para el grado que calcula el servidor, mientras que su visibilidad depende del umbral que
+fije el usuario en cada momento. Esta distinción tiene consecuencias en la interfaz: el grado que
+envía el servidor es el de la red completa, mientras que el número de conexiones que el usuario ve
+en pantalla depende del umbral. El panel de información muestra ambos valores, como se explica en el
+apartado de validación. La figura~\ref{fig:clases-s2} recoge el modelo de datos resultante, con los
+atributos añadidos en este \textit{sprint} destacados.
 
 \begin{figure}[H]
 	\centering
@@ -546,8 +547,8 @@ para cumplir el requisito de que el filtrado se aplique \emph{en tiempo real} (R
 por cada movimiento del control deslizante haría la interacción inviable.
 
 El punto delicado es cómo aplicar el umbral sin penalizar el rendimiento. La solución directa
----recorrer las aristas y reconstruir la geometría cada vez que el usuario mueve el control--- obliga
-a recalcular y volver a enviar a la tarjeta gráfica miles de vértices en cada fotograma. En su lugar
+, que consiste en recorrer las aristas y reconstruir la geometría cada vez que el usuario mueve el
+control, obliga a recalcular y volver a enviar a la tarjeta gráfica miles de vértices en cada fotograma. En su lugar
 se ha adoptado la siguiente estrategia, apoyada en que el servidor entrega las aristas ordenadas por
 peso descendente:
 
@@ -558,12 +559,12 @@ peso descendente:
 		esa secuencia ordenada. Determinar cuántas son se reduce entonces a localizar la posición de la
 		primera arista que no alcanza el umbral, lo que se resuelve con una \textbf{búsqueda binaria},
 		de coste $O(\log E)$ sobre el número de aristas $E$, en lugar de recorrer la lista completa.
-	\item Basta entonces con indicar al motor gráfico cuántos elementos debe dibujar
-		(\textit{rango de dibujado}), operación de \textbf{coste constante} que no modifica la
-		geometría ni vuelve a enviarla a la tarjeta gráfica.
+	\item Basta entonces con indicar al motor gráfico cuántos segmentos debe dibujar, operación de
+		\textbf{coste constante} que no modifica la geometría ni vuelve a enviarla a la tarjeta
+		gráfica.
 \end{enumerate}
 
-De este modo, mover el control deslizante no implica reconstruir nada: su coste es logarítmico en el
+Con esta estrategia, mover el control deslizante no implica reconstruir nada: su coste es logarítmico en el
 número de aristas y prácticamente independiente del tamaño de la red, por lo que la escena responde
 de forma inmediata. La figura~\ref{fig:sec-s2} muestra el diagrama de secuencia de ambas
 interacciones.
@@ -609,14 +610,14 @@ un error descriptivo en caso contrario [RNF 3].
 
 \subsubsection*{Frontend: filtrado en tiempo real (RF 5)}
 
-El componente de visualización construye la geometría una única vez y aplica el umbral ajustando el
-rango de dibujado, siguiendo la estrategia descrita en el diseño:
+El componente de visualización construye la geometría una única vez y aplica el umbral limitando el
+número de segmentos que se dibujan, siguiendo la estrategia descrita en el diseño:
 
 \begin{lstlisting}[language=JavaScript, basicstyle=\footnotesize\ttfamily, keywordstyle=\color{blue!60!black}, commentstyle=\color{gray}, showstringspaces=false, frame=single, columns=fullflexible]
 // Las aristas llegan ordenadas por peso: las visibles son siempre las
-// primeras, asi que basta con ajustar el rango de dibujado (2 vertices/arista)
+// primeras, asi que basta con limitar cuantos segmentos se dibujan
 useEffect(() => {
-  if (linesGeometry) linesGeometry.setDrawRange(0, settings.visibleLinks * 2);
+  if (linesGeometry) linesGeometry.instanceCount = settings.visibleLinks;
 }, [linesGeometry, settings.visibleLinks]);
 \end{lstlisting}
 
@@ -661,8 +662,8 @@ la selección de una región con su panel de información.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/app_s2_seleccion}
-	\caption{Selección e inspección de un nodo (RF 6): la región \texttt{PoCG.L} aparece resaltada en la
-	escena y el panel lateral muestra su identificador, grupo, grado y coordenadas.}
+	\caption{Selección e inspección de un nodo (RF 6): la región \texttt{IFGtriang.L} queda resaltada
+	junto con sus conexiones, y el panel lateral muestra su identificador, grupo, grado y coordenadas.}
 	\label{fig:s2-seleccion}
 \end{figure}
 
@@ -733,8 +734,8 @@ La tabla~\ref{tab:pruebas-s2} recoge las pruebas de validación de los requisito
 
 Una vez implementada la interacción, se ha abordado la comprobación del requisito no funcional de
 fluidez [RNF 1]. Para poder evaluar el comportamiento con redes mayores que la de ejemplo, se ha
-generado además una \textbf{red sintética de 500 nodos y 12.470 aristas} ---unas treinta veces más
-conexiones que AAL90---, próxima al tamaño de referencia que fija el requisito. La medición se ha
+generado además una \textbf{red sintética de 500 nodos y 12.470 aristas}, unas treinta veces más
+conexiones que AAL90 y próxima al tamaño de referencia que fija el requisito. La medición se ha
 realizado con un navegador controlado de forma automatizada, activando la rotación automática para
 forzar un renderizado continuo (caso más desfavorable) y midiendo los intervalos entre fotogramas.
 La tabla~\ref{tab:rendimiento} recoge los resultados.
@@ -751,7 +752,7 @@ La tabla~\ref{tab:rendimiento} recoge los resultados.
 		AAL90 (red de ejemplo)      & 90  & 411    & 30 \\
 		Red sintética de prueba     & 500 & 12.470 & 30 \\
 		\addlinespace
-		\textit{Página vacía (referencia del entorno)} & --- & --- & \textit{30} \\
+		\textit{Página vacía (referencia del entorno)} & \textit{n/a} & \textit{n/a} & \textit{30} \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -767,8 +768,8 @@ lo que indica que el renderizado no constituye un cuello de botella en el rango 
 evaluado. Este resultado es coherente con la estrategia de diseño adoptada, que mantiene una única
 geometría para todas las aristas y evita reconstruirla al filtrar. La verificación formal del
 objetivo de $\geq 60$~FPS queda pendiente de realizarse con el perfilador de rendimiento de un
-navegador de escritorio, y su resultado ---se alcance o no el objetivo--- se documentará en la
-memoria final.
+navegador de escritorio, y su resultado se documentará en la memoria final, se alcance o no el
+objetivo.
 
 \subsubsection*{Errores detectados y corregidos}
 
@@ -800,8 +801,8 @@ El despliegue emplea una \textbf{imagen de producción} distinta de la utilizada
 lugar de dos servicios comunicados por un \textit{proxy} interno, se genera un único contenedor en el
 que la interfaz de React se compila a ficheros estáticos y es servida por el propio \textit{backend}
 mediante un servidor WSGI de producción. Esta decisión simplifica el despliegue, elimina la
-dependencia de la red interna de contenedores y evita ejecutar servidores de desarrollo ---o el modo
-de depuración--- en una dirección pública. El procedimiento completo se detalla en el manual de
+dependencia de la red interna de contenedores y evita ejecutar en una dirección pública servidores
+de desarrollo o el modo de depuración. El procedimiento completo se detalla en el manual de
 instalación.
 
 La versión resultante de este \textit{sprint} está disponible en:
@@ -810,7 +811,60 @@ La versión resultante de este \textit{sprint} está disponible en:
 	\url{https://brain-viz.onrender.com/}
 \end{center}
 
-Conviene advertir que, al tratarse de un plan de alojamiento gratuito, la instancia se suspende tras
+Hay que tener en cuenta que, al tratarse de un plan de alojamiento gratuito, la instancia se suspende tras
 un periodo prolongado de inactividad; en ese caso la primera carga puede demorarse mientras el
 servicio se reactiva. Para evitarlo durante los periodos de revisión se ha configurado una
 comprobación periódica del \textit{endpoint} \texttt{/health} que mantiene la instancia activa.
+
+\subsubsection*{Mejoras incorporadas tras la revisión del director}
+
+Una vez probada la aplicación desplegada, el director dio por válido el funcionamiento del
+\textit{sprint} y propuso tres mejoras sobre la visualización, todas relacionadas con la legibilidad
+de las conexiones. Se han incorporado las tres y se describen a continuación, junto con las
+decisiones técnicas que ha requerido cada una.
+
+\paragraph*{Grosor de las conexiones.} Las aristas se dibujaban demasiado finas y costaba seguirlas,
+sobre todo al alejar la cámara. Aumentar su grosor no era tan inmediato como parecía: la
+especificación de WebGL no obliga a los navegadores a dibujar líneas de más de un píxel de ancho, y
+en la práctica los principales las ignoran, de modo que el parámetro de grosor del material de
+líneas básico no tiene ningún efecto. Para poder controlarlo se ha sustituido ese material por otro
+que representa cada arista como una tira de dos triángulos orientada hacia la cámara, técnica
+habitual para dibujar líneas anchas en WebGL. Con ella el grosor sí es configurable, y se ha fijado
+en un valor ligeramente superior al anterior para ganar visibilidad sin recargar la escena.
+
+\paragraph*{Resaltado de las conexiones del nodo seleccionado.} Al seleccionar un nodo se resaltaba
+el nodo, pero no sus conexiones, de modo que seguir hacia dónde iba cada una exigía fijarse mucho.
+Ahora, al pulsar sobre un nodo, sus aristas se dibujan en un color distinto y con más grosor que el
+resto. Para conseguirlo se mantienen dos geometrías separadas: la de la red completa, que no cambia,
+y una segunda que contiene solo las aristas del nodo seleccionado y se construye al vuelo cuando
+cambia la selección. Esta segunda geometría es muy pequeña, ya que el grado de un nodo es de unas
+pocas unidades, así que construirla no penaliza el rendimiento; separarlas es además la única forma
+de darles color y grosor propios, porque un mismo material se aplica por igual a toda la geometría.
+
+\paragraph*{El grado responde al umbral.} Si un nodo con grado 6 estaba seleccionado y el usuario
+subía el umbral hasta hacer desaparecer parte de sus conexiones, el panel seguía mostrando 6, lo que
+no se correspondía con lo que se veía en pantalla. El panel muestra ahora dos cifras separadas por
+una barra, con el mismo criterio que ya seguía el contador de conexiones: a la izquierda, el número
+de conexiones del nodo que superan el umbral actual, que baja según el usuario lo sube; a la
+derecha, su grado en la red completa, que no varía. Se ha optado por conservar ambos valores porque
+el grado total es un dato propio del nodo y perderlo al filtrar habría empobrecido la información.
+
+El efecto de las tres mejoras se aprecia comparando dos estados del mismo nodo. La
+figura~\ref{fig:s2-seleccion}, ya mostrada al describir la implementación, recoge el nodo
+\texttt{IFGtriang.L} con el umbral al mínimo: se distinguen sus nueve conexiones resaltadas y el
+panel indica un grado de 9 sobre 9. La figura~\ref{fig:s2-grado} muestra ese mismo nodo con el
+umbral en 0,70; solo dos de sus conexiones superan ese peso, son las únicas que siguen resaltadas y
+el panel pasa a indicar 2 sobre 9.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/app_s2_grado_umbral}
+	\caption{El nodo \texttt{IFGtriang.L} con el umbral en 0,70. De sus nueve conexiones solo dos
+	superan ese peso, y son las únicas que aparecen resaltadas; el grado que muestra el panel baja a
+	2 sobre 9.}
+	\label{fig:s2-grado}
+\end{figure}
+
+Las tres mejoras se comprobaron sobre la aplicación en ejecución antes de volver a desplegarla,
+contrastando para varios umbrales que el grado indicado en el panel coincidía con el número de
+conexiones resaltadas en la escena.
