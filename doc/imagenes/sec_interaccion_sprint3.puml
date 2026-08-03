@@ -1,0 +1,50 @@
+@startuml sec_interaccion_sprint3
+' Interacciones del Sprint 3: mapeo visual por métrica y búsqueda de un nodo
+skinparam shadowing false
+skinparam defaultFontSize 14
+skinparam sequenceMessageAlign left
+
+actor Usuario as U
+participant "Panel de\ncontroles" as CTRL
+participant "Estado de la\naplicación" as ST
+participant "Escena 3D" as SC
+participant "Leyenda" as LEG
+participant "Cámara" as CAM
+
+== RF 9: mapeo visual por métrica ==
+U -> CTRL : elige una métrica
+activate CTRL
+CTRL -> ST : actualiza el criterio de mapeo
+deactivate CTRL
+activate ST
+ST -> ST : calcula el rango\n(mínimo y máximo) de la métrica
+ST -> SC : métrica y rango
+activate SC
+SC -> SC : normaliza el valor de cada nodo\ny le asigna color y tamaño
+SC --> U : red coloreada y dimensionada
+deactivate SC
+ST -> LEG : rango de la métrica
+LEG --> U : escala de color con sus extremos
+deactivate ST
+
+== RF 10: búsqueda de un nodo ==
+U -> CTRL : escribe parte de una etiqueta
+activate CTRL
+CTRL -> ST : texto buscado
+activate ST
+ST -> ST : filtra los nodos cuya\netiqueta contiene el texto
+ST --> U : lista de coincidencias
+deactivate CTRL
+U -> CTRL : elige un resultado
+CTRL -> ST : nodo elegido
+ST -> SC : nodo seleccionado
+activate SC
+SC --> U : nodo resaltado con sus conexiones
+deactivate SC
+ST -> CAM : nodo objetivo
+activate CAM
+CAM -> CAM : desplaza el punto de mira\ny la posición de forma progresiva
+CAM --> U : nodo centrado en pantalla
+deactivate CAM
+deactivate ST
+@enduml

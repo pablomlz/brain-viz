@@ -868,3 +868,362 @@ el panel pasa a indicar 2 sobre 9.
 Las tres mejoras se comprobaron sobre la aplicación en ejecución antes de volver a desplegarla,
 contrastando para varios umbrales que el grado indicado en el panel coincidía con el número de
 conexiones resaltadas en la escena.
+
+\section{Sprint 3}
+
+El tercer \textit{sprint} corresponde a los requisitos de \textbf{Prioridad 3} (RF 6.1, RF 8, RF 9 y
+RF 10) y es el que convierte la herramienta en algo más que un visor. Hasta ahora la aplicación
+permitía ver la red y explorarla; con este \textit{sprint} pasa a \emph{analizarla}: calcula métricas
+de teoría de grafos sobre la red completa (RF 8) y sobre cada nodo (RF 6.1), permite representar esas
+métricas visualmente sobre la propia escena (RF 9) y añade una búsqueda que lleva la cámara hasta una
+región concreta (RF 10).
+
+Este es el \textit{sprint} en el que se materializa el segundo objetivo del proyecto, el análisis
+básico de las métricas fundamentales de teoría de grafos, y también aquel en el que el
+\textit{backend} deja de limitarse a servir datos para empezar a producir información nueva a partir
+de ellos.
+
+\subsection{Diseño de la interfaz}
+
+La interfaz debe acoger tres elementos nuevos sin restar espacio a la escena 3D, que sigue siendo el
+centro de la aplicación:
+
+\begin{itemize}
+	\item Un \textbf{panel de métricas de la red} (RF 8), situado bajo el de estadísticas. Se
+		separan ambos de forma deliberada: las estadísticas describen el tamaño de la red (cuántos
+		nodos y conexiones tiene) mientras que las métricas describen su estructura, y mezclarlas
+		habría confundido dos cosas distintas.
+	\item Un \textbf{buscador de nodos} (RF 10) en la columna izquierda, con un campo de texto y la
+		lista de coincidencias que va apareciendo según se escribe.
+	\item Un \textbf{selector de mapeo visual} (RF 9) dentro del panel de controles, que permite
+		elegir si los nodos se colorean y dimensionan según su grupo anatómico, como hasta ahora, o
+		según una de las métricas calculadas.
+\end{itemize}
+
+Además, la leyenda pasa a ser \textbf{adaptativa}: cuando se colorea por grupo mantiene las etiquetas
+de color de siempre, y cuando se colorea por una métrica se sustituye por una escala continua con los
+valores mínimo y máximo de esa métrica en la red. Sin ese cambio, la leyenda habría seguido
+explicando algo que ya no se estaría viendo. La figura~\ref{fig:mockup-s3} recoge el boceto
+resultante, con los tres elementos nuevos destacados.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[font=\footnotesize]
+		\draw[rounded corners=3pt, thick, fill=black!3] (0,0) rectangle (13,9.4);
+		\node[align=center, gray] at (7.4,4.6) {\itshape Lienzo 3D\\\itshape (nodos coloreados y
+		\itshape dimensionados por la métrica)};
+		% Izquierda: estadísticas
+		\draw[rounded corners=2pt, fill=white, draw=black!45] (0.35,7.5) rectangle (4.3,9.05);
+		\node[anchor=north west, align=left] at (0.5,8.95)
+			{\textbf{Brain Viz}\\[1pt]\footnotesize Nodos · Conexiones · Grupos};
+		% Izquierda: métricas de la red (nuevo)
+		\draw[rounded corners=2pt, fill=white, draw=black!45, very thick] (0.35,5.2) rectangle (4.3,7.15);
+		\node[anchor=north west, align=left] at (0.5,7.05)
+			{\textbf{Métricas de la red}\\[1pt]\footnotesize Densidad · Grado medio\\
+			\footnotesize Clustering · Componentes};
+		% Izquierda: buscador (nuevo)
+		\draw[rounded corners=2pt, fill=white, draw=black!45, very thick] (0.35,2.9) rectangle (4.3,4.85);
+		\node[anchor=north west, align=left] at (0.5,4.75)
+			{\textbf{Buscar nodo}\\[2pt]\footnotesize\fbox{\footnotesize Etiqueta de la región}\\
+			\footnotesize Lista de coincidencias};
+		% Izquierda abajo: leyenda adaptativa
+		\draw[rounded corners=2pt, fill=white, draw=black!45] (0.35,0.35) rectangle (4.3,2.1);
+		\node[anchor=north west, align=left] at (0.5,2.0)
+			{\textbf{Leyenda}\\[2pt]\footnotesize Grupos, o bien\\\footnotesize escala de la métrica
+			\tikz[baseline=-0.5ex]{\shade[left color=black!15, right color=black!65]
+			(0,0) rectangle (1.1,0.16);}};
+		% Derecha: controles con el selector nuevo
+		\draw[rounded corners=2pt, fill=white, draw=black!45] (8.75,5.6) rectangle (12.65,9.05);
+		\node[anchor=north west, align=left] at (8.9,8.95)
+			{\textbf{Controles}\\[2pt]\footnotesize Umbral de peso\\[2pt]
+			\textbf{Colorear y dimensionar por}\\\footnotesize\fbox{\footnotesize Métrica $\vee$}\\
+			\footnotesize Conexiones · rotación · ejes};
+		% Derecha: nodo seleccionado con centralidades
+		\draw[rounded corners=2pt, fill=white, draw=black!45] (8.75,1.9) rectangle (12.65,5.25);
+		\node[anchor=north west, align=left] at (8.9,5.15)
+			{\textbf{Nodo seleccionado}\\[2pt]\footnotesize Etiqueta · Identificador\\
+			\footnotesize Grupo · Grado\\\textbf{\footnotesize Intermediación}\\
+			\textbf{\footnotesize Cercanía}\\\footnotesize Coordenadas};
+	\end{tikzpicture}
+	\caption{Boceto de la interfaz del Sprint 3. En trazo grueso, el panel de métricas de la red y el
+	buscador; en el panel de controles se incorpora el selector de mapeo visual, y el panel del nodo
+	añade sus centralidades.}
+	\label{fig:mockup-s3}
+\end{figure}
+
+\subsection{Diseño de los datos}
+
+Las métricas que pide este \textit{sprint} se calculan en el servidor, tal y como exige el propio
+requisito [RF 8], y viajan al cliente dentro de la misma respuesta de la API. El contrato se amplía
+en dos puntos:
+
+\begin{itemize}
+	\item Cada \textbf{nodo} incorpora sus dos centralidades: \texttt{betweenness}
+		(intermediación) y \texttt{closeness} (cercanía). El grado, que también es una medida de
+		centralidad, ya se enviaba desde el Sprint 2.
+	\item Los \textbf{metadatos} incorporan un bloque \texttt{metrics} con las cuatro métricas
+		globales: densidad, grado medio, coeficiente de \textit{clustering} y número de componentes
+		conexas.
+\end{itemize}
+
+Merece la pena detenerse en el significado de cada una, porque de él dependen las decisiones de
+cálculo. La \textbf{densidad} es la proporción de conexiones que existen frente a todas las que
+podrían existir, y sitúa la red entre los extremos de dispersa y completa. El \textbf{grado medio}
+indica cuántas conexiones tiene un nodo por término medio. El \textbf{coeficiente de clustering}
+mide hasta qué punto los vecinos de un nodo están conectados también entre sí, es decir, si la red
+forma agrupaciones locales. El \textbf{número de componentes conexas} revela si la red está formada
+por una única pieza o por varios bloques aislados. En cuanto a las centralidades por nodo, la
+\textbf{intermediación} cuenta en cuántos caminos mínimos entre otros nodos participa un nodo dado,
+por lo que identifica regiones que actúan como puente, mientras que la \textbf{cercanía} mide lo
+próximo que está un nodo del resto de la red.
+
+Hay aquí una decisión metodológica que conviene justificar. Tanto la intermediación como la cercanía
+se apoyan en el concepto de camino más corto, y en un grafo ponderado ese cálculo puede tener en
+cuenta los pesos interpretándolos como distancias. En una red cerebral, sin embargo, el peso expresa
+lo \emph{intensa} que es una conexión, no lo que cuesta recorrerla: un peso alto significa una
+conexión fuerte, que intuitivamente acerca los dos nodos en lugar de alejarlos. Usar los pesos
+directamente como distancias daría por tanto un resultado invertido y engañoso. Por eso ambas
+centralidades se calculan sobre la \textbf{topología} de la red, contando saltos y no pesos, que es
+además el criterio que aplican por defecto las bibliotecas de análisis de grafos. La
+figura~\ref{fig:clases-s3} recoge el modelo de datos resultante.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/clases_sprint3}
+	\caption{Modelo de datos tras el Sprint 3, con las centralidades por nodo (RF 6.1) y el bloque de
+	métricas globales de la red (RF 8) destacados.}
+	\label{fig:clases-s3}
+\end{figure}
+
+\subsection{Diseño del software}
+
+El reparto de responsabilidades entre servidor y cliente vuelve a ser la decisión principal, y en
+este \textit{sprint} se resuelve de forma distinta según la funcionalidad:
+
+\begin{itemize}
+	\item El \textbf{cálculo de las métricas} (RF 8 y RF 6.1) se hace en el \textbf{servidor}. No es
+		solo que el requisito lo exija: son cálculos que recorren toda la red y que se apoyan en una
+		biblioteca de análisis de grafos ya disponible en el \textit{backend}, de modo que llevarlos
+		al navegador habría supuesto reimplementarlos sin ninguna ventaja.
+	\item El \textbf{mapeo visual} (RF 9) y la \textbf{búsqueda} (RF 10) se resuelven por completo en
+		el \textbf{cliente}, igual que el filtrado del \textit{sprint} anterior. Ambos operan sobre
+		datos que ya están en memoria, así que consultar al servidor cada vez que el usuario cambia
+		de métrica o escribe una letra sería innecesario y haría la interacción más lenta.
+\end{itemize}
+
+Para el mapeo visual, cada métrica tiene un rango de valores propio: el grado son números enteros que
+en la red de ejemplo van de 2 a 15, mientras que las centralidades son valores entre 0 y 1 que en la
+práctica ocupan solo una fracción de ese intervalo. Aplicar una escala fija habría hecho que las
+diferencias entre nodos resultaran imperceptibles. Por eso, al elegir una métrica se calcula primero
+su mínimo y su máximo en la red y cada valor se normaliza dentro de ese rango, de manera que el
+color y el tamaño siempre aprovechan toda la escala disponible sea cual sea la métrica y la red.
+
+La búsqueda plantea un problema distinto, el de llevar la cámara hasta el nodo elegido. Situarla de
+golpe en la nueva posición resulta desconcertante, porque el usuario pierde la referencia de dónde
+estaba mirando. La cámara se desplaza por tanto de forma progresiva, acercándose en cada fotograma
+una fracción de la distancia que le queda hasta el destino, lo que produce un movimiento suave que se
+frena solo al llegar. También se detiene la rotación automática si estaba activa, ya que de lo
+contrario la escena seguiría girando y el nodo no llegaría a quedar centrado. La
+figura~\ref{fig:sec-s3} recoge el diagrama de secuencia de ambas interacciones.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/sec_interaccion_sprint3}
+	\caption{Diagrama de secuencia del mapeo visual por métrica (RF 9) y de la búsqueda de un nodo
+	con centrado de la cámara (RF 10).}
+	\label{fig:sec-s3}
+\end{figure}
+
+\subsection{Implementación}
+
+\subsubsection*{Backend: métricas de la red y centralidades (RF 8, RF 6.1)}
+
+El módulo de parseo incorpora el cálculo de las métricas justo después de construir el grafo. La
+biblioteca de análisis de grafos resuelve cada una con una llamada, de modo que el código se mantiene
+breve y legible:
+
+\begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily, keywordstyle=\color{blue!60!black}, commentstyle=\color{gray}, showstringspaces=false, frame=single, columns=fullflexible]
+# Centralidades de cada nodo (RF 6.1). Se calculan sobre la topologia:
+# el peso indica cuan intensa es una conexion, no lo que cuesta recorrerla
+intermediacion = nx.betweenness_centrality(G)
+cercania = nx.closeness_centrality(G)
+
+# Metricas globales de la red (RF 8)
+metricas = {
+    "density": float(nx.density(G)),
+    "avg_degree": float(2 * n_aristas / n_nodos),
+    "avg_clustering": float(nx.average_clustering(G)),
+    "components": int(nx.number_connected_components(G)),
+}
+\end{lstlisting}
+
+\subsubsection*{Frontend: mapeo visual por métrica (RF 9)}
+
+Al seleccionar una métrica se obtiene su rango en la red y se construye la función que normaliza
+cualquier valor dentro de ese intervalo. Con ella, cada nodo recibe un color tomado de una rampa
+continua y un tamaño proporcional:
+
+\begin{lstlisting}[language=JavaScript, basicstyle=\footnotesize\ttfamily, keywordstyle=\color{blue!60!black}, commentstyle=\color{gray}, showstringspaces=false, frame=single, columns=fullflexible]
+// Cada metrica tiene su propio rango, asi que se normaliza entre 0 y 1
+// para que el color y el tamano aprovechen toda la escala disponible
+const rango = max - min;
+const normaliza = (v) => (rango > 0 ? (v - min) / rango : 0);
+
+const t = normaliza(node[settings.metrica]);
+const tamano = 0.6 + 1.5 * t;
+const color  = colorMetrica(t);
+\end{lstlisting}
+
+\subsubsection*{Frontend: búsqueda y centrado de la cámara (RF 10)}
+
+Las coincidencias se obtienen filtrando las etiquetas por el texto introducido. Al elegir un
+resultado, el nodo se selecciona y la cámara viaja hasta él aproximándose de forma progresiva:
+
+\begin{lstlisting}[language=JavaScript, basicstyle=\footnotesize\ttfamily, keywordstyle=\color{blue!60!black}, commentstyle=\color{gray}, showstringspaces=false, frame=single, columns=fullflexible]
+// En cada fotograma la camara recorre una fraccion de lo que le queda,
+// de modo que el movimiento es suave y se frena solo al llegar
+useFrame(() => {
+  if (!destino.current || !controls) return;
+  controls.target.lerp(destino.current, 0.12);
+  camera.position.lerp(vista, 0.12);
+  controls.update();
+});
+\end{lstlisting}
+
+Las figuras~\ref{fig:s3-mapeo} y~\ref{fig:s3-busqueda} muestran el resultado sobre la red de ejemplo.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/app_s3_mapeo}
+	\caption{Mapeo visual por intermediación (RF 9). El tamaño y el color de cada nodo reflejan su
+	valor de la métrica, y la leyenda pasa a mostrar la escala continua con los extremos del rango.
+	A la izquierda se aprecia el panel con las métricas globales de la red (RF 8).}
+	\label{fig:s3-mapeo}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/app_s3_busqueda}
+	\caption{Búsqueda de un nodo (RF 10). Al escribir parte de una etiqueta aparecen las
+	coincidencias; al elegir una, la cámara se desplaza hasta la región y el panel muestra sus
+	centralidades (RF 6.1).}
+	\label{fig:s3-busqueda}
+\end{figure}
+
+\subsection{Pruebas}
+
+En este \textit{sprint} las pruebas tienen un peso especial, porque por primera vez la aplicación no
+se limita a mostrar los datos de entrada: produce valores nuevos. Un error en el cálculo de una
+métrica no se manifestaría con un fallo visible, sino con una cifra plausible pero equivocada, que es
+la clase de defecto más difícil de detectar y el que más daño haría a un usuario que confiara en la
+herramienta para su investigación.
+
+\subsubsection*{Pruebas de caja blanca (unitarias)}
+
+Siguiendo el criterio de validación fijado en el capítulo de requisitos, cada métrica se ha
+contrastado con una implementación de referencia escrita de forma independiente, sin reutilizar la
+biblioteca de análisis de grafos y partiendo de la lista de adyacencia reconstruida a partir de la
+respuesta de la API. Las comprobaciones realizadas son las siguientes:
+
+\begin{itemize}
+	\item La \textbf{densidad} coincide con $2|A| / (N(N-1))$ y el \textbf{grado medio} con
+		$2|A| / N$, calculados directamente a partir del número de nodos y aristas.
+	\item El \textbf{coeficiente de clustering} coincide con el obtenido calculando a mano, para cada
+		nodo, la proporción de pares de vecinos que están conectados entre sí, y promediando.
+	\item El \textbf{número de componentes conexas} coincide con el que resulta de recorrer la red en
+		anchura desde cada nodo no visitado.
+	\item La \textbf{cercanía} de los 90 nodos coincide con la que se obtiene calculando las
+		distancias mediante un recorrido en anchura propio.
+	\item La \textbf{intermediación} de los 90 nodos coincide con la que produce una implementación
+		propia del algoritmo de Brandes, que es el que se emplea habitualmente para esta métrica.
+\end{itemize}
+
+En los cinco casos la desviación es nula o del orden de la precisión de la representación en coma
+flotante, por lo que se considera que las métricas son correctas.
+
+\subsubsection*{Pruebas de caja negra (de integración)}
+
+Se ha verificado que la respuesta de la API respeta el contrato ampliado, comprobando que cada nodo
+incluye sus dos centralidades y que los metadatos incorporan el bloque de métricas globales con sus
+cuatro valores. Sobre la aplicación en ejecución se ha contrastado que las cifras que muestra el
+panel de métricas coinciden con las que devuelve la API, y que las centralidades del panel del nodo
+seleccionado se corresponden con las de ese nodo en los datos servidos.
+
+\subsubsection*{Pruebas de validación (de aceptación)}
+
+La tabla~\ref{tab:pruebas-s3} recoge las pruebas de validación de este \textit{sprint}.
+
+\begin{table}[H]
+	\centering
+	\caption{Pruebas de validación del Sprint 3.}
+	\label{tab:pruebas-s3}
+	\small
+	\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{1.6cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\centering\arraybackslash}p{1.6cm}}
+		\toprule
+		\textbf{Prueba} & \textbf{Descripción} & \textbf{Resultado esperado} & \textbf{Estado} \\
+		\midrule
+		P-12 (RF 8) & Consultar el panel de métricas de la red. &
+			Muestra densidad 0,103, grado medio 9,13, clustering 0,548 y una componente conexa,
+			cifras que coinciden con el cálculo de referencia. & Correcto \\
+		\addlinespace
+		P-13 (RF 6.1) & Seleccionar un nodo y consultar sus centralidades. &
+			El panel muestra su intermediación y su cercanía, coincidentes con las calculadas de
+			forma independiente. & Correcto \\
+		\addlinespace
+		P-14 (RF 9) & Elegir cada una de las métricas en el selector. &
+			El color y el tamaño de los nodos cambian, y la leyenda pasa a mostrar la escala con el
+			rango real de la métrica elegida. & Correcto \\
+		\addlinespace
+		P-15 (RF 9) & Volver al coloreado por grupo anatómico. &
+			Los nodos recuperan el color de su grupo y el mismo tamaño, y la leyenda vuelve a
+			mostrar las etiquetas de los grupos. & Correcto \\
+		\addlinespace
+		P-16 (RF 10) & Escribir parte de una etiqueta en el buscador. &
+			Aparecen las regiones cuya etiqueta contiene ese texto; al buscar \texttt{PUT} se
+			obtienen \texttt{PUT.L} y \texttt{PUT.R}. & Correcto \\
+		\addlinespace
+		P-17 (RF 10) & Elegir un resultado de la búsqueda. &
+			El nodo queda seleccionado con sus conexiones resaltadas y la cámara se desplaza hasta
+			centrarlo, sin saltos bruscos. & Correcto \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\subsubsection*{Errores detectados y corregidos}
+
+Durante el desarrollo y las pruebas de este \textit{sprint} se detectaron los siguientes problemas:
+
+\begin{itemize}
+	\item \textbf{La cámara se acercaba demasiado al nodo buscado.} La primera versión situaba la
+		cámara muy cerca de la región encontrada, de modo que esta quedaba centrada pero se perdía
+		por completo la referencia del resto de la red. Se corrigió aumentando la distancia a la que
+		se detiene la cámara, de forma que el nodo queda centrado sin sacar de plano el conjunto.
+	\item \textbf{Los paneles de la derecha se desbordaban.} Al añadir el buscador a esa columna, los
+		tres paneles juntos superaban la altura de la ventana y el del nodo seleccionado quedaba
+		cortado. Se resolvió repartiendo los paneles entre las dos columnas y llevando el buscador a
+		la izquierda, junto a las métricas, donde había espacio libre.
+	\item \textbf{La leyenda dejaba de tener sentido al colorear por métrica.} En una primera versión
+		la leyenda seguía mostrando los grupos anatómicos aunque los nodos ya no estuvieran coloreados
+		por grupo, con lo que explicaba algo que no correspondía a lo que se veía. Se corrigió
+		haciendo que la leyenda cambie según el criterio de coloreado activo.
+\end{itemize}
+
+\subsubsection*{Rendimiento del cálculo de métricas}
+
+El cálculo de la intermediación es, con diferencia, el más costoso de los que incorpora este
+\textit{sprint}: su coste crece con el producto del número de nodos por el de aristas. Sobre la red
+de ejemplo el procesamiento completo de una petición se mantiene en torno a los 15~milisegundos, de
+modo que no se aprecia ninguna demora. Con redes bastante mayores el cálculo sí llegaría a notarse,
+y conviene recordar aquí la limitación ya señalada en el Sprint 1: cada petición reconstruye la red
+desde los ficheros y ahora, además, recalcula todas sus métricas. La mejora prevista de almacenar el
+resultado ya procesado, que se abordará al introducir la persistencia en el Sprint 4, cobra con este
+\textit{sprint} bastante más importancia de la que tenía.
+
+\subsubsection*{Validación por parte del cliente}
+
+Como en los \textit{sprints} anteriores, la versión resultante se despliega en el servidor público
+para que el director pueda validarla en la dirección ya conocida:
+
+\begin{center}
+	\url{https://brain-viz.onrender.com/}
+\end{center}

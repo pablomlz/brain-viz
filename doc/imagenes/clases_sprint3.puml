@@ -1,0 +1,57 @@
+@startuml clases_sprint3
+' Modelo de datos tras el Sprint 3: métricas de red y centralidades por nodo
+skinparam shadowing false
+skinparam defaultFontSize 15
+skinparam classAttributeIconSize 0
+hide circle
+
+class BrainNetwork {
+  +to_json() : dict
+}
+
+class Node {
+  +id : int
+  +label : str
+  +x, y, z : float
+  +group : int
+  +degree : int
+  <b>+ betweenness : float</b>
+  <b>+ closeness : float</b>
+}
+
+class Edge {
+  +source : int
+  +target : int
+  +value : float
+}
+
+class Meta {
+  +total_nodes : int
+  +total_edges : int
+  +min_weight : float
+  +max_weight : float
+  <b>+ metrics : Metrics</b>
+}
+
+class Metrics {
+  <b>+ density : float</b>
+  <b>+ avg_degree : float</b>
+  <b>+ avg_clustering : float</b>
+  <b>+ components : int</b>
+}
+
+BrainNetwork "1" o-- "0..*" Node
+BrainNetwork "1" o-- "0..*" Edge
+BrainNetwork "1" o-- "1" Meta
+Meta "1" *-- "1" Metrics
+
+note right of Node
+  <b>betweenness</b> y <b>closeness</b>:
+  centralidades del nodo (RF 6.1)
+end note
+
+note bottom of Metrics
+  Métricas globales de la red,
+  calculadas en el servidor (RF 8)
+end note
+@enduml
