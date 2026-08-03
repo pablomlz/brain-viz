@@ -21,6 +21,32 @@ const GROUP_PALETTE = [
 ];
 const groupColor = (g) => GROUP_PALETTE[(g ?? 0) % GROUP_PALETTE.length];
 
+// Métricas por las que se puede colorear y dimensionar los nodos (RF 9).
+// La opción por defecto mantiene el coloreado por grupo anatómico (RF 7).
+const METRICAS = [
+  { id: 'group',       nombre: 'Grupo anatómico' },
+  { id: 'degree',      nombre: 'Grado' },
+  { id: 'betweenness', nombre: 'Intermediación' },
+  { id: 'closeness',   nombre: 'Cercanía' },
+];
+
+// Rampa de color para el mapeo por métrica: de azul apagado (valor bajo) a
+// ámbar (valor alto), pasando por un tono intermedio.
+const RAMPA = ['#2f4b7c', '#4c7df0', '#58c4a3', '#e0a458', '#d6685e'];
+
+// El grado es un número entero; las centralidades son valores entre 0 y 1.
+function formatoMetrica(id, v) {
+  return id === 'degree' ? String(Math.round(v)) : v.toFixed(3);
+}
+
+function colorMetrica(t) {
+  const x = Math.min(Math.max(t, 0), 1) * (RAMPA.length - 1);
+  const i = Math.floor(x);
+  const c1 = new THREE.Color(RAMPA[i]);
+  if (i >= RAMPA.length - 1) return c1;
+  return c1.lerp(new THREE.Color(RAMPA[i + 1]), x - i);
+}
+
 const ACCENT = '#4c7df0';    // Color de acento para el nodo seleccionado (RF 6)
 const ACCENT_HI = '#6f97f5'; // Color de sus conexiones, algo más claro
 
@@ -57,7 +83,7 @@ function Mark({ size = 24 }) {
   );
 }
 
-function BrainVis({ data, hovered, setHovered, selected, setSelected, settings }) {
+function BrainVis({ data, hovered, setHovered, selected, setSelected, settings, normaliza }) {
   const groupRef = useRef();
 
   useFrame((_, dt) => {
@@ -174,7 +200,14 @@ function BrainVis({ data, hovered, setHovered, selected, setSelected, settings }
       {data.nodes.map((node, i) => {
         const isHovered = hovered === i;
         const isSelected = selected === i;
-        const color = isSelected ? ACCENT : groupColor(node.group);
+        // Mapeo visual por métrica (RF 9): con la opción por defecto se
+        // mantiene el coloreado por grupo y todos los nodos del mismo tamaño.
+        const porMetrica = settings.metrica !== 'group';
+        const t = porMetrica ? normaliza(node[settings.metrica]) : 0;
+        const base = porMetrica ? 0.6 + 1.5 * t : 1;
+        const color = isSelected
+          ? ACCENT
+          : (porMetrica ? colorMetrica(t) : groupColor(node.group));
         return (
           <mesh
             key={i}
@@ -182,7 +215,7 @@ function BrainVis({ data, hovered, setHovered, selected, setSelected, settings }
             onPointerOver={(e) => { e.stopPropagation(); setHovered(i); document.body.style.cursor = 'pointer'; }}
             onPointerOut={() => { setHovered(null); document.body.style.cursor = 'default'; }}
             onClick={(e) => { e.stopPropagation(); setSelected(i === selected ? null : i); }}
-            scale={isSelected ? 2 : isHovered ? 1.6 : 1}
+            scale={base * (isSelected ? 2 : isHovered ? 1.6 : 1)}
           >
             <sphereGeometry args={[1.6, 24, 24]} />
             <meshStandardMaterial
@@ -220,6 +253,36 @@ function BrainVis({ data, hovered, setHovered, selected, setSelected, settings }
   );
 }
 
+// Lleva la cámara hasta el nodo buscado (RF 10). El grupo de la escena está
+// girado -90 grados sobre X, así que un punto (x, y, z) del modelo se
+// corresponde con (x, z, -y) en coordenadas de mundo.
+function CamaraHaciaNodo({ data, objetivo, alLlegar }) {
+  const controls = useThree((s) => s.controls);
+  const camera = useThree((s) => s.camera);
+  const destino = useRef(null);
+
+  useEffect(() => {
+    if (objetivo == null || !data) { destino.current = null; return; }
+    const n = data.nodes[objetivo];
+    if (n) destino.current = new THREE.Vector3(n.x, n.z, -n.y);
+  }, [objetivo, data]);
+
+  useFrame(() => {
+    if (!destino.current || !controls) return;
+    // Aproximación progresiva, para que el movimiento no sea un salto brusco
+    controls.target.lerp(destino.current, 0.12);
+    const vista = destino.current.clone().add(new THREE.Vector3(0, 55, 125));
+    camera.position.lerp(vista, 0.12);
+    controls.update();
+    if (controls.target.distanceTo(destino.current) < 0.6) {
+      destino.current = null;
+      alLlegar();
+    }
+  });
+
+  return null;
+}
+
 function Loader({ label }) {
   return (
     <div className="loader">
@@ -252,7 +315,10 @@ export default function App() {
     showAxes: false,
     threshold: 0,       // Umbral de peso mínimo (RF 5)
     visibleLinks: 0,    // Nº de aristas que superan el umbral
+    metrica: 'group',   // Criterio de color y tamaño de los nodos (RF 9)
   });
+  const [busqueda, setBusqueda] = useState('');   // Texto buscado (RF 10)
+  const [objetivo, setObjetivo] = useState(null); // Nodo al que va la cámara
 
   // Carga de la red (RF 1, RF 2)
   useEffect(() => {
@@ -271,6 +337,7 @@ export default function App() {
           groups: Array.from(groups).sort((a, b) => a - b),
           minWeight: brainData.meta?.min_weight ?? 0,
           maxWeight: brainData.meta?.max_weight ?? 1,
+          metrics: brainData.meta?.metrics ?? null,   // métricas globales (RF 8)
         });
         // Se respeta el umbral que el usuario pudiera haber fijado mientras la
         // red se estaba cargando; si no tocó nada (umbral 0), se muestran todas.
@@ -286,6 +353,38 @@ export default function App() {
   const onThresholdChange = (value) => {
     const visibles = data ? contarVisibles(data.links, value) : 0;
     setSettings((s) => ({ ...s, threshold: value, visibleLinks: visibles }));
+  };
+
+  // Rango de la métrica activa, para normalizar los valores entre 0 y 1 (RF 9)
+  const rangoMetrica = useMemo(() => {
+    if (!data || settings.metrica === 'group') return null;
+    const vals = data.nodes.map((n) => n[settings.metrica] ?? 0);
+    return { min: Math.min(...vals), max: Math.max(...vals) };
+  }, [data, settings.metrica]);
+
+  const normaliza = useMemo(() => {
+    if (!rangoMetrica) return () => 0;
+    const { min, max } = rangoMetrica;
+    const rango = max - min;
+    return (v) => (rango > 0 ? ((v ?? 0) - min) / rango : 0);
+  }, [rangoMetrica]);
+
+  // Nodos cuya etiqueta contiene el texto buscado (RF 10)
+  const resultados = useMemo(() => {
+    const q = busqueda.trim().toLowerCase();
+    if (!data || q.length === 0) return [];
+    return data.nodes
+      .map((n, i) => ({ i, label: n.label }))
+      .filter((n) => n.label.toLowerCase().includes(q))
+      .slice(0, 8);
+  }, [data, busqueda]);
+
+  // Al elegir un resultado se selecciona el nodo y la cámara viaja hasta él.
+  // La rotación automática se detiene para que no se mueva mientras tanto.
+  const irANodo = (i) => {
+    setSelected(i);
+    setObjetivo(i);
+    setSettings((s) => ({ ...s, autoRotate: false }));
   };
 
   const selectedNode = selected != null && data ? data.nodes[selected] : null;
@@ -320,6 +419,7 @@ export default function App() {
         <pointLight position={[-80, -40, -80]} intensity={0.35} color="#ffffff" />
 
         <OrbitControls
+          makeDefault
           enableDamping
           dampingFactor={0.08}
           rotateSpeed={0.7}
@@ -335,8 +435,12 @@ export default function App() {
             selected={selected}
             setSelected={setSelected}
             settings={settings}
+            normaliza={normaliza}
           />
         )}
+
+        {/* Desplazamiento de la cámara hasta el nodo buscado (RF 10) */}
+        {data && <CamaraHaciaNodo data={data} objetivo={objetivo} alLlegar={() => setObjetivo(null)} />}
 
         {loading && <Html center><Loader label="Cargando conectoma" /></Html>}
         {error && <Html center><ErrorCard message={error} /></Html>}
@@ -344,8 +448,9 @@ export default function App() {
         {settings.showAxes && <axesHelper args={[70]} />}
       </Canvas>
 
-      {/* Arriba izquierda: marca + estadísticas */}
-      <div className="panel panel-tl">
+      {/* Columna izquierda: estadísticas y métricas de la red */}
+      <div className="stack-tl">
+      <div className="panel">
         <div className="brand">
           <Mark size={24} />
           <div>
@@ -366,6 +471,51 @@ export default function App() {
           <Stat label="Grupos" value={meta.groups.length} />
         </div>
       </div>
+
+      {/* Métricas globales de la red, calculadas en el servidor (RF 8) */}
+      {meta.metrics && (
+        <div className="panel">
+          <div className="panel-hd">
+            <span className="panel-ttl">Métricas de la red</span>
+            <span className="panel-idx">GRAFO</span>
+          </div>
+          <div className="panel-bd" style={{ paddingTop: 4, paddingBottom: 4 }}>
+            <Stat label="Densidad" value={meta.metrics.density.toFixed(3)} />
+            <Stat label="Grado medio" value={meta.metrics.avg_degree.toFixed(2)} />
+            <Stat label="Coef. de clustering" value={meta.metrics.avg_clustering.toFixed(3)} />
+            <Stat label="Componentes conexas" value={meta.metrics.components} />
+          </div>
+        </div>
+      )}
+      {/* Búsqueda de un nodo por su etiqueta (RF 10) */}
+      <div className="panel">
+        <div className="panel-hd">
+          <span className="panel-ttl">Buscar nodo</span>
+          <span className="panel-idx">{data ? data.nodes.length : 0}</span>
+        </div>
+        <div className="panel-bd">
+          <input
+            className="buscar"
+            type="text"
+            placeholder="Etiqueta de la región"
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter' && resultados.length) irANodo(resultados[0].i); }}
+          />
+          {busqueda.trim() && (
+            <div className="resultados">
+              {resultados.length === 0 && <div className="sin-resultados">Sin coincidencias</div>}
+              {resultados.map((r) => (
+                <button key={r.i} className="resultado" onClick={() => irANodo(r.i)}>
+                  <span className="sw-sq" style={{ background: groupColor(data.nodes[r.i].group) }} />
+                  {r.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      </div>{/* fin de la columna izquierda */}
 
       {/* Columna derecha: controles y, si procede, el nodo seleccionado.
           Se apilan en una columna flexible para que nunca se solapen. */}
@@ -400,6 +550,17 @@ export default function App() {
               <span>0.00</span>
               <span>{maxWeight.toFixed(2)}</span>
             </div>
+          </div>
+          {/* Mapeo visual: color y tamaño de los nodos según una métrica (RF 9) */}
+          <div className="sel-row">
+            <span className="sel-lab">Colorear y dimensionar por</span>
+            <select
+              className="sel"
+              value={settings.metrica}
+              onChange={(e) => setSettings((s) => ({ ...s, metrica: e.target.value }))}
+            >
+              {METRICAS.map((m) => <option key={m.id} value={m.id}>{m.nombre}</option>)}
+            </select>
           </div>
           <Toggle
             label="Mostrar conexiones"
@@ -449,6 +610,9 @@ export default function App() {
             <Stat label="Identificador" value={selectedNode.id} />
             <Stat label="Grupo" value={`G${selectedNode.group}`} />
             <Stat label="Grado" value={`${gradoVisible} / ${selectedNode.degree ?? 0}`} />
+            {/* Centralidades calculadas en el servidor (RF 6.1) */}
+            <Stat label="Intermediación" value={(selectedNode.betweenness ?? 0).toFixed(4)} />
+            <Stat label="Cercanía" value={(selectedNode.closeness ?? 0).toFixed(4)} />
             <Stat label="Coordenada X" value={selectedNode.x.toFixed(1)} />
             <Stat label="Coordenada Y" value={selectedNode.y.toFixed(1)} />
             <Stat label="Coordenada Z" value={selectedNode.z.toFixed(1)} />
@@ -457,8 +621,30 @@ export default function App() {
       )}
       </div>{/* fin de la columna derecha */}
 
-      {/* Abajo izquierda: leyenda */}
-      {meta.groups.length > 0 && (
+      {/* Abajo izquierda: leyenda. Cambia según se coloree por grupo o por
+          métrica, para que siempre explique lo que se está viendo (RF 7, RF 9) */}
+      {meta.groups.length > 0 && rangoMetrica && (
+        <div className="panel panel-bl">
+          <div className="panel-hd">
+            <span className="panel-ttl">Leyenda</span>
+            <span className="panel-idx">
+              {METRICAS.find((m) => m.id === settings.metrica)?.nombre.toUpperCase()}
+            </span>
+          </div>
+          <div className="panel-bd">
+            <div
+              className="escala"
+              style={{ background: `linear-gradient(90deg, ${RAMPA.join(', ')})` }}
+            />
+            <div className="escala-lab">
+              <span>{formatoMetrica(settings.metrica, rangoMetrica.min)}</span>
+              <span>{formatoMetrica(settings.metrica, rangoMetrica.max)}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {meta.groups.length > 0 && !rangoMetrica && (
         <div className="panel panel-bl">
           <div className="panel-hd">
             <span className="panel-ttl">Leyenda</span>

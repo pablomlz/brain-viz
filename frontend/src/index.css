@@ -55,6 +55,49 @@ input:focus, button:focus { outline: none; }
 .panel-tr { top: 18px; right: 18px; }
 .panel-bl { bottom: 18px; left: 18px; }
 
+
+/* Columna izquierda: estadísticas y métricas de la red (RF 8) */
+.stack-tl {
+  position: absolute; top: 18px; left: 18px; z-index: 5;
+  display: flex; flex-direction: column; gap: 12px; align-items: flex-start;
+  max-height: calc(100vh - 220px); overflow-y: auto;
+}
+.stack-tl > .panel { position: static; flex: none; }
+
+/* Búsqueda de nodos (RF 10) */
+.buscar {
+  width: 100%; padding: 7px 9px;
+  background: var(--surface-2); border: 1px solid var(--line-2); border-radius: var(--r-sm);
+  color: var(--text); font-family: var(--ui); font-size: 12px;
+}
+.buscar::placeholder { color: var(--faint); }
+.buscar:focus { border-color: var(--accent); }
+.resultados { margin-top: 8px; display: flex; flex-direction: column; gap: 2px; max-height: 168px; overflow-y: auto; }
+.resultado {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 6px 7px; background: none; border: none; border-radius: var(--r-sm);
+  color: var(--text); font-family: var(--mono); font-size: 11.5px; text-align: left; cursor: pointer;
+}
+.resultado:hover { background: var(--surface-2); }
+.sin-resultados { font-size: 11.5px; color: var(--faint); padding: 5px 2px; }
+
+/* Selector de métrica para el mapeo visual (RF 9) */
+.sel-row { padding: 9px 0 4px; }
+.sel-lab { display: block; font-size: 11px; color: var(--muted); margin-bottom: 7px; }
+.sel {
+  width: 100%; padding: 6px 8px;
+  background: var(--surface-2); border: 1px solid var(--line-2); border-radius: var(--r-sm);
+  color: var(--text); font-family: var(--ui); font-size: 12px; cursor: pointer;
+}
+.sel:focus { border-color: var(--accent); }
+
+/* Escala de color de la leyenda cuando se colorea por métrica (RF 9) */
+.escala { height: 9px; border-radius: 3px; border: 1px solid rgba(255,255,255,.1); }
+.escala-lab {
+  display: flex; justify-content: space-between; margin-top: 6px;
+  font-family: var(--mono); font-size: 10.5px; color: var(--muted);
+}
+
 /* Columna derecha: los paneles se apilan y nunca se solapan, con
    independencia de cuánto crezca cada uno (RF 5, RF 6) */
 .stack-tr {

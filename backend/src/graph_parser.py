@@ -61,7 +61,14 @@ def load_brain_graph(node_path, edge_path):
     sin_conexion = [(u, v) for u, v, w in G.edges(data='weight') if w is None or w <= MIN_WEIGHT]
     G.remove_edges_from(sin_conexion)
 
-    # 6. Enriquecer el grafo con datos de posición, etiquetas y grado
+    # 6. Métricas de centralidad de cada nodo (RF 6.1)
+    #    Se calculan sobre la topología, sin tener en cuenta los pesos: en estas
+    #    redes el peso expresa cuán intensa es una conexión, no lo que cuesta
+    #    recorrerla, así que usarlo como distancia daría un resultado engañoso.
+    intermediacion = nx.betweenness_centrality(G)
+    cercania = nx.closeness_centrality(G)
+
+    # 7. Enriquecer el grafo con datos de posición, etiquetas y grado
     nodes_data = []
     for i in G.nodes():
         node_info = df_nodes.iloc[i]
@@ -82,9 +89,12 @@ def load_brain_graph(node_path, edge_path):
             "group": int(node_info['color_id']),
             # Grado del nodo en la red completa (número de conexiones), RF 6
             "degree": int(G.degree(i)),
+            # Centralidades del nodo (RF 6.1)
+            "betweenness": float(intermediacion[i]),
+            "closeness": float(cercania[i]),
         })
 
-    # 7. Preparar enlaces (Edges), ordenados por peso descendente (RF 5)
+    # 8. Preparar enlaces (Edges), ordenados por peso descendente (RF 5)
     links_data = [
         {"source": int(u), "target": int(v), "value": float(w)}
         for u, v, w in G.edges(data='weight')
@@ -92,6 +102,20 @@ def load_brain_graph(node_path, edge_path):
     links_data.sort(key=lambda link: link["value"], reverse=True)
 
     pesos = [link["value"] for link in links_data]
+
+    # 9. Métricas globales de la red (RF 8)
+    n_nodos = G.number_of_nodes()
+    n_aristas = G.number_of_edges()
+    metricas = {
+        # Proporción de conexiones existentes sobre todas las posibles
+        "density": float(nx.density(G)),
+        # Número medio de conexiones por nodo
+        "avg_degree": float(2 * n_aristas / n_nodos) if n_nodos else 0.0,
+        # Tendencia de los vecinos de un nodo a estar conectados entre sí
+        "avg_clustering": float(nx.average_clustering(G)),
+        # Nº de grupos de nodos entre los que no hay ningún camino
+        "components": int(nx.number_connected_components(G)),
+    }
 
     # Estructura final para el Frontend
     graph_json = {
@@ -103,6 +127,8 @@ def load_brain_graph(node_path, edge_path):
             # Rango de pesos, necesario para calibrar el control de umbral (RF 5)
             "min_weight": float(min(pesos)) if pesos else 0.0,
             "max_weight": float(max(pesos)) if pesos else 0.0,
+            # Métricas globales de la red (RF 8)
+            "metrics": metricas,
         }
     }
 
