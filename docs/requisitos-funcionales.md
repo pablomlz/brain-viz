@@ -35,10 +35,10 @@ menos importantes.
 | RF 5 | Filtrado de aristas por umbral de peso | Visitante | 2 | Hecho |
 | RF 6 | Selección e inspección de un nodo | Visitante | 2 | Hecho |
 | RF 7 | Coloreado de nodos por grupo o lóbulo | Visitante | 2 | Hecho |
-| RF 6.1 | Métricas de centralidad por nodo | Visitante | 3 | Pendiente |
-| RF 8 | Métricas globales de la red (en el servidor) | Visitante | 3 | Pendiente |
-| RF 9 | Mapeo visual de métricas (tamaño/color) | Visitante | 3 | Pendiente |
-| RF 10 | Búsqueda de nodo por etiqueta | Visitante | 3 | Pendiente |
+| RF 6.1 | Métricas de centralidad por nodo | Visitante | 3 | Hecho |
+| RF 8 | Métricas globales de la red (en el servidor) | Visitante | 3 | Hecho |
+| RF 9 | Mapeo visual de métricas (tamaño/color) | Visitante | 3 | Hecho |
+| RF 10 | Búsqueda de nodo por etiqueta | Visitante | 3 | Hecho |
 | RF 11 | Personalización y restablecimiento de la vista | Visitante | 4 | Pendiente |
 | RF 12 | Exportación de la vista como imagen | Visitante | 4 | Pendiente |
 | RF 13 | Registro e inicio de sesión | Investigador | 4 | Pendiente |

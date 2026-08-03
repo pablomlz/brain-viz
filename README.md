@@ -28,6 +28,12 @@ Funcionalidades disponibles actualmente:
 - Selección de un nodo con el ratón e inspección de sus datos (etiqueta, identificador,
   grupo, grado y coordenadas).
 - Coloreado de nodos por grupo o lóbulo anatómico, con su leyenda.
+- Métricas de la red calculadas en el servidor: densidad, grado medio, coeficiente
+  de clustering y número de componentes conexas.
+- Centralidades por nodo: grado, intermediación y cercanía.
+- Mapeo visual: el color y el tamaño de los nodos pueden reflejar cualquiera de
+  esas métricas, con una leyenda que se adapta a la escala.
+- Búsqueda de una región por su etiqueta, con desplazamiento de la cámara hasta ella.
 
 ## Arquitectura
 
@@ -126,5 +132,5 @@ uso están en el capítulo 2 de la memoria.
 |---|---|---|
 | 1 | Carga y procesamiento de la red, visualización 3D, cámara y estadísticas | Completado |
 | 2 | Filtrado por umbral, selección e inspección de nodos, coloreado por grupo | Completado |
-| 3 | Métricas de teoría de grafos, mapeo visual por métrica y búsqueda de nodos | Pendiente |
+| 3 | Métricas de teoría de grafos, mapeo visual por métrica y búsqueda de nodos | Completado |
 | 4 | Cuentas de usuario, carga y gestión de redes propias, y administración | Pendiente |
