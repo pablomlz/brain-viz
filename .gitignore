@@ -21,7 +21,9 @@ dist/
 npm-debug.log*
 
 # Ficheros del sistema operativo
-.DS_Store## Core latex/pdflatex auxiliary files:
+.DS_Store
+
+## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
 *.log

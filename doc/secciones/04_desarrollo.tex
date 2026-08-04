@@ -894,7 +894,8 @@ centro de la aplicación:
 		nodos y conexiones tiene) mientras que las métricas describen su estructura, y mezclarlas
 		habría confundido dos cosas distintas.
 	\item Un \textbf{buscador de nodos} (RF 10) en la columna izquierda, con un campo de texto y la
-		lista de coincidencias que va apareciendo según se escribe.
+		lista de regiones, que se despliega al situar el cursor en él y se va reduciendo a las
+		coincidencias según se escribe.
 	\item Un \textbf{selector de mapeo visual} (RF 9) dentro del panel de controles, que permite
 		elegir si los nodos se colorean y dimensionan según su grupo anatómico, como hasta ahora, o
 		según una de las métricas calculadas.
@@ -1185,6 +1186,10 @@ La tabla~\ref{tab:pruebas-s3} recoge las pruebas de validación de este \textit{
 		P-17 (RF 10) & Elegir un resultado de la búsqueda. &
 			El nodo queda seleccionado con sus conexiones resaltadas y la cámara se desplaza hasta
 			centrarlo, sin saltos bruscos. & Correcto \\
+		\addlinespace
+		P-18 (RF 10) & Situar el cursor en el campo de búsqueda vacío. &
+			Se despliega la lista de las 90 regiones de la red, de modo que el usuario pueda elegir
+			una sin conocer de antemano las abreviaturas del atlas. & Correcto \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -1206,6 +1211,16 @@ Durante el desarrollo y las pruebas de este \textit{sprint} se detectaron los si
 		la leyenda seguía mostrando los grupos anatómicos aunque los nodos ya no estuvieran coloreados
 		por grupo, con lo que explicaba algo que no correspondía a lo que se veía. Se corrigió
 		haciendo que la leyenda cambie según el criterio de coloreado activo.
+	\item \textbf{El buscador era inutilizable sin conocer el atlas.} Este fue el error más
+		instructivo, porque el código funcionaba correctamente y aun así la funcionalidad no servía.
+		Las etiquetas de las regiones son abreviaturas de la parcelación empleada
+		(\texttt{PUT}, \texttt{HIP}, \texttt{SFGdor}), de modo que un usuario que escribiera
+		\textit{frontal}, \textit{putamen} o \textit{hipocampo} no obtenía ninguna coincidencia y
+		concluía, con razón, que la búsqueda no funcionaba. El problema no estaba en el filtrado sino
+		en que no había forma de saber qué escribir. Se corrigió haciendo que, al situar el cursor en
+		el campo vacío, se despliegue la lista completa de regiones disponibles, de manera que el
+		usuario pueda elegir directamente una o descubrir el formato de las etiquetas antes de
+		teclear; el texto de ayuda del campo incluye además un ejemplo.
 \end{itemize}
 
 \subsubsection*{Rendimiento del cálculo de métricas}

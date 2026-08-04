@@ -318,6 +318,7 @@ export default function App() {
     metrica: 'group',   // Criterio de color y tamaño de los nodos (RF 9)
   });
   const [busqueda, setBusqueda] = useState('');   // Texto buscado (RF 10)
+  const [buscadorAbierto, setBuscadorAbierto] = useState(false);
   const [objetivo, setObjetivo] = useState(null); // Nodo al que va la cámara
 
   // Carga de la red (RF 1, RF 2)
@@ -371,17 +372,20 @@ export default function App() {
 
   // Nodos cuya etiqueta contiene el texto buscado (RF 10)
   const resultados = useMemo(() => {
+    if (!data) return [];
+    const todos = data.nodes.map((n, i) => ({ i, label: n.label }));
     const q = busqueda.trim().toLowerCase();
-    if (!data || q.length === 0) return [];
-    return data.nodes
-      .map((n, i) => ({ i, label: n.label }))
-      .filter((n) => n.label.toLowerCase().includes(q))
-      .slice(0, 8);
+    // Sin texto se ofrece la lista completa de regiones. Las etiquetas del atlas
+    // son abreviaturas (PUT, HIP, SFGdor), imposibles de adivinar, así que el
+    // usuario necesita poder verlas antes de escribir nada.
+    if (q.length === 0) return todos;
+    return todos.filter((n) => n.label.toLowerCase().includes(q));
   }, [data, busqueda]);
 
   // Al elegir un resultado se selecciona el nodo y la cámara viaja hasta él.
   // La rotación automática se detiene para que no se mueva mientras tanto.
   const irANodo = (i) => {
+    setBuscadorAbierto(false);
     setSelected(i);
     setObjetivo(i);
     setSettings((s) => ({ ...s, autoRotate: false }));
@@ -497,16 +501,20 @@ export default function App() {
           <input
             className="buscar"
             type="text"
-            placeholder="Etiqueta de la región"
+            placeholder="Etiqueta, p. ej. PUT o HIP"
             value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
+            onChange={(e) => { setBusqueda(e.target.value); setBuscadorAbierto(true); }}
+            onFocus={() => setBuscadorAbierto(true)}
+            onBlur={() => setBuscadorAbierto(false)}
             onKeyDown={(e) => { if (e.key === 'Enter' && resultados.length) irANodo(resultados[0].i); }}
           />
-          {busqueda.trim() && (
+          {(buscadorAbierto || busqueda.trim()) && (
             <div className="resultados">
               {resultados.length === 0 && <div className="sin-resultados">Sin coincidencias</div>}
               {resultados.map((r) => (
-                <button key={r.i} className="resultado" onClick={() => irANodo(r.i)}>
+                /* onMouseDown, no onClick: el clic debe registrarse antes de
+                   que el campo pierda el foco y la lista se cierre */
+                <button key={r.i} className="resultado" onMouseDown={() => irANodo(r.i)}>
                   <span className="sw-sq" style={{ background: groupColor(data.nodes[r.i].group) }} />
                   {r.label}
                 </button>
