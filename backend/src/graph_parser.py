@@ -1,6 +1,8 @@
-import pandas as pd
-import networkx as nx
+import io
 import os
+
+import networkx as nx
+import pandas as pd
 
 # Peso mínimo para considerar que existe una conexión. No es el umbral de
 # visualización (ese lo controla el usuario en el cliente, RF 5), sino el valor
@@ -22,21 +24,52 @@ def load_brain_graph(node_path, edge_path):
     if not os.path.exists(node_path) or not os.path.exists(edge_path):
         raise FileNotFoundError("No se encuentran los archivos de datos de la red.")
 
+    with open(node_path, encoding='utf-8') as f:
+        texto_nodos = f.read()
+    with open(edge_path, encoding='utf-8') as f:
+        texto_aristas = f.read()
+
+    return parse_brain_graph(texto_nodos, texto_aristas)
+
+
+def parse_brain_graph(texto_nodos, texto_aristas):
+    """
+    Procesa el contenido de los ficheros .node y .edge, ya leídos como texto.
+
+    Desde el Sprint 4 las redes que sube un investigador se guardan en la base
+    de datos y no como ficheros en disco, así que el procesamiento necesita
+    trabajar sobre el contenido y no sobre una ruta. La comprobación de los
+    datos [RF 14.1] se realiza aquí, y cualquier problema se comunica con un
+    mensaje que explique qué falla [RNF 3].
+    """
+
     # 2. Leer Nodos
     # Usamos sep='\s+' para que funcione tanto con Tabs como con Espacios
     # Las columnas son: X, Y, Z, Color, Tamaño, Etiqueta
     try:
-        df_nodes = pd.read_csv(node_path, sep=r'\s+', header=None, names=['x', 'y', 'z', 'color_id', 'size', 'label'])
+        df_nodes = pd.read_csv(io.StringIO(texto_nodos), sep=r'\s+', header=None,
+                               names=['x', 'y', 'z', 'color_id', 'size', 'label'])
     except Exception as e:
-        print(f"Error leyendo nodos: {e}")
-        return None
+        raise ValueError(f"El fichero de nodos no se ha podido interpretar: {e}")
 
     # 3. Leer Aristas (Matriz de adyacencia)
     try:
-        df_adj = pd.read_csv(edge_path, sep=r'\s+', header=None)
+        df_adj = pd.read_csv(io.StringIO(texto_aristas), sep=r'\s+', header=None)
     except Exception as e:
-        print(f"Error leyendo aristas: {e}")
-        return None
+        raise ValueError(f"El fichero de conexiones no se ha podido interpretar: {e}")
+
+    if df_nodes.empty or df_adj.empty:
+        raise ValueError("Alguno de los ficheros está vacío.")
+
+    # Las tres coordenadas son obligatorias [RI 1]
+    if df_nodes[['x', 'y', 'z']].isnull().any().any():
+        raise ValueError(
+            "El fichero de nodos debe indicar las tres coordenadas (x, y, z) de cada nodo."
+        )
+    try:
+        df_adj = df_adj.astype(float)
+    except Exception:
+        raise ValueError("La matriz de conexiones debe contener únicamente valores numéricos.")
 
     adj_matrix = df_adj.to_numpy()
 

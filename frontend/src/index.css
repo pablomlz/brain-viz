@@ -257,3 +257,148 @@ input:focus, button:focus { outline: none; }
   display: flex; align-items: center; justify-content: center; gap: 7px;
   font-family: var(--mono); font-size: 10px; letter-spacing: .06em; color: var(--faint);
 }
+
+/* ============================================================
+   Sprint 4: tema claro, sesión y ventanas modales
+   ============================================================ */
+
+/* Tema claro (RF 11). Se cambian los tokens y todo lo demás se adapta solo,
+   que es la ventaja de haber definido el sistema con variables. */
+:root[data-tema="claro"] {
+  --bg:        #f4f5f7;
+  --surface:   #ffffff;
+  --surface-2: #eef0f3;
+  --line:      #dfe3e8;
+  --line-2:    #c8ced6;
+  --text:      #14171a;
+  --muted:     #5b636d;
+  --faint:     #8b929b;
+  --accent:    #2f5fd0;
+  --accent-hi: #4c7df0;
+}
+:root[data-tema="claro"] .panel { box-shadow: 0 12px 30px -22px rgba(0,0,0,.35); }
+:root[data-tema="claro"] .sw { background: #dfe3e8; }
+:root[data-tema="claro"] .sw::after { background: #ffffff; }
+
+/* Barra de sesión */
+.sesion {
+  position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px; z-index: 6;
+}
+.sesion-nombre {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--text);
+  padding: 8px 12px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+}
+.sesion-rol {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-soft);
+  padding: 2px 6px; border-radius: 3px;
+}
+.sesion .btn-ghost { cursor: pointer; }
+
+/* Nombre de la red activa y enlace para cambiarla */
+.red-activa {
+  padding: 9px 13px 2px; font-size: 13.5px; font-weight: 600; color: var(--text);
+}
+.enlace-idx {
+  background: none; border: none; cursor: pointer; padding: 0;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--accent);
+}
+.enlace-idx:hover { text-decoration: underline; }
+
+/* ---------- ventanas modales ---------- */
+.modal-fondo {
+  position: fixed; inset: 0; z-index: 40;
+  background: rgba(0,0,0,.62);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.modal {
+  width: 100%; max-height: calc(100vh - 48px); overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+  box-shadow: 0 30px 70px -30px rgba(0,0,0,.8);
+}
+.modal-hd {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  padding: 16px 18px 13px; border-bottom: 1px solid var(--line);
+}
+.modal-hd h2 { margin: 0; font-size: 16px; font-weight: 600; }
+.modal-hd p { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
+.modal-bd { padding: 16px 18px 18px; }
+
+/* ---------- pestañas ---------- */
+.pestanas { display: flex; gap: 4px; margin-bottom: 14px; border-bottom: 1px solid var(--line); }
+.pestana {
+  background: none; border: none; cursor: pointer;
+  padding: 8px 12px; font-family: var(--ui); font-size: 12.5px; color: var(--muted);
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.pestana:hover { color: var(--text); }
+.pestana.activa { color: var(--text); border-bottom-color: var(--accent); }
+
+/* ---------- formularios ---------- */
+.formulario { display: flex; flex-direction: column; gap: 12px; }
+.campo { display: flex; flex-direction: column; gap: 5px; }
+.campo > span { font-size: 11.5px; color: var(--muted); }
+.campo .opcional { color: var(--faint); }
+.campo input {
+  padding: 8px 10px; background: var(--surface-2);
+  border: 1px solid var(--line-2); border-radius: var(--r-sm);
+  color: var(--text); font-family: var(--ui); font-size: 12.5px;
+}
+.campo input:focus { border-color: var(--accent); }
+.campo input[type="file"] { padding: 6px 8px; font-size: 11.5px; }
+.campo code { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+.alterna { margin: 2px 0 0; font-size: 12px; color: var(--muted); text-align: center; }
+.nota { font-size: 11.5px; color: var(--faint); line-height: 1.5; margin: 8px 0 0; }
+.enlace { background: none; border: none; padding: 0; cursor: pointer; color: var(--accent); font-size: 12px; }
+.enlace:hover { text-decoration: underline; }
+
+/* ---------- botones ---------- */
+.btn {
+  padding: 8px 13px; border-radius: var(--r-sm); cursor: pointer;
+  background: var(--surface-2); border: 1px solid var(--line-2);
+  color: var(--text); font-family: var(--ui); font-size: 12.5px;
+  text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+}
+.btn:hover { border-color: var(--accent); }
+.btn:disabled { opacity: .55; cursor: default; }
+.btn-principal { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn-principal:hover { background: var(--accent-hi); border-color: var(--accent-hi); }
+.btn-peligro { color: var(--danger); }
+.btn-peligro:hover { border-color: var(--danger); }
+.btn-pequeno { padding: 5px 9px; font-size: 11.5px; }
+.botonera { display: flex; gap: 8px; flex-wrap: wrap; }
+.botonera-panel { padding-top: 11px; margin-top: 9px; border-top: 1px solid var(--line); }
+.botonera-panel .btn { flex: 1; }
+
+/* ---------- listas de redes y usuarios ---------- */
+.grupo-titulo {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); margin: 14px 0 6px;
+}
+.grupo-titulo:first-child { margin-top: 0; }
+.fila {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 9px 10px; border: 1px solid var(--line); border-radius: var(--r-sm); margin-bottom: 6px;
+}
+.fila-activa { border-color: var(--accent); background: var(--accent-soft); }
+.fila-info { min-width: 0; }
+.fila-nombre { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; }
+.fila-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.fila-acciones { display: flex; gap: 6px; flex: none; align-items: center; }
+.etiqueta {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--muted); border: 1px solid var(--line-2); border-radius: 3px; padding: 1px 5px;
+}
+.sel-pequeno { width: auto; padding: 4px 7px; font-size: 11.5px; }
+
+/* ---------- avisos ---------- */
+.aviso {
+  padding: 9px 11px; border-radius: var(--r-sm); font-size: 12px; line-height: 1.45;
+  border: 1px solid; 
+}
+.aviso-error { color: var(--danger); border-color: var(--danger); background: rgba(224,87,77,.09); }
+.aviso-ok    { color: var(--ok);     border-color: var(--ok);     background: rgba(59,179,127,.09); }

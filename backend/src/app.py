@@ -1,11 +1,34 @@
+import json
+import os
+from datetime import timedelta
+
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-import os
-import json
+
+from administracion import bp_admin
+from auth import bp_auth
 from graph_parser import load_brain_graph
+from models import ROL_ADMINISTRADOR, Red, Usuario, db, url_base_datos
+from redes import bp_redes, grafo_de
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
+
+# Clave con la que se firma la cookie de sesión. En producción debe venir del
+# entorno; el valor por defecto solo sirve para desarrollo local.
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'clave-solo-para-desarrollo')
+app.config['SQLALCHEMY_DATABASE_URI'] = url_base_datos()
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+# La cookie solo viaja por HTTPS cuando la aplicación está publicada
+app.config['SESSION_COOKIE_SECURE'] = os.environ.get('COOKIE_SEGURA', '0') == '1'
+
+db.init_app(app)
+app.register_blueprint(bp_auth)
+app.register_blueprint(bp_redes)
+app.register_blueprint(bp_admin)
 
 
 # Rutas a los archivos (asumiendo que corremos desde /app en Docker)
@@ -132,9 +155,19 @@ def health_check():
 
 @app.route('/api/brain-data')
 def get_brain_data():
+    """Red por defecto del catálogo.
+
+    Este endpoint es el que existe desde el Sprint 1. Desde el Sprint 4 las
+    redes viven en la base de datos, así que devuelve la primera red pública
+    del catálogo en lugar de leer los ficheros del servidor. Se mantiene por
+    compatibilidad: la interfaz utiliza ya /api/networks.
+    """
     try:
-        # Llamamos a nuestro parser
-        data = load_brain_graph(NODE_FILE, EDGE_FILE)
+        red = Red.query.filter_by(publica=True).order_by(Red.id.asc()).first()
+        if red is not None:
+            data = grafo_de(red)
+        else:
+            data = load_brain_graph(NODE_FILE, EDGE_FILE)
 
         if data is None:
             error_payload = {"error": "Error parsing data files"}
@@ -208,6 +241,48 @@ def servir_frontend(ruta):
     if ruta and os.path.exists(os.path.join(STATIC_DIR, ruta)):
         return send_from_directory(STATIC_DIR, ruta)
     return send_from_directory(STATIC_DIR, 'index.html')
+
+
+def preparar_base_de_datos():
+    """Crea las tablas si no existen y siembra los datos iniciales.
+
+    Se ejecuta al arrancar para que el despliegue no requiera ningún paso
+    manual: la primera vez deja la red de ejemplo publicada en el catálogo y,
+    si se han indicado por entorno, crea la cuenta de administrador.
+    """
+    db.create_all()
+
+    # Red de ejemplo como red pública del catálogo
+    if Red.query.filter_by(publica=True).count() == 0 and os.path.exists(NODE_FILE):
+        with open(NODE_FILE, encoding='utf-8') as f:
+            texto_nodos = f.read()
+        with open(EDGE_FILE, encoding='utf-8') as f:
+            texto_aristas = f.read()
+        red = Red(
+            nombre='AAL90',
+            descripcion='Parcelación anatómica del cerebro en 90 regiones (atlas AAL).',
+            publica=True,
+            contenido_nodos=texto_nodos,
+            contenido_aristas=texto_aristas,
+        )
+        db.session.add(red)
+        db.session.commit()
+        grafo_de(red)  # deja el resultado ya procesado en la caché
+
+    # Cuenta de administrador inicial
+    email = os.environ.get('ADMIN_EMAIL')
+    password = os.environ.get('ADMIN_PASSWORD')
+    if email and password and Usuario.query.filter_by(email=email.lower()).first() is None:
+        admin = Usuario(email=email.lower(),
+                        nombre=os.environ.get('ADMIN_NOMBRE', 'Administrador'),
+                        rol=ROL_ADMINISTRADOR)
+        admin.fijar_password(password)
+        db.session.add(admin)
+        db.session.commit()
+
+
+with app.app_context():
+    preparar_base_de_datos()
 
 
 if __name__ == '__main__':

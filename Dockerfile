@@ -50,4 +50,11 @@ EXPOSE 8080
 
 # Servidor de producción: sin modo depuración y escuchando en todas las
 # interfaces. `sh -c` permite expandir la variable $PORT.
-CMD ["sh", "-c", "gunicorn --chdir src --bind 0.0.0.0:${PORT} --workers 2 --threads 4 --timeout 120 app:app"]
+#
+# Se emplea un único proceso con varios hilos en lugar de varios procesos. El
+# motivo es la base de datos: con SQLite, varios procesos compiten al escribir y,
+# además, cada uno ejecutaría por su cuenta la creación de las tablas y el
+# sembrado inicial, con el riesgo de duplicarlo. La aplicación dedica muy poco
+# tiempo a la CPU (el cálculo de las métricas queda en caché tras la primera
+# petición), así que los hilos bastan para atender varias peticiones a la vez.
+CMD ["sh", "-c", "gunicorn --chdir src --bind 0.0.0.0:${PORT} --workers 1 --threads 8 --timeout 120 app:app"]

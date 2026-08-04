@@ -8,9 +8,10 @@ import * as THREE from 'three';
 import { LineSegments2 } from 'three/examples/jsm/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
-// NOTA: el componente Login existe en el proyecto pero todavía no se utiliza.
-// El acceso de usuarios (registro, inicio y cierre de sesión) corresponde al
-// Sprint 4; hasta entonces la aplicación es de acceso libre (rol visitante).
+import { api } from './api';
+import Acceso from './Acceso';
+import Redes from './Redes';
+import Administracion from './Administracion';
 
 const API_BASE_URL = ''; // Las peticiones van al mismo host; Vite proxy las redirige al backend
 
@@ -69,6 +70,22 @@ function contarVisibles(links, umbral) {
   }
   return ini;
 }
+
+// Color de fondo de la escena 3D según el tema (RF 11)
+const FONDO_ESCENA = { oscuro: '#0b0c0e', claro: '#eef0f3' };
+
+// Ajustes de visualización por defecto. Se declaran aparte porque el usuario
+// puede modificarlos y volver a este estado con un solo botón (RF 11).
+const AJUSTES_INICIALES = {
+  showLinks: true,
+  linkOpacity: 0.25,
+  autoRotate: false,
+  showAxes: false,
+  threshold: 0,       // Umbral de peso mínimo (RF 5)
+  visibleLinks: 0,    // Nº de aristas que superan el umbral
+  metrica: 'group',   // Criterio de color y tamaño de los nodos (RF 9)
+  tamanoNodos: 1,     // Factor de tamaño de los nodos (RF 11)
+};
 
 function Mark({ size = 24 }) {
   return (
@@ -215,7 +232,7 @@ function BrainVis({ data, hovered, setHovered, selected, setSelected, settings, 
             onPointerOver={(e) => { e.stopPropagation(); setHovered(i); document.body.style.cursor = 'pointer'; }}
             onPointerOut={() => { setHovered(null); document.body.style.cursor = 'default'; }}
             onClick={(e) => { e.stopPropagation(); setSelected(i === selected ? null : i); }}
-            scale={base * (isSelected ? 2 : isHovered ? 1.6 : 1)}
+            scale={base * settings.tamanoNodos * (isSelected ? 2 : isHovered ? 1.6 : 1)}
           >
             <sphereGeometry args={[1.6, 24, 24]} />
             <meshStandardMaterial
@@ -308,28 +325,36 @@ export default function App() {
   const [meta, setMeta] = useState({ nodes: 0, edges: 0, groups: [] });
   const [hovered, setHovered] = useState(null);
   const [selected, setSelected] = useState(null);
-  const [settings, setSettings] = useState({
-    showLinks: true,
-    linkOpacity: 0.25,
-    autoRotate: false,
-    showAxes: false,
-    threshold: 0,       // Umbral de peso mínimo (RF 5)
-    visibleLinks: 0,    // Nº de aristas que superan el umbral
-    metrica: 'group',   // Criterio de color y tamaño de los nodos (RF 9)
-  });
+  const [settings, setSettings] = useState(AJUSTES_INICIALES);
+  // Sesión y catálogo (Sprint 4)
+  const [usuario, setUsuario] = useState(null);
+  const [catalogo, setCatalogo] = useState([]);
+  const [redActiva, setRedActiva] = useState(null);
+  const [ventana, setVentana] = useState(null);   // 'acceso' | 'redes' | 'admin'
+  const [tema, setTema] = useState(() => localStorage.getItem('brainviz-tema') || 'oscuro');
+
   const [busqueda, setBusqueda] = useState('');   // Texto buscado (RF 10)
   const [buscadorAbierto, setBuscadorAbierto] = useState(false);
   const [objetivo, setObjetivo] = useState(null); // Nodo al que va la cámara
 
-  // Carga de la red (RF 1, RF 2)
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/brain-data`)
-      .then((res) => res.json())
+  // Sesión actual y catálogo de redes disponibles
+  const recargarCatalogo = async () => {
+    try {
+      const r = await api.redes();
+      setCatalogo(r.redes);
+      return r.redes;
+    } catch { return []; }
+  };
+
+  // Carga de una red concreta del catálogo (RF 1, RF 2)
+  const cargarRed = (id) => {
+    setLoading(true);
+    setError(null);
+    setSelected(null);
+    setHovered(null);
+    api.red(id)
       .then((brainData) => {
-        if (brainData?.error) {
-          setError(brainData.error);
-          return;
-        }
+        setRedActiva(id);
         setData(brainData);
         const groups = new Set(brainData.nodes.map((n) => n.group));
         setMeta({
@@ -340,16 +365,73 @@ export default function App() {
           maxWeight: brainData.meta?.max_weight ?? 1,
           metrics: brainData.meta?.metrics ?? null,   // métricas globales (RF 8)
         });
-        // Se respeta el umbral que el usuario pudiera haber fijado mientras la
-        // red se estaba cargando; si no tocó nada (umbral 0), se muestran todas.
+        // Al cambiar de red se parte del umbral mínimo, porque el rango de
+        // pesos de la red nueva no tiene por qué parecerse al de la anterior.
         setSettings((s) => ({
           ...s,
-          visibleLinks: contarVisibles(brainData.links, s.threshold),
+          threshold: 0,
+          visibleLinks: brainData.links.length,
         }));
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    api.sesion().then((r) => setUsuario(r.usuario)).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    recargarCatalogo().then((redes) => {
+      if (redes.length && redActiva == null) cargarRed(redes[0].id);
+    });
+  }, [usuario]);
+
+  useEffect(() => {
+    document.documentElement.dataset.tema = tema;
+    localStorage.setItem('brainviz-tema', tema);
+  }, [tema]);
+
+  // Al cerrar sesión se recarga el catálogo: las redes privadas dejan de estar
+  // disponibles, así que si la que se estaba viendo era una de ellas hay que
+  // volver a la primera pública.
+  const cerrarSesion = async () => {
+    try { await api.logout(); } catch { /* la sesión se cierra igualmente */ }
+    setUsuario(null);
+    setVentana(null);
+    const redes = await recargarCatalogo();
+    if (!redes.some((r) => r.id === redActiva) && redes.length) {
+      cargarRed(redes[0].id);
+    }
+  };
+
+  // Devuelve la visualización a su estado inicial (RF 11). El umbral se
+  // recalcula para la red que esté cargada, no se fija a ciegas.
+  const restablecerVista = () => {
+    setSettings({
+      ...AJUSTES_INICIALES,
+      visibleLinks: data ? data.links.length : 0,
+    });
+    setTema('oscuro');
+  };
+
+  // Exporta la escena tal y como se ve, en formato PNG (RF 12). El lienzo se
+  // conserva tras dibujarlo (preserveDrawingBuffer) para poder leerlo aquí;
+  // sin esa opción el navegador devolvería una imagen en blanco.
+  const exportarImagen = () => {
+    const lienzo = document.querySelector('canvas');
+    if (!lienzo) return;
+    lienzo.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const enlace = document.createElement('a');
+      const nombre = catalogo.find((r) => r.id === redActiva)?.nombre || 'red';
+      enlace.href = url;
+      enlace.download = `brainviz_${nombre.replace(/[^\w]+/g, '_')}.png`;
+      enlace.click();
+      URL.revokeObjectURL(url);
+    }, 'image/png');
+  };
 
   const onThresholdChange = (value) => {
     const visibles = data ? contarVisibles(data.links, value) : 0;
@@ -414,11 +496,16 @@ export default function App() {
       <Canvas
         camera={{ position: [0, 100, 180], fov: 45 }}
         dpr={[1, 2]}
+        /* Conservar el contenido del lienzo permite leerlo para exportar la
+           imagen (RF 12); sin esto el navegador lo descarta tras dibujarlo. */
+        gl={{ preserveDrawingBuffer: true }}
         onPointerMissed={() => setSelected(null)} /* clic en vacío: deselecciona (RF 6) */
       >
-        <color attach="background" args={['#0b0c0e']} />
-        <fog attach="fog" args={['#0b0c0e', 260, 520]} />
-        <ambientLight intensity={0.6} />
+        {/* El fondo de la escena acompaña al tema elegido (RF 11): con los
+            paneles en claro y el lienzo en negro la pantalla quedaba partida. */}
+        <color attach="background" args={[FONDO_ESCENA[tema]]} />
+        <fog attach="fog" args={[FONDO_ESCENA[tema], 260, 520]} />
+        <ambientLight intensity={tema === 'claro' ? 0.85 : 0.6} />
         <pointLight position={[100, 120, 80]} intensity={0.8} color="#ffffff" />
         <pointLight position={[-80, -40, -80]} intensity={0.35} color="#ffffff" />
 
@@ -464,7 +551,10 @@ export default function App() {
         </div>
         <div className="panel-hd">
           <span className="panel-ttl">Red activa</span>
-          <span className="panel-idx">AAL90</span>
+          <button className="enlace-idx" onClick={() => setVentana('redes')}>Cambiar</button>
+        </div>
+        <div className="red-activa">
+          {catalogo.find((r) => r.id === redActiva)?.nombre || '—'}
         </div>
         <div className="panel-bd" style={{ paddingTop: 4, paddingBottom: 4 }}>
           <Stat label="Nodos" value={meta.nodes} />
@@ -585,6 +675,12 @@ export default function App() {
             value={settings.showAxes}
             onChange={(v) => setSettings((s) => ({ ...s, showAxes: v }))}
           />
+          {/* Tema claro u oscuro (RF 11) */}
+          <Toggle
+            label="Tema claro"
+            value={tema === 'claro'}
+            onChange={(v) => setTema(v ? 'claro' : 'oscuro')}
+          />
           <div className="slider-row">
             <div className="slider-lab">
               <span>Opacidad conexiones</span>
@@ -599,6 +695,27 @@ export default function App() {
                 background: `linear-gradient(90deg, var(--accent) ${settings.linkOpacity * 100}%, var(--line-2) ${settings.linkOpacity * 100}%)`,
               }}
             />
+          </div>
+          {/* Tamaño de los nodos (RF 11) */}
+          <div className="slider-row">
+            <div className="slider-lab">
+              <span>Tamaño de los nodos</span>
+              <span className="slider-val">{settings.tamanoNodos.toFixed(1)}×</span>
+            </div>
+            <input
+              className="rng"
+              type="range" min={0.4} max={2.5} step={0.1}
+              value={settings.tamanoNodos}
+              onChange={(e) => setSettings((s) => ({ ...s, tamanoNodos: parseFloat(e.target.value) }))}
+              style={{
+                background: `linear-gradient(90deg, var(--accent) ${((settings.tamanoNodos - 0.4) / 2.1) * 100}%, var(--line-2) ${((settings.tamanoNodos - 0.4) / 2.1) * 100}%)`,
+              }}
+            />
+          </div>
+          {/* Restablecer la vista y exportar la imagen (RF 11, RF 12) */}
+          <div className="botonera botonera-panel">
+            <button className="btn btn-pequeno" onClick={restablecerVista}>Restablecer</button>
+            <button className="btn btn-pequeno" onClick={exportarImagen}>Exportar imagen</button>
           </div>
         </div>
       </div>
@@ -671,6 +788,28 @@ export default function App() {
         </div>
       )}
 
+      {/* Arriba a la derecha del todo: sesión (RF 13) */}
+      <div className="sesion">
+        {usuario ? (
+          <>
+            <span className="sesion-nombre">
+              {usuario.nombre}
+              <span className="sesion-rol">{usuario.rol}</span>
+            </span>
+            {usuario.rol === 'administrador' && (
+              <button className="btn-ghost" onClick={() => setVentana('admin')}>Administrar</button>
+            )}
+            <button className="btn-ghost" onClick={() => setVentana('redes')}>Mis redes</button>
+            <button className="btn-ghost" onClick={cerrarSesion}>Salir</button>
+          </>
+        ) : (
+          <>
+            <button className="btn-ghost" onClick={() => setVentana('redes')}>Redes</button>
+            <button className="btn-ghost" onClick={() => setVentana('acceso')}>Iniciar sesión</button>
+          </>
+        )}
+      </div>
+
       {/* Abajo derecha: enlaces */}
       <div className="links">
         <a href={`${API_BASE_URL}/health`} target="_blank" rel="noreferrer" className="btn-ghost">
@@ -680,6 +819,32 @@ export default function App() {
           API
         </a>
       </div>
+
+      {/* Ventanas de acceso, gestión de redes y administración */}
+      {ventana === 'acceso' && (
+        <Acceso
+          onEntrar={(u) => { setUsuario(u); setVentana(null); }}
+          onCerrar={() => setVentana(null)}
+        />
+      )}
+      {ventana === 'redes' && (
+        <Redes
+          usuario={usuario}
+          redes={catalogo}
+          activa={redActiva}
+          onElegir={(id) => { cargarRed(id); setVentana(null); }}
+          onRecargar={recargarCatalogo}
+          onCerrar={() => setVentana(null)}
+        />
+      )}
+      {ventana === 'admin' && usuario?.rol === 'administrador' && (
+        <Administracion
+          usuario={usuario}
+          redes={catalogo}
+          onRecargar={recargarCatalogo}
+          onCerrar={() => setVentana(null)}
+        />
+      )}
 
       {/* Abajo centro: pista */}
       <div className="hint">

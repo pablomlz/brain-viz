@@ -11,3 +11,19 @@ services:
     branch: main
     healthCheckPath: /health   # Render comprueba aquí que el servicio está vivo
     autoDeploy: true           # cada push a main vuelve a desplegar
+    envVars:
+      # Clave con la que se firma la cookie de sesión; Render genera un valor
+      # aleatorio la primera vez y lo conserva entre despliegues.
+      - key: SECRET_KEY
+        generateValue: true
+      # La cookie de sesión solo debe viajar por HTTPS
+      - key: COOKIE_SEGURA
+        value: "1"
+      # Cuenta de administrador inicial. Se definen desde el panel de Render
+      # para no dejar credenciales escritas en el repositorio.
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_NOMBRE
+        sync: false

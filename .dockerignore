@@ -8,3 +8,6 @@ doc/
 *.md
 .venv
 venv
+# La base de datos se crea al arrancar; nunca debe viajar dentro de la imagen
+*.db
+**/*.db
