@@ -82,9 +82,12 @@
 	% Índice de contenidos
 	\tableofcontents
 
-	% Índice de figuras y de tablas
+	% Índice de figuras y de tablas. Se compactan ligeramente para que cada uno
+	% quepa en una página y no quede una hoja suelta con una sola entrada.
+	{\renewcommand{\baselinestretch}{0.92}\selectfont
 	\listoffigures
 	\listoftables
+	}
 	\cleardoublepage
 
 	% Cap. 1 - Introducción
