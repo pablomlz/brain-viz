@@ -1226,13 +1226,34 @@ Durante el desarrollo y las pruebas de este \textit{sprint} se detectaron los si
 \subsubsection*{Rendimiento del cálculo de métricas}
 
 El cálculo de la intermediación es, con diferencia, el más costoso de los que incorpora este
-\textit{sprint}: su coste crece con el producto del número de nodos por el de aristas. Sobre la red
-de ejemplo el procesamiento completo de una petición se mantiene en torno a los 15~milisegundos, de
-modo que no se aprecia ninguna demora. Con redes bastante mayores el cálculo sí llegaría a notarse,
-y conviene recordar aquí la limitación ya señalada en el Sprint 1: cada petición reconstruye la red
-desde los ficheros y ahora, además, recalcula todas sus métricas. La mejora prevista de almacenar el
-resultado ya procesado, que se abordará al introducir la persistencia en el Sprint 4, cobra con este
-\textit{sprint} bastante más importancia de la que tenía.
+\textit{sprint}: su coste crece con el producto del número de nodos por el de aristas. Para
+comprobar hasta qué punto importa se ha medido el tiempo que tarda el servidor en procesar una
+petición completa, tanto con la red de ejemplo como con la red sintética de 500 nodos y 12.470
+aristas que ya se empleó en las pruebas de rendimiento del Sprint 2. Los resultados aparecen en la
+tabla~\ref{tab:coste-metricas}.
+
+\begin{table}[H]
+	\centering
+	\caption{Tiempo de procesamiento de una petición, con el cálculo de las métricas incluido.}
+	\label{tab:coste-metricas}
+	\small
+	\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X >{\centering\arraybackslash}p{2.2cm} >{\centering\arraybackslash}p{2.2cm} >{\centering\arraybackslash}p{3cm}}
+		\toprule
+		\textbf{Red} & \textbf{Nodos} & \textbf{Aristas} & \textbf{Tiempo} \\
+		\midrule
+		AAL90 (red de ejemplo)  & 90  & 411    & 12\,ms  \\
+		Red sintética de prueba & 500 & 12.470 & 623\,ms \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+Con la red de ejemplo no se aprecia ninguna demora, pero multiplicar por treinta el número de
+aristas multiplica por cincuenta el tiempo de proceso, y 623~milisegundos ya son perceptibles al
+cargar la aplicación. Esto pone en primer plano la limitación señalada en el Sprint 1: cada petición
+reconstruye la red desde los ficheros y ahora, además, recalcula todas sus métricas, aunque se trate
+de una red pública que no ha cambiado. La mejora prevista de almacenar el resultado ya procesado,
+que se abordará al introducir la persistencia en el Sprint 4, pasa de ser una optimización deseable
+a ser necesaria para trabajar con redes grandes.
 
 \subsubsection*{Validación por parte del cliente}
 
