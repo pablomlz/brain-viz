@@ -117,7 +117,6 @@ backend/     Servicio de datos y análisis (Flask + NetworkX)
 frontend/    Aplicación cliente (React + Three.js)
   src/       Componentes e interfaz
 doc/         Memoria del TFG (LaTeX) e imágenes/diagramas
-docs/        Documentación de trabajo
 Dockerfile   Imagen única de producción
 docker-compose.yml   Entorno de desarrollo
 ```
