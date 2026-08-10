@@ -1,0 +1,57 @@
+@startuml clases_sprint4
+' Modelo de datos persistente del Sprint 4
+skinparam shadowing false
+skinparam defaultFontSize 15
+skinparam classAttributeIconSize 0
+hide circle
+
+package "Datos persistentes (base de datos)" {
+  class Usuario {
+    +id : int
+    +email : str
+    +nombre : str
+    +hash_password : str
+    +rol : str
+    +creado : datetime
+    --
+    +fijar_password(p)
+    +comprueba_password(p) : bool
+  }
+
+  class Red {
+    +id : int
+    +nombre : str
+    +descripcion : str
+    +publica : bool
+    +contenido_nodos : text
+    +contenido_aristas : text
+    +n_nodos, n_aristas : int
+    +json_procesado : text
+    +creada : datetime
+    --
+    +visible_para(usuario) : bool
+    +editable_por(usuario) : bool
+  }
+}
+
+package "Modelo en memoria (por petición)" {
+  class BrainNetwork {
+    +nodes, links, meta
+  }
+}
+
+Usuario "1" o-- "0..*" Red : posee >
+Red ..> BrainNetwork : se procesa como >
+
+note bottom of Usuario
+  De la contraseña solo se guarda
+  su hash, nunca el texto [RNF 2]
+end note
+
+note bottom of Red
+  Los ficheros se guardan como texto
+  en la base de datos, no en disco.
+  <b>json_procesado</b> conserva el resultado
+  ya calculado para no repetirlo.
+end note
+@enduml

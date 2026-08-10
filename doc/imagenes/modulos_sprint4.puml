@@ -1,0 +1,45 @@
+@startuml modulos_sprint4
+' Modularización tras el Sprint 4
+skinparam shadowing false
+skinparam defaultFontSize 15
+skinparam componentStyle rectangle
+skinparam defaultTextAlignment center
+
+package "Frontend (React)" {
+  component "App.jsx\nescena 3D + HUD" as APP
+  component "api.js\nllamadas al servidor" as API_JS
+  component "Acceso.jsx\nregistro e inicio de sesión" as ACC
+  component "Redes.jsx\ncatálogo, carga y gestión" as RED_JS
+  component "Administracion.jsx\nusuarios y catálogo público" as ADM_JS
+  component "Modal.jsx" as MOD
+}
+
+package "Backend (Python / Flask)" {
+  component "app.py\nAPI y arranque" as APP_PY
+  component "auth.py\nsesión y permisos" as AUTH
+  component "redes.py\ncatálogo, carga y exportación" as REDES
+  component "administracion.py\nusuarios y catálogo" as ADM
+  component "models.py\nUsuario y Red" as MODELS
+  component "graph_parser.py\nprocesamiento y métricas" as GP
+}
+
+database "Base de datos" as BD
+
+APP --> API_JS
+ACC --> API_JS
+RED_JS --> API_JS
+ADM_JS --> API_JS
+ACC ..> MOD
+RED_JS ..> MOD
+ADM_JS ..> MOD
+API_JS --> APP_PY : HTTP
+
+APP_PY --> AUTH
+APP_PY --> REDES
+APP_PY --> ADM
+AUTH --> MODELS
+REDES --> MODELS
+REDES --> GP
+ADM --> MODELS
+MODELS --> BD
+@enduml

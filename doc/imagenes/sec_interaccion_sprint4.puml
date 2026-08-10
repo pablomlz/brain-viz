@@ -1,0 +1,44 @@
+@startuml sec_interaccion_sprint4
+' Acceso y carga de una red propia (Sprint 4)
+skinparam shadowing false
+skinparam defaultFontSize 14
+skinparam sequenceMessageAlign left
+
+actor "Investigador" as U
+participant "Interfaz" as FE
+participant "API" as API
+participant "Procesador\nde la red" as GP
+database "Base de\ndatos" as BD
+
+== RF 13: inicio de sesión ==
+U -> FE : correo y contraseña
+FE -> API : POST /api/auth/login
+activate API
+API -> BD : busca el usuario por su correo
+BD --> API : usuario y hash
+API -> API : compara la contraseña\ncon el hash almacenado
+API --> FE : cookie de sesión firmada
+deactivate API
+FE --> U : sesión iniciada
+
+== RF 14: carga de una red propia ==
+U -> FE : nombre y los dos ficheros
+FE -> API : POST /api/networks
+activate API
+API -> API : comprueba tamaño\ny codificación
+API -> GP : procesa los ficheros
+activate GP
+GP -> GP : valida el formato y las\ndimensiones [RF 14.1]
+alt los ficheros no son válidos
+  GP --> API : error descriptivo
+  API --> FE : 422 con el motivo
+  FE --> U : mensaje explicando qué falla
+else los ficheros son correctos
+  GP --> API : red procesada y métricas
+  deactivate GP
+  API -> BD : guarda la red, sus ficheros\ny el resultado procesado
+  API --> FE : red creada
+  FE --> U : la red aparece en "Mis redes"
+end
+deactivate API
+@enduml

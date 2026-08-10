@@ -1263,3 +1263,512 @@ para que el director pueda validarla en la dirección ya conocida:
 \begin{center}
 	\url{https://brain-viz.onrender.com/}
 \end{center}
+
+\section{Sprint 4}
+
+El cuarto y último \textit{sprint} corresponde a los requisitos de \textbf{Prioridad 4} (RF 11 a
+RF 18) y es el que transforma la herramienta en un sistema con usuarios. Hasta ahora la aplicación
+era la misma para todo el mundo: mostraba una red fija y no recordaba nada de una visita a la
+siguiente. Con este \textit{sprint} aparecen las cuentas de usuario [RF 13], la posibilidad de
+cargar redes propias y conservarlas [RF 14, RF 15], la exportación de resultados [RF 12, RF 16] y
+las funciones de administración [RF 17, RF 18], además de la personalización de la vista [RF 11].
+
+Es también el \textit{sprint} con mayor impacto en la arquitectura. Los tres anteriores compartían
+una característica que simplificaba mucho las cosas: el sistema no almacenaba nada. Al introducir
+cuentas y conjuntos de datos privados aparece por primera vez la necesidad de una base de datos y,
+con ella, tres asuntos nuevos que hasta ahora no se planteaban: dónde guardar las contraseñas, cómo
+saber quién está haciendo cada petición y cómo impedir que un usuario acceda a los datos de otro.
+
+\subsection{Diseño de la interfaz}
+
+El principio que ha guiado los \textit{sprints} anteriores sigue vigente: la escena 3D es el centro
+de la aplicación y no debe ceder espacio. Eso plantea un problema, porque las funciones nuevas
+(elegir una red, cargar ficheros, gestionar usuarios) necesitan bastante superficie y no caben en un
+panel lateral sin comerse la visualización.
+
+La solución adoptada es distinguir dos clases de elementos según su uso:
+
+\begin{itemize}
+	\item Lo que se consulta \textbf{de forma continua} mientras se explora la red permanece en los
+		paneles superpuestos de siempre. Ahí se incorporan los controles nuevos de personalización
+		[RF 11]: el tamaño de los nodos, el tema y un botón para devolver la vista a su estado
+		inicial, junto al de exportar la imagen [RF 12].
+	\item Lo que se usa \textbf{de forma puntual} se traslada a \textbf{ventanas modales} que se
+		abren cuando hacen falta y se cierran al terminar: la de acceso, la de redes y la de
+		administración. Así estas funciones disponen de espacio suficiente sin restarlo a la escena
+		el resto del tiempo.
+\end{itemize}
+
+Se añade además una \textbf{barra de sesión} en la parte superior, que indica en todo momento quién
+está usando la aplicación y con qué rol, y desde la que se abren las ventanas anteriores. Un
+visitante ve ahí la invitación a iniciar sesión; un investigador, su nombre y el acceso a sus redes;
+un administrador, además, la entrada al panel de administración. La figura~\ref{fig:mockup-s4}
+recoge el boceto de la interfaz resultante.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[font=\footnotesize]
+		\draw[rounded corners=3pt, thick, fill=black!3] (0,0) rectangle (13,8.8);
+		% Barra de sesión (nueva)
+		\draw[rounded corners=2pt, fill=white, draw=black!45, very thick] (4.3,7.9) rectangle (8.7,8.55);
+		\node[align=center] at (6.5,8.22) {\textbf{Usuario}~·~rol~·~\footnotesize Mis redes~·~Salir};
+		% Paneles laterales existentes
+		\draw[rounded corners=2pt, fill=white, draw=black!45] (0.35,5.4) rectangle (3.9,8.45);
+		\node[anchor=north west, align=left] at (0.5,8.35)
+			{\textbf{Brain Viz}\\[1pt]\footnotesize Red activa · Estadísticas\\\footnotesize
+			Métricas · Buscador};
+		\draw[rounded corners=2pt, fill=white, draw=black!45] (9.3,4.9) rectangle (12.65,8.45);
+		\node[anchor=north west, align=left] at (9.45,8.35)
+			{\textbf{Controles}\\[1pt]\footnotesize Umbral · métrica\\\footnotesize Conexiones ·
+			ejes\\\textbf{\footnotesize Tamaño de nodos}\\\textbf{\footnotesize Tema}\\[2pt]
+			\textbf{\footnotesize Restablecer}~~\textbf{\footnotesize Exportar}};
+		% Ventana modal (nueva)
+		\draw[rounded corners=3pt, fill=white, draw=black!60, very thick] (3.3,1.5) rectangle (9.7,6.6);
+		\node[anchor=north west, align=left] at (3.5,6.4)
+			{\textbf{Ventana emergente} \hfill $\times$};
+		\draw[black!35] (3.5,5.75) -- (9.5,5.75);
+		\node[anchor=north west, align=left] at (3.5,5.65)
+			{\footnotesize\underline{Catálogo}~~~Cargar una red\\[4pt]
+			\footnotesize\textbf{Redes públicas}\\
+			\footnotesize\fbox{\parbox{5.2cm}{\footnotesize AAL90 · 90 nodos \hfill CSV~JSON~Visualizar}}\\[2pt]
+			\footnotesize\textbf{Mis redes}\\
+			\footnotesize\fbox{\parbox{5.2cm}{\footnotesize Mi conectoma \hfill CSV~JSON~Visualizar~Eliminar}}};
+		\node[align=center, gray] at (6.5,0.85) {\itshape la escena 3D permanece detrás};
+	\end{tikzpicture}
+	\caption{Boceto de la interfaz del Sprint 4. En trazo grueso, la barra de sesión y la ventana
+	emergente, que da espacio a las funciones de gestión sin restárselo a la escena; en el panel de
+	controles se incorporan la personalización y la exportación.}
+	\label{fig:mockup-s4}
+\end{figure}
+
+\subsection{Diseño de los datos}
+
+Este es el punto en el que el sistema deja de ser \textit{sin estado}. Hasta el Sprint 3, las redes
+públicas eran ficheros en el servidor y el modelo interno vivía solo durante el procesamiento de
+cada petición. El requisito de información [RI 4] obliga ahora a almacenar de forma consistente y
+privada los datos de cada entidad, lo que se traduce en dos tablas.
+
+\begin{itemize}
+	\item \textbf{Usuario}: identificador, correo, nombre, rol y contraseña. De la contraseña no se
+		guarda el texto sino su \textbf{hash}, una transformación que no se puede deshacer: el
+		sistema puede comprobar si una contraseña es la correcta, pero ni siquiera un administrador
+		con acceso a la base de datos podría averiguar cuál es [RNF 2, RI 4.1].
+	\item \textbf{Red}: nombre, descripción, si es pública o privada, su propietario y el contenido
+		de sus dos ficheros [RI 4.2].
+\end{itemize}
+
+Hay dos decisiones sobre el almacenamiento que conviene justificar.
+
+\paragraph*{Los ficheros se guardan en la base de datos, no en disco.} Lo natural sería dejarlos en
+una carpeta del servidor, pero en los alojamientos habituales el disco del contenedor es
+\textbf{efímero}: desaparece cada vez que se publica una versión nueva. Una red guardada en disco se
+perdería con el siguiente despliegue, mientras que la base de datos puede ser externa y sobrevivir.
+Guardar el contenido como texto en la propia tabla mantiene los ficheros y sus metadatos juntos, y
+hace que copiar o trasladar el sistema sea copiar una sola cosa.
+
+\paragraph*{Cada red conserva su resultado ya procesado.} En el Sprint 1 se dejó señalada una
+ineficiencia: cada petición reconstruía el grafo desde los ficheros, de modo que visualizar la misma
+red varias veces repetía siempre el mismo trabajo. Con las métricas del Sprint 3 eso pasó de ser una
+molestia a un problema medible, ya que el cálculo de la intermediación domina el tiempo de proceso.
+La solución es la prevista entonces: la red se procesa la primera vez que se solicita y el resultado
+se guarda en la propia fila. Como los ficheros no cambian una vez subidos, las peticiones siguientes
+lo reutilizan sin recalcular nada. La figura~\ref{fig:clases-s4} recoge el modelo resultante.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/clases_sprint4}
+	\caption{Modelo de datos tras el Sprint 4. Las dos entidades persistentes y su relación con el
+	modelo en memoria que se construye para cada visualización.}
+	\label{fig:clases-s4}
+\end{figure}
+
+\subsection{Diseño del software}
+
+La aparición de usuarios obliga a resolver tres cuestiones que hasta ahora no se planteaban: cómo
+reconocer a quien hace cada petición, cómo decidir qué puede hacer y cómo garantizar que no acceda a
+lo ajeno.
+
+\subsubsection*{Cómo se mantiene la sesión}
+
+Una vez que alguien ha demostrado quién es, el servidor debe reconocerlo en las peticiones
+siguientes, porque el protocolo sobre el que funciona la web no recuerda nada entre una y otra. Hay
+dos formas habituales de conseguirlo:
+
+\begin{itemize}
+	\item Entregar al cliente un \textbf{testigo} que este guarda y adjunta en cada petición.
+	\item Entregar una \textbf{cookie de sesión firmada} por el servidor, que el navegador envía de
+		forma automática.
+\end{itemize}
+
+Se ha optado por la segunda. El motivo principal es que la interfaz y la API se sirven desde el
+mismo origen, con lo que la cookie funciona sin configuración adicional y sin las complicaciones que
+introduce el reparto entre dominios distintos. El segundo motivo es de seguridad: un testigo hay que
+guardarlo en algún sitio del navegador al que el propio código de la página tiene acceso, de modo
+que basta con que se cuele código ajeno en la página para que quede expuesto. La cookie se marca
+como inaccesible desde el código y el navegador la envía por su cuenta, así que ese riesgo
+desaparece. Va firmada por el servidor, de manera que nadie puede fabricar una que diga ser otro
+usuario.
+
+\subsubsection*{Cómo se decide qué puede hacer cada uno}
+
+Los permisos se resuelven en dos niveles. El primero es el \textbf{acceso a la operación}: hay
+funciones que exigen sesión iniciada y otras reservadas al administrador. Esto se expresa marcando
+cada operación con el requisito que debe cumplirse, en lugar de repetir la comprobación dentro de
+cada una, con lo que resulta difícil olvidarla.
+
+El segundo nivel es el \textbf{acceso al dato concreto}, y es el que de verdad protege la
+confidencialidad [RNF 2]. Que un investigador tenga sesión iniciada no significa que pueda ver
+cualquier red: solo las públicas y las suyas. Esa regla se ha concentrado en un único punto del
+modelo, de forma que el catálogo, la visualización y la exportación consultan todos la misma
+condición. Repartir esa lógica por cada operación habría hecho casi inevitable que alguna se quedara
+sin proteger, que es precisamente el tipo de descuido con peores consecuencias.
+
+\subsubsection*{Cómo se valida lo que sube el usuario}
+
+Que cualquiera pueda enviar ficheros al servidor cambia el planteamiento de la validación. Hasta
+ahora los datos de entrada eran conocidos y estaban bajo control; ahora pueden estar mal formados,
+ser enormes o no ser siquiera lo que dicen ser. La comprobación se hace en dos pasos y, sobre todo,
+\textbf{antes de guardar nada}:
+
+\begin{enumerate}
+	\item Comprobaciones sobre los ficheros en bruto: que estén los dos, que no vengan vacíos, que no
+		superen un tamaño máximo y que su codificación sea la esperada [RI 3].
+	\item Procesamiento completo de la red, que es el que detecta los problemas de contenido: matriz
+		no cuadrada, dimensiones que no coinciden con el número de nodos o valores no numéricos
+		[RF 14.1].
+\end{enumerate}
+
+Solo si el segundo paso termina bien se almacena la red, junto con el resultado ya procesado. De
+este modo nunca queda en la base de datos una red que no se pueda visualizar, y el usuario recibe un
+mensaje que explica qué falla en lugar de un error genérico [RNF 3].
+
+La figura~\ref{fig:modulos-s4} muestra la modularización resultante y la
+figura~\ref{fig:sec-s4} el diagrama de secuencia del acceso y de la carga de una red.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/modulos_sprint4}
+	\caption{Modularización del software tras el Sprint 4. Tanto el \textit{backend} como el
+	\textit{frontend} se dividen en módulos con una responsabilidad definida, en lugar de crecer
+	sobre los ficheros existentes.}
+	\label{fig:modulos-s4}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/sec_interaccion_sprint4}
+	\caption{Diagrama de secuencia del inicio de sesión (RF 13) y de la carga de una red propia
+	(RF 14), con la validación previa al almacenamiento (RF 14.1).}
+	\label{fig:sec-s4}
+\end{figure}
+
+\subsection{Implementación}
+
+\subsubsection*{Backend: usuarios y contraseñas (RF 13)}
+
+El modelo de usuario no expone en ningún momento la contraseña: solo permite fijarla y comprobarla,
+y lo que se almacena es su hash.
+
+\begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily, keywordstyle=\color{blue!60!black}, commentstyle=\color{gray}, showstringspaces=false, frame=single, columns=fullflexible]
+class Usuario(db.Model):
+    email = db.Column(db.String(190), unique=True, nullable=False, index=True)
+    # Nunca se guarda la contrasena, solo su hash [RNF 2]
+    hash_password = db.Column(db.String(255), nullable=False)
+    rol = db.Column(db.String(20), nullable=False, default=ROL_INVESTIGADOR)
+
+    def fijar_password(self, password):
+        self.hash_password = generate_password_hash(password)
+
+    def comprueba_password(self, password):
+        return check_password_hash(self.hash_password, password)
+\end{lstlisting}
+
+Un detalle de la implementación del acceso merece mención. Cuando las credenciales no son correctas,
+el sistema responde siempre con el mismo mensaje, sin distinguir si el fallo está en el correo o en
+la contraseña. Diferenciarlos sería más cómodo para el usuario, pero permitiría a cualquiera
+averiguar qué cuentas existen probando correos uno a uno.
+
+\subsubsection*{Backend: permisos y confidencialidad (RNF 2)}
+
+El acceso a cada operación se marca sobre la propia función, y la visibilidad de cada red se decide
+en un único punto del modelo:
+
+\begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily, keywordstyle=\color{blue!60!black}, commentstyle=\color{gray}, showstringspaces=false, frame=single, columns=fullflexible]
+# En el modelo: la regla de visibilidad, en un solo sitio
+def visible_para(self, usuario):
+    if self.publica:
+        return True
+    if usuario is None:
+        return False
+    return usuario.es_administrador or self.propietario_id == usuario.id
+
+# En la API: la operacion declara lo que exige
+@bp_redes.post('')
+@requiere_sesion
+def subir():
+    ...
+\end{lstlisting}
+
+\subsubsection*{Backend: reutilización del resultado procesado}
+
+La red se procesa una sola vez y el resultado queda guardado para las peticiones siguientes:
+
+\begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily, keywordstyle=\color{blue!60!black}, commentstyle=\color{gray}, showstringspaces=false, frame=single, columns=fullflexible]
+def grafo_de(red):
+    if red.json_procesado:          # ya se calculo antes
+        return json.loads(red.json_procesado)
+
+    datos = parse_brain_graph(red.contenido_nodos, red.contenido_aristas)
+    red.json_procesado = json.dumps(datos)
+    db.session.commit()
+    return datos
+\end{lstlisting}
+
+\subsubsection*{Frontend: personalización y exportación (RF 11, RF 12)}
+
+Los ajustes de visualización se declaran en un único objeto con sus valores por defecto, de modo que
+restablecer la vista consiste sencillamente en volver a ese objeto en lugar de deshacer cada cambio
+por separado. El tema se aplica marcando la raíz del documento, lo que permite que toda la hoja de
+estilos responda a un único cambio, y se recuerda entre visitas.
+
+Para exportar la imagen [RF 12] hay un detalle que condiciona la implementación: por omisión, el
+navegador descarta el contenido del lienzo 3D en cuanto termina de dibujarlo, así que al intentar
+copiarlo se obtiene una imagen en blanco. Es necesario indicarle expresamente que lo conserve.
+
+\begin{lstlisting}[language=JavaScript, basicstyle=\footnotesize\ttfamily, keywordstyle=\color{blue!60!black}, commentstyle=\color{gray}, showstringspaces=false, frame=single, columns=fullflexible]
+// El lienzo debe conservar lo dibujado; si no, la imagen sale en blanco
+<Canvas gl={{ preserveDrawingBuffer: true }} ...>
+
+// Restablecer es volver a los valores de partida, no deshacer cambio a cambio
+const restablecerVista = () => { setSettings(AJUSTES_INICIALES); setTema('oscuro'); };
+\end{lstlisting}
+
+El resultado se recoge en las figuras siguientes: la~\ref{fig:s4-acceso} muestra la ventana de
+acceso, la~\ref{fig:s4-catalogo} el catálogo de redes, la~\ref{fig:s4-subida} el formulario de
+carga, las~\ref{fig:s4-admin} y~\ref{fig:s4-admin-catalogo} el panel de administración y
+la~\ref{fig:s4-tema} la aplicación con el tema claro.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.86\textwidth]{imagenes/app_s4_acceso}
+	\caption{Registro e inicio de sesión (RF 13). Ambas operaciones comparten ventana, ya que desde
+	el punto de vista del usuario son la misma decisión: entrar en su cuenta.}
+	\label{fig:s4-acceso}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/app_s4_catalogo}
+	\caption{Catálogo de redes (RF 15). Se distinguen las redes públicas de las propias del
+	investigador, cada una con las acciones que le corresponden: visualizarla, exportar sus métricas
+	(RF 16) y, en el caso de las propias, eliminarla.}
+	\label{fig:s4-catalogo}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/app_s4_subida}
+	\caption{Carga de una red propia (RF 14). Los dos ficheros se envían juntos porque una red no
+	queda definida sin ambos.}
+	\label{fig:s4-subida}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/app_s4_admin}
+	\caption{Panel de administración (RF 18). Permite consultar los usuarios registrados, cambiar su
+	rol (RF 18.1) y darlos de baja.}
+	\label{fig:s4-admin}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/app_s4_admin_catalogo}
+	\caption{Gestión del catálogo público (RF 17). El administrador puede publicar una red, con lo
+	que pasa a estar disponible para cualquier visitante, o retirarla sin llegar a borrarla.}
+	\label{fig:s4-admin-catalogo}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/app_s4_tema_claro}
+	\caption{Personalización de la vista (RF 11): la aplicación con el tema claro, que afecta tanto a
+	los paneles como al fondo de la escena.}
+	\label{fig:s4-tema}
+\end{figure}
+
+\subsection{Pruebas}
+
+Este \textit{sprint} introduce la novedad más relevante en materia de pruebas: hasta ahora se habían
+realizado de forma manual, y aquí se automatizan. En el Sprint 1 se dejó anotado que en los
+\textit{sprints} sucesivos se completarían con pruebas automatizadas del \textit{backend}, y este es
+el momento adecuado para hacerlo, por dos razones. La primera es que la API ha crecido lo suficiente
+como para que comprobarla a mano en cada cambio deje de ser razonable. La segunda, y más importante,
+es que aparece un tipo de fallo cuyas consecuencias son de otro orden: que un usuario acceda a los
+datos privados de otro. Un error así no se manifiesta con nada raro en pantalla, así que solo puede
+descartarse comprobándolo de forma explícita y repetible.
+
+\subsubsection*{Pruebas de caja blanca (unitarias)}
+
+Se han verificado los puntos del código donde una equivocación tendría consecuencias silenciosas. Se
+comprueba que la contraseña no aparece en ningún momento almacenada en claro y que el hash guardado
+sí reconoce la contraseña correcta; que la red procesada queda efectivamente guardada tras la
+primera petición, de modo que la reutilización funciona; y que el registro rechaza los datos que no
+cumplen las condiciones exigidas, tanto un correo mal formado como una contraseña demasiado corta o
+un correo ya dado de alta.
+
+\subsubsection*{Pruebas de caja negra (de integración)}
+
+Estas pruebas recorren la API completa sin conocer su implementación, actuando como lo haría la
+interfaz. Se ha comprobado el ciclo entero de una cuenta (alta, cierre de sesión, acceso con
+credenciales incorrectas y acceso correcto); la carga de una red y su posterior baja; la exportación
+de las métricas en los dos formatos, verificando que el fichero contiene una fila por nodo y las
+métricas globales; y el rechazo de ficheros incorrectos en sus cuatro variantes: matriz no cuadrada,
+dimensiones que no coinciden con el número de nodos, valores no numéricos y fichero vacío.
+
+Merece la pena detenerse en las pruebas de \textbf{confidencialidad}, que son las que motivaron
+automatizar todo esto. Se crean dos investigadores, uno sube una red privada y se comprueba
+sistemáticamente que el otro no puede acceder a ella por ninguna vía: no aparece en su catálogo, no
+puede abrirla, no puede exportar sus métricas y no puede eliminarla. Se comprueba también que un
+visitante sin cuenta tampoco llega a ella, y que en cambio su propietario y un administrador sí.
+
+El conjunto está formado por \textbf{17 pruebas} que se ejecutan con una sola orden y sobre una base
+de datos limpia en cada caso, de manera que ninguna depende de lo que hayan hecho las anteriores.
+
+\subsubsection*{Pruebas de validación (de aceptación)}
+
+La tabla~\ref{tab:pruebas-s4} recoge las pruebas de validación de los requisitos de este
+\textit{sprint}, comprobadas sobre la aplicación en ejecución.
+
+\begin{table}[H]
+	\centering
+	\caption{Pruebas de validación del Sprint 4.}
+	\label{tab:pruebas-s4}
+	\small
+	\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{1.7cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\centering\arraybackslash}p{1.6cm}}
+		\toprule
+		\textbf{Prueba} & \textbf{Descripción} & \textbf{Resultado esperado} & \textbf{Estado} \\
+		\midrule
+		P-19 (RF 11) & Modificar el tamaño de los nodos, el tema y el resto de ajustes. &
+			La escena responde a cada cambio y el tema afecta también a los paneles. & Correcto \\
+		\addlinespace
+		P-20 (RF 11) & Pulsar el botón de restablecer. &
+			Todos los ajustes vuelven a sus valores iniciales, incluido el tema. & Correcto \\
+		\addlinespace
+		P-21 (RF 12) & Exportar la visualización como imagen. &
+			Se descarga un fichero PNG con la escena tal y como se ve. & Correcto \\
+		\addlinespace
+		P-22 (RF 13) & Registrarse, cerrar sesión y volver a entrar. &
+			La cuenta se crea con el rol de investigador y la sesión se recupera al entrar de
+			nuevo. & Correcto \\
+		\addlinespace
+		P-23 (RF 14.1) & Cargar una red con ficheros incongruentes. &
+			La carga se rechaza indicando el motivo concreto, y la red no llega a guardarse. &
+			Correcto \\
+		\addlinespace
+		P-24 (RF 14) & Cargar una red con ficheros correctos. &
+			La red se procesa, aparece entre las propias y puede visualizarse. & Correcto \\
+		\addlinespace
+		P-25 (RF 15) & Listar y eliminar los conjuntos de datos propios. &
+			Las redes propias se distinguen de las públicas y la baja las retira del catálogo. &
+			Correcto \\
+		\addlinespace
+		P-26 (RF 16) & Exportar las métricas en los dos formatos. &
+			Se descargan un CSV y un JSON con las centralidades de cada nodo y las métricas
+			globales. & Correcto \\
+		\addlinespace
+		P-27 (RNF 2) & Intentar acceder a la red privada de otro investigador. &
+			El acceso se deniega por todas las vías y la red no figura en el catálogo ajeno. &
+			Correcto \\
+		\addlinespace
+		P-28 (RF 17) & Publicar y retirar una red del catálogo público. &
+			Al publicarla pasa a estar disponible para cualquier visitante; al retirarla deja de
+			estarlo sin llegar a borrarse. & Correcto \\
+		\addlinespace
+		P-29 (RF 18, RF 18.1) & Consultar los usuarios y cambiar un rol. &
+			El administrador ve la lista completa y puede asignar y revocar el rol de
+			investigador. & Correcto \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\subsubsection*{Rendimiento del resultado reutilizado}
+
+La reutilización del resultado procesado se ha medido con las mismas dos redes que se emplearon en
+los \textit{sprints} anteriores. La tabla~\ref{tab:cache} compara el tiempo de la primera petición,
+que es la que calcula, con el de las siguientes.
+
+\begin{table}[H]
+	\centering
+	\caption{Tiempo de respuesta antes y después de reutilizar el resultado procesado.}
+	\label{tab:cache}
+	\small
+	\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X >{\centering\arraybackslash}p{2.4cm} >{\centering\arraybackslash}p{2.4cm} >{\centering\arraybackslash}p{2.2cm}}
+		\toprule
+		\textbf{Red} & \textbf{Primera petición} & \textbf{Siguientes} & \textbf{Mejora} \\
+		\midrule
+		AAL90 (90 nodos, 411 aristas)          & 12\,ms  & 4\,ms & 3$\times$   \\
+		Red sintética (500 nodos, 12.470 aristas) & 652\,ms & 4\,ms & 147$\times$ \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+Con la red de ejemplo la diferencia es pequeña, porque el cálculo ya era rápido. Donde se aprecia es
+en la red grande, en la que la espera pasa de ser perceptible a no serlo. Queda así resuelta la
+ineficiencia señalada en el Sprint 1, y resuelta en el momento adecuado: cuando el cálculo de las
+métricas la convirtió en un problema real y cuando la base de datos ofreció dónde guardar el
+resultado.
+
+\subsubsection*{Errores detectados y corregidos}
+
+Durante el desarrollo y las pruebas de este \textit{sprint} se detectaron los siguientes problemas:
+
+\begin{itemize}
+	\item \textbf{El resaltado del nodo seleccionado ocultaba información.} Al pulsar sobre un nodo,
+		este y sus conexiones se teñían del color de acento de la interfaz. El problema es que el
+		color no es decorativo: indica a qué grupo anatómico pertenece la región o qué valor tiene en
+		la métrica representada. Teñirlo borraba ese dato justo en el nodo que el usuario estaba
+		mirando. Se corrigió haciendo que el nodo conserve su color y que sus conexiones se dibujen
+		en ese mismo tono, de modo que lo que distingue a la selección es el tamaño y el grosor. Hubo
+		que reducir además el brillo del nodo seleccionado, porque con el valor anterior el color se
+		saturaba hacia el blanco y tampoco llegaba a reconocerse.
+	\item \textbf{La aplicación no arrancaba si la base de datos no respondía.} Al depender de una
+		base de datos externa, la aplicación quedaba a merced de su disponibilidad: si dejaba de
+		responder, el arranque fallaba y no se mostraba absolutamente nada, un resultado peor que no
+		haber usado una base de datos externa. Se corrigió comprobando la conexión al iniciar y
+		recurriendo a la base de datos local cuando no responde. Se pierden entonces los datos
+		almacenados, pero el catálogo público se sigue explorando con normalidad, que es lo que hace
+		la mayoría de los visitantes.
+	\item \textbf{Faltaba el controlador de la base de datos.} El código admitía cualquier gestor
+		desde el principio, pero el controlador de PostgreSQL no estaba entre las dependencias, de
+		modo que apuntar la configuración a un PostgreSQL habría hecho fallar el arranque. Se detectó
+		al preparar el despliegue definitivo, antes de publicarlo.
+\end{itemize}
+
+\subsubsection*{Despliegue con almacenamiento persistente}
+
+El paso a producción de este \textit{sprint} obligó a revisar el despliegue. En los anteriores el
+sistema no guardaba nada, así que reconstruir el contenedor en cada publicación no tenía
+consecuencias. Ahora sí las tiene: los usuarios registrados y las redes que hubieran cargado
+desaparecerían con cada versión nueva.
+
+Por eso el despliegue emplea una \textbf{base de datos gestionada externa}, indicada mediante una
+variable de entorno. La comprobación de que funciona no se hizo por inspección sino provocándola:
+se anotó la fecha de creación de la red del catálogo, se publicó una versión nueva y se verificó que
+la fecha no había cambiado, lo que solo puede ocurrir si los datos han sobrevivido a la
+reconstrucción del contenedor.
+
+Las credenciales de acceso a la base de datos y la cuenta inicial de administrador se definen como
+variables de entorno del servicio y no figuran en el repositorio, ya que este es público.
+
+\subsubsection*{Validación por parte del cliente}
+
+Como en los \textit{sprints} anteriores, la versión resultante queda desplegada para su validación
+por el director del proyecto en la dirección habitual:
+
+\begin{center}
+	\url{https://brain-viz.onrender.com/}
+\end{center}
+
+Con este \textit{sprint} quedan implementados los dieciocho requisitos funcionales recogidos en el
+capítulo de requisitos.
