@@ -48,9 +48,6 @@ function colorMetrica(t) {
   return c1.lerp(new THREE.Color(RAMPA[i + 1]), x - i);
 }
 
-const ACCENT = '#4c7df0';    // Color de acento para el nodo seleccionado (RF 6)
-const ACCENT_HI = '#6f97f5'; // Color de sus conexiones, algo más claro
-
 // Grosor de las aristas en píxeles: el general y el de las conexiones del nodo
 // seleccionado, que se dibujan más marcadas para distinguirlas (RF 6).
 const LINK_WIDTH = 1.6;
@@ -175,12 +172,26 @@ function BrainVis({ data, hovered, setHovered, selected, setSelected, settings, 
   }), []);
 
   const nodeLinesMaterial = useMemo(() => new LineMaterial({
-    color: new THREE.Color(ACCENT_HI),
     transparent: true,
     depthWrite: false,
     opacity: 0.95,
     linewidth: LINK_WIDTH_SELECTED,
   }), []);
+
+  // Color del nodo seleccionado, que es también el de sus conexiones. Depende
+  // del criterio de coloreado activo: su grupo anatómico o la métrica elegida.
+  const colorSeleccion = useMemo(() => {
+    if (!data || selected == null) return null;
+    const n = data.nodes[selected];
+    if (!n) return null;
+    return settings.metrica === 'group'
+      ? new THREE.Color(groupColor(n.group))
+      : colorMetrica(normaliza(n[settings.metrica]));
+  }, [data, selected, settings.metrica, normaliza]);
+
+  useEffect(() => {
+    if (colorSeleccion) nodeLinesMaterial.color.copy(colorSeleccion);
+  }, [nodeLinesMaterial, colorSeleccion]);
 
   useEffect(() => {
     linesMaterial.resolution = resolution;
@@ -222,9 +233,10 @@ function BrainVis({ data, hovered, setHovered, selected, setSelected, settings, 
         const porMetrica = settings.metrica !== 'group';
         const t = porMetrica ? normaliza(node[settings.metrica]) : 0;
         const base = porMetrica ? 0.6 + 1.5 * t : 1;
-        const color = isSelected
-          ? ACCENT
-          : (porMetrica ? colorMetrica(t) : groupColor(node.group));
+        // El nodo seleccionado conserva su color: lo que lo distingue es el
+        // tamaño y el brillo, además de sus conexiones resaltadas. Cambiarle el
+        // color rompería la lectura del grupo o de la métrica que representa.
+        const color = porMetrica ? colorMetrica(t) : groupColor(node.group);
         return (
           <mesh
             key={i}
@@ -238,7 +250,9 @@ function BrainVis({ data, hovered, setHovered, selected, setSelected, settings, 
             <meshStandardMaterial
               color={color}
               emissive={color}
-              emissiveIntensity={isSelected ? 1.1 : isHovered ? 0.9 : 0.32}
+              /* El brillo del nodo seleccionado se mantiene contenido: subirlo más
+                 lo satura hacia el blanco y deja de reconocerse su color. */
+              emissiveIntensity={isSelected ? 0.7 : isHovered ? 0.55 : 0.32}
               roughness={0.5}
               metalness={0.1}
             />
