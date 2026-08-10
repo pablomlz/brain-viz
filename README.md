@@ -142,10 +142,11 @@ automático.
 | `DATABASE_URL` | Base de datos a utilizar; sin ella se usa un fichero SQLite local |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NOMBRE` | Crean la cuenta de administrador la primera vez que arranca |
 
-> **Sobre la persistencia.** En los alojamientos gratuitos el disco del contenedor es
-> efímero y se pierde en cada despliegue, de modo que con SQLite los usuarios y las redes
-> cargadas no sobreviven a una nueva publicación. Definiendo `DATABASE_URL` para apuntar a
-> una base de datos externa, los datos persisten sin tocar el código.
+> **Sobre la persistencia.** El disco del contenedor es efímero y se pierde en cada
+> despliegue, así que con SQLite los usuarios y las redes cargadas no sobrevivirían a una
+> nueva publicación. Por eso el despliegue emplea una base de datos PostgreSQL externa,
+> indicada mediante `DATABASE_URL`. La base de datos debe estar en la misma región que el
+> servicio para que se comuniquen por la red privada del proveedor.
 
 ## Pruebas
 
