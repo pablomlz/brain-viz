@@ -11,7 +11,7 @@ Pablo Moliz Arias\\
 
 \vspace{0.5cm}
 \noindent\textbf{Palabras clave}: \textit{connectoma, red cerebral, visualización 3D, WebGL,
-teoría de grafos, matriz de adyacencia, React, Three.js, Flask, Docker.}
+teoría de grafos, matriz de adyacencia, centralidad, React, Three.js, Flask, Docker.}
 \vspace{0.7cm}
 
 \noindent\textbf{Resumen}\\
@@ -24,13 +24,17 @@ adyacencia disponibles en bases de datos públicas de neuroimagen.
 Brain Viz sigue una arquitectura cliente-servidor y se estructura en dos componentes desacoplados
 que se despliegan juntos en un servidor: un servicio de \textit{backend}, implementado en Python
 con Flask y NetworkX, encargado de procesar los ficheros de entrada, construir el grafo, calcular
-métricas básicas de teoría de grafos y exponer los datos a través de una API; y una aplicación
+sus métricas de teoría de grafos y exponer los datos a través de una API; y una aplicación
 cliente o \textit{frontend}, desarrollada en React con Three.js mediante \textit{react-three-fiber},
 que se ejecuta en el navegador del usuario y es responsable de la visualización 3D interactiva.
-Ambos servicios se empaquetan en contenedores y se orquestan con Docker, lo que garantiza un
-despliegue reproducible. El objetivo es ofrecer una herramienta a la que el usuario acceda desde
-cualquier navegador, sin tener que instalar nada, y que le permita cargar, explorar y analizar redes
-cerebrales de forma inmediata.
+
+La aplicación permite explorar una red filtrando sus conexiones por peso, seleccionar regiones para
+consultar sus datos y representar sobre la propia escena las métricas calculadas, tanto las globales
+de la red como las centralidades de cada región. Incorpora además cuentas de usuario, con las que un
+investigador puede cargar sus propias redes y conservarlas de forma privada, y un rol de
+administración que gestiona el catálogo público y los usuarios registrados. El sistema se empaqueta
+en contenedores, se apoya en una base de datos para la información persistente y está desplegado en
+un servidor público, de manera que se puede utilizar desde cualquier navegador sin instalar nada.
 
 \cleardoublepage
 
@@ -44,7 +48,7 @@ cerebrales de forma inmediata.
 \end{center}
 \vspace{0.5cm}
 \noindent\textbf{Keywords}: \textit{connectome, brain network, 3D visualization, WebGL, graph
-theory, adjacency matrix, React, Three.js, Flask, Docker.}
+theory, adjacency matrix, centrality, React, Three.js, Flask, Docker.}
 \vspace{0.7cm}
 
 \noindent\textbf{Abstract}\\
@@ -56,13 +60,18 @@ neuroimaging databases.
 
 Brain Viz follows a client-server architecture and is structured into two decoupled components that
 are deployed together on a server: a \textit{backend} service, implemented in Python with Flask and
-NetworkX, responsible for processing the input files, building the graph, computing basic
-graph-theory metrics and exposing the data through an API; and a client application or
-\textit{frontend}, developed in React with Three.js via \textit{react-three-fiber}, which runs in
-the user's browser and is responsible for the interactive 3D visualization. Both services are
-packaged into containers and orchestrated with Docker, ensuring a reproducible deployment. The goal
-is to provide a tool that the user can access from any browser, without installing anything, and
-that allows brain networks to be loaded, explored and analysed immediately.
+NetworkX, responsible for processing the input files, building the graph, computing its graph-theory
+metrics and exposing the data through an API; and a client application or \textit{frontend},
+developed in React with Three.js via \textit{react-three-fiber}, which runs in the user's browser
+and is responsible for the interactive 3D visualization.
+
+The application allows a network to be explored by filtering its connections by weight, selecting
+regions to inspect their data and mapping the computed metrics onto the scene itself, both the
+global measures of the network and the centrality of each region. It also provides user accounts,
+which let a researcher upload their own networks and keep them private, and an administration role
+that manages the public catalogue and the registered users. The system is packaged into containers,
+relies on a database for persistent information and is deployed on a public server, so that it can
+be used from any browser without installing anything.
 
 \cleardoublepage
 
