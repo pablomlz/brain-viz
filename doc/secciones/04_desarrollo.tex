@@ -650,8 +650,8 @@ la selección de una región con su panel de información.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.86\textwidth]{imagenes/app_s2_umbral_bajo}\\[6pt]
-	\includegraphics[width=0.86\textwidth]{imagenes/app_s2_umbral_alto}
+	\includegraphics[width=\textwidth]{imagenes/app_s2_umbral_bajo}\\[6pt]
+	\includegraphics[width=\textwidth]{imagenes/app_s2_umbral_alto}
 	\caption{Filtrado por umbral (RF 5). Arriba: umbral 0,00, se muestran las 411 conexiones de la
 	red. Abajo: umbral 0,60, quedan 168 conexiones y la estructura de la red se aprecia con mayor
 	claridad. El contador del panel de estadísticas refleja en ambos casos la relación
@@ -825,7 +825,8 @@ decisiones técnicas que ha requerido cada una.
 
 \paragraph*{Grosor de las conexiones.} Las aristas se dibujaban demasiado finas y costaba seguirlas,
 sobre todo al alejar la cámara. Aumentar su grosor no era tan inmediato como parecía: la
-especificación de WebGL no obliga a los navegadores a dibujar líneas de más de un píxel de ancho, y
+especificación de WebGL~\cite{webgl} no obliga a los navegadores a dibujar líneas de más de un
+píxel de ancho, y
 en la práctica los principales las ignoran, de modo que el parámetro de grosor del material de
 líneas básico no tiene ningún efecto. Para poder controlarlo se ha sustituido ese material por otro
 que representa cada arista como una tira de dos triángulos orientada hacia la cámara, técnica
@@ -967,8 +968,8 @@ en dos puntos:
 		conexas.
 \end{itemize}
 
-Merece la pena detenerse en el significado de cada una, porque de él dependen las decisiones de
-cálculo. La \textbf{densidad} es la proporción de conexiones que existen frente a todas las que
+Merece la pena detenerse en el significado de cada una~\cite{bullmore2009}, porque de él dependen
+las decisiones de cálculo. La \textbf{densidad} es la proporción de conexiones que existen frente a todas las que
 podrían existir, y sitúa la red entre los extremos de dispersa y completa. El \textbf{grado medio}
 indica cuántas conexiones tiene un nodo por término medio. El \textbf{coeficiente de clustering}
 mide hasta qué punto los vecinos de un nodo están conectados también entre sí, es decir, si la red
@@ -1104,7 +1105,7 @@ Las figuras~\ref{fig:s3-mapeo} y~\ref{fig:s3-busqueda} muestran el resultado sob
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth]{imagenes/app_s3_busqueda}
+	\includegraphics[width=0.42\textwidth]{imagenes/app_s3_busqueda}
 	\caption{Búsqueda de un nodo (RF 10). Al escribir parte de una etiqueta aparecen las
 	coincidencias; al elegir una, la cámara se desplaza hasta la región y el panel muestra sus
 	centralidades (RF 6.1).}
@@ -1136,7 +1137,8 @@ respuesta de la API. Las comprobaciones realizadas son las siguientes:
 	\item La \textbf{cercanía} de los 90 nodos coincide con la que se obtiene calculando las
 		distancias mediante un recorrido en anchura propio.
 	\item La \textbf{intermediación} de los 90 nodos coincide con la que produce una implementación
-		propia del algoritmo de Brandes, que es el que se emplea habitualmente para esta métrica.
+		propia del algoritmo de Brandes~\cite{brandes}, que es el que se emplea habitualmente para esta
+		métrica.
 \end{itemize}
 
 En los cinco casos la desviación es nula o del orden de la precisión de la representación en coma
@@ -1550,7 +1552,7 @@ la~\ref{fig:s4-tema} la aplicación con el tema claro.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.86\textwidth]{imagenes/app_s4_acceso}
+	\includegraphics[width=0.55\textwidth]{imagenes/app_s4_acceso}
 	\caption{Registro e inicio de sesión (RF 13). Ambas operaciones comparten ventana, ya que desde
 	el punto de vista del usuario son la misma decisión: entrar en su cuenta.}
 	\label{fig:s4-acceso}
@@ -1558,7 +1560,7 @@ la~\ref{fig:s4-tema} la aplicación con el tema claro.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth]{imagenes/app_s4_catalogo}
+	\includegraphics[width=0.85\textwidth]{imagenes/app_s4_catalogo}
 	\caption{Catálogo de redes (RF 15). Se distinguen las redes públicas de las propias del
 	investigador, cada una con las acciones que le corresponden: visualizarla, exportar sus métricas
 	(RF 16) y, en el caso de las propias, eliminarla.}
@@ -1567,7 +1569,7 @@ la~\ref{fig:s4-tema} la aplicación con el tema claro.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth]{imagenes/app_s4_subida}
+	\includegraphics[width=0.8\textwidth]{imagenes/app_s4_subida}
 	\caption{Carga de una red propia (RF 14). Los dos ficheros se envían juntos porque una red no
 	queda definida sin ambos.}
 	\label{fig:s4-subida}
@@ -1575,7 +1577,7 @@ la~\ref{fig:s4-tema} la aplicación con el tema claro.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth]{imagenes/app_s4_admin}
+	\includegraphics[width=0.85\textwidth]{imagenes/app_s4_admin}
 	\caption{Panel de administración (RF 18). Permite consultar los usuarios registrados, cambiar su
 	rol (RF 18.1) y darlos de baja.}
 	\label{fig:s4-admin}
@@ -1583,7 +1585,7 @@ la~\ref{fig:s4-tema} la aplicación con el tema claro.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth]{imagenes/app_s4_admin_catalogo}
+	\includegraphics[width=0.85\textwidth]{imagenes/app_s4_admin_catalogo}
 	\caption{Gestión del catálogo público (RF 17). El administrador puede publicar una red, con lo
 	que pasa a estar disponible para cualquier visitante, o retirarla sin llegar a borrarla.}
 	\label{fig:s4-admin-catalogo}

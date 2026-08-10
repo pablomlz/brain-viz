@@ -21,12 +21,12 @@
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
 1  & El visitante accede a la aplicación. \\ \hline
-2  & El sistema muestra una red por defecto ya renderizado y la lista de redes disponibles. \\ \hline
+2  & El sistema muestra una red por defecto ya renderizada y la lista de redes disponibles. \\ \hline
 3  & El visitante selecciona una red de la lista. \\ \hline
 3a & El \textit{backend} procesa la red y la devuelve; el sistema la renderiza en 3D. \\ \hline
 3b & La red no se puede cargar; se informa del error y se mantiene la anterior. \\ \hline
 \textbf{Postcondición} & La red seleccionada queda visualizada en la escena 3D. \\ \hline
-\textbf{Excepciones} & La red seleccionada no existe o está corrupto. \\ \hline
+\textbf{Excepciones} & La red seleccionada no existe o sus ficheros están dañados. \\ \hline
 \textbf{Comentarios} & No aplica. \\ \hline
 \end{xltabular}
 }
@@ -246,7 +246,7 @@
 \textbf{Descripción} & El usuario cierra su sesión y vuelve a actuar como visitante. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
-1 & El usuario pulsa ``cerrar sesión''. \\ \hline
+1 & El usuario pulsa ``salir''. \\ \hline
 2 & El sistema finaliza la sesión y devuelve al usuario al estado no autenticado. \\ \hline
 \textbf{Postcondición} & La sesión queda cerrada; el usuario pasa a actuar como visitante. \\ \hline
 \textbf{Excepciones} & Ninguna. \\ \hline
@@ -270,7 +270,7 @@
 \textbf{Descripción} & El investigador sube sus ficheros \texttt{.node} y \texttt{.edge} para visualizar su propia red. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
-1  & El investigador selecciona ``cargar red propia''. \\ \hline
+1  & El investigador selecciona ``cargar una red''. \\ \hline
 2  & El sistema solicita los ficheros \texttt{.node} y \texttt{.edge}. \\ \hline
 3  & El investigador sube ambos ficheros. \\ \hline
 4  & El sistema valida el formato y la consistencia dimensional. \\ \hline
@@ -298,7 +298,7 @@
 \textbf{Descripción} & El investigador consulta, guarda, carga o elimina sus \textit{conjuntos de datos} privados. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
-1  & El investigador abre la sección ``mis datasets''. \\ \hline
+1  & El investigador abre la sección ``mis redes''. \\ \hline
 2  & El sistema muestra la lista de sus \textit{conjuntos de datos}. \\ \hline
 3  & El investigador selecciona una acción. \\ \hline
 3a & Guardar la red actual como un nuevo \textit{conjunto de datos}. \\ \hline
@@ -327,9 +327,9 @@
 \textbf{Descripción} & El investigador exporta las métricas de la red en formato CSV o JSON. \\ \hline
 \rowcolor[gray]{0.88}\multicolumn{2}{|c|}{\textbf{Secuencia}} \\ \hline
 \textbf{Paso} & \textbf{Acción} \\ \hline
-1 & El investigador pulsa ``exportar métricas''. \\ \hline
-2 & El sistema solicita el formato (CSV o JSON). \\ \hline
-3 & El investigador elige el formato. \\ \hline
+1 & El investigador localiza la red en el catálogo. \\ \hline
+2 & El sistema ofrece la descarga en cada uno de los formatos disponibles. \\ \hline
+3 & El investigador elige el formato que necesita. \\ \hline
 4 & El sistema genera y descarga el fichero de métricas. \\ \hline
 \textbf{Postcondición} & Se descarga el fichero de métricas en el formato elegido. \\ \hline
 \textbf{Excepciones} & Ninguna. \\ \hline
