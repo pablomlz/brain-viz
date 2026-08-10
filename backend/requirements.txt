@@ -5,3 +5,6 @@ numpy==1.26.0
 pandas==2.1.1
 gunicorn==21.2.0
 flask-sqlalchemy==3.1.1
+# Controlador de PostgreSQL. Solo se usa si DATABASE_URL apunta a un
+# PostgreSQL; con SQLite no interviene.
+psycopg2-binary==2.9.9

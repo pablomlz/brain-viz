@@ -19,6 +19,11 @@ services:
       # La cookie de sesión solo debe viajar por HTTPS
       - key: COOKIE_SEGURA
         value: "1"
+      # Base de datos. Sin esta variable la aplicación usa un fichero SQLite
+      # dentro del contenedor, que se pierde en cada despliegue. Apuntándola a
+      # una base de datos externa, los usuarios y las redes cargadas persisten.
+      - key: DATABASE_URL
+        sync: false
       # Cuenta de administrador inicial. Se definen desde el panel de Render
       # para no dejar credenciales escritas en el repositorio.
       - key: ADMIN_EMAIL
