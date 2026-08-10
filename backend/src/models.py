@@ -19,6 +19,7 @@ import os
 from datetime import datetime, timezone
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
 from werkzeug.security import check_password_hash, generate_password_hash
 
 db = SQLAlchemy()
@@ -130,17 +131,51 @@ class Red(db.Model):
         return usuario.es_administrador or self.propietario_id == usuario.id
 
 
-def url_base_datos():
-    """Dirección de la base de datos.
-
-    Por defecto un fichero SQLite junto a los datos de la aplicación. La
-    variable DATABASE_URL permite apuntar a otro gestor sin tocar el código.
-    """
-    url = os.environ.get('DATABASE_URL')
-    if url:
-        # Algunos proveedores publican la URL con el prefijo antiguo
-        if url.startswith('postgres://'):
-            url = url.replace('postgres://', 'postgresql://', 1)
-        return url
+def url_sqlite_local():
+    """Fichero SQLite junto a los datos de la aplicación."""
     base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     return 'sqlite:///' + os.path.join(base, 'data', 'brainviz.db')
+
+
+def _accesible(url):
+    """Comprueba que se puede abrir una conexión con la base de datos."""
+    try:
+        opciones = {'connect_timeout': 5} if url.startswith('postgresql') else {}
+        motor = create_engine(url, connect_args=opciones)
+        with motor.connect():
+            pass
+        motor.dispose()
+        return True
+    except Exception:
+        return False
+
+
+def url_base_datos():
+    """Dirección de la base de datos que se va a utilizar.
+
+    Si DATABASE_URL está definida se emplea esa; en caso contrario, un fichero
+    SQLite local.
+
+    Ahora bien, una base de datos externa puede dejar de estar disponible: que
+    caduque el plan contratado, que el proveedor la retire o que simplemente no
+    responda. Si la aplicación se limitara a intentar conectarse, no llegaría a
+    arrancar y no se vería absolutamente nada. Por eso se comprueba antes que
+    responde y, si no lo hace, se recurre a la base de datos local: se pierden
+    los datos almacenados, pero la aplicación sigue en pie y permite explorar
+    las redes públicas, que es lo que la mayoría de visitantes va a hacer.
+    """
+    url = os.environ.get('DATABASE_URL')
+    if not url:
+        return url_sqlite_local()
+
+    # Algunos proveedores publican la URL con el prefijo antiguo
+    if url.startswith('postgres://'):
+        url = url.replace('postgres://', 'postgresql://', 1)
+
+    if _accesible(url):
+        return url
+
+    print('AVISO: la base de datos configurada no responde. Se continúa con la '
+          'base de datos local, de modo que la aplicación sigue funcionando '
+          'aunque no se conserven los datos.', flush=True)
+    return url_sqlite_local()

@@ -147,6 +147,11 @@ automático.
 > nueva publicación. Por eso el despliegue emplea una base de datos PostgreSQL externa,
 > indicada mediante `DATABASE_URL`. La base de datos debe estar en la misma región que el
 > servicio para que se comuniquen por la red privada del proveedor.
+>
+> Si esa base de datos dejara de estar disponible, la aplicación no se queda sin arrancar:
+> comprueba la conexión al iniciarse y, si no responde, continúa con la base de datos local.
+> Se pierden los datos almacenados, pero el catálogo público sigue explorándose con
+> normalidad.
 
 ## Pruebas
 
