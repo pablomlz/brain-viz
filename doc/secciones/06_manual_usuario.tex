@@ -1,36 +1,228 @@
 \chapter{Manual de usuario}
 
-Este capítulo explica cómo utilizar la aplicación una vez desplegada. Dado que el sistema cuenta con
-un único rol de usuario, el manual se organiza en función de las tareas que este puede realizar, en
-lugar de por perfiles. El contenido se irá ampliando a medida que se completen los sucesivos
-\textit{sprints}.
+Este capítulo explica cómo utilizar Brain Viz. No hace falta instalar nada: la aplicación se abre en
+el navegador y funciona igual desde cualquier ordenador.
 
-\section{Acceso y visión general}
+El manual se organiza en tres partes, siguiendo los perfiles de usuario descritos en el capítulo de
+requisitos. La primera recoge lo que puede hacer cualquiera que entre, sin necesidad de tener cuenta.
+La segunda, lo que se añade al registrarse como investigador. La tercera, las funciones reservadas al
+administrador. Como los roles se heredan, un investigador dispone de todo lo de la primera parte, y
+un administrador de todo lo anterior.
 
-Al abrir la aplicación en el navegador se muestra una pantalla de acceso de carácter presentacional.
-Tras acceder, se presenta la red cerebral de ejemplo (atlas AAL90) ya renderizada en el lienzo 3D,
-junto con los paneles de información y control superpuestos.
+\section{Primeros pasos}
 
-% NOTA: incluir captura de la pantalla de acceso y de la vista general.
+Al abrir la dirección de la aplicación aparece directamente una red cerebral renderizada en 3D. No
+hay pantalla de acceso ni registro previo: quien solo quiera mirar puede hacerlo desde el primer
+momento.
 
-\section{Navegación por la escena 3D}
+La pantalla se organiza alrededor de la escena 3D, que ocupa todo el espacio disponible, con la
+información superpuesta en paneles situados en los bordes para no taparla. La
+figura~\ref{fig:manual-vista} muestra esta distribución.
 
-El usuario puede explorar la red mediante los controles de cámara:
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/manual_vista_general}
+	\caption{Vista general de la aplicación. A la izquierda, los datos de la red y el buscador; a la
+	derecha, los controles de visualización; abajo a la izquierda, la leyenda de colores.}
+	\label{fig:manual-vista}
+\end{figure}
+
+Los elementos de la pantalla son estos:
 
 \begin{itemize}
-	\item \textbf{Rotar (orbitar):} arrastrar con el botón izquierdo del ratón.
-	\item \textbf{Zoom:} rueda del ratón o gesto de pellizco en dispositivos táctiles.
-	\item \textbf{Desplazar (paneo):} arrastrar con el botón derecho o con dos dedos.
+	\item En la \textbf{columna izquierda} se indica qué red se está viendo y cuántos nodos,
+		conexiones y grupos tiene, seguido de las métricas de la red y del buscador de regiones.
+	\item En la \textbf{columna derecha} están los controles que modifican la visualización.
+	\item En la \textbf{esquina inferior izquierda}, la leyenda que explica qué significan los
+		colores.
+	\item En la \textbf{parte superior}, la barra de sesión, desde la que se accede al catálogo de
+		redes y se inicia sesión.
 \end{itemize}
 
-\section{Interpretación de la visualización}
+\section{Lo que puede hacer cualquier visitante}
 
-Cada nodo representa una región cerebral situada en sus coordenadas anatómicas, y su color indica el
-grupo o lóbulo al que pertenece, según la leyenda mostrada en la interfaz. Las líneas entre nodos
-representan las conexiones de la red. El panel de estadísticas muestra el número de nodos,
-conexiones y grupos de la red activa.
+\subsection{Moverse por la red}
 
-% NOTA: a medida que avancen los sprints, documentar aquí el filtrado por umbral (RF 5), la
-% selección e inspección de nodos (RF 6, RF 6.1), la consulta de métricas (RF 8), la búsqueda
-% (RF 10), y las funciones de investigador/administrador: registro (RF 13), carga de datasets
-% propios (RF 14), gestión de datasets (RF 15) y exportación (RF 12, RF 16).
+La escena se maneja con el ratón:
+
+\begin{itemize}
+	\item \textbf{Girar la red}: arrastrar con el botón izquierdo.
+	\item \textbf{Acercar y alejar}: girar la rueda.
+	\item \textbf{Desplazar}: arrastrar con el botón derecho.
+\end{itemize}
+
+En un ordenador portátil sin ratón, arrastrar con un dedo sobre el panel táctil gira la red y el
+gesto de pellizco acerca y aleja.
+
+\subsection{Entender lo que se ve}
+
+Cada esfera es una región del cerebro, colocada en las coordenadas que le corresponden
+anatómicamente. Las líneas entre esferas son las conexiones entre esas regiones, y su intensidad
+está recogida en el peso que trae el fichero de la red.
+
+El color de los nodos indica, por defecto, a qué grupo o lóbulo pertenece cada región. La
+correspondencia entre color y grupo está en la leyenda. Al pasar el cursor por encima de un nodo
+aparece su nombre.
+
+\subsection{Quedarse solo con las conexiones más fuertes}
+
+Una red cerebral completa tiene tantas conexiones que cuesta distinguir su estructura. El control
+\textbf{umbral de peso} sirve para eso: al subirlo van desapareciendo las conexiones más débiles y
+queda a la vista el esqueleto de la red.
+
+El contador de conexiones del panel izquierdo indica en todo momento cuántas se están viendo del
+total, de modo que se sabe qué proporción de la red se está mostrando. Con el umbral en su valor
+mínimo aparecen todas. En las figuras~\ref{fig:s2-umbral} y~\ref{fig:s2-grado} puede verse el efecto
+sobre la red de ejemplo.
+
+\subsection{Consultar los datos de una región}
+
+Al hacer clic sobre un nodo, este se agranda y sus conexiones se dibujan más gruesas, de manera que
+se distingue con qué otras regiones se relaciona. A la derecha aparece un panel con su nombre, su
+identificador, el grupo al que pertenece, su grado y sus coordenadas.
+
+El grado se muestra con dos cifras separadas por una barra. La primera es el número de conexiones que
+se están viendo con el umbral actual y la segunda el total que tiene esa región en la red completa,
+así que la primera baja según se sube el umbral. El panel se cierra pulsando la equis, y también
+haciendo clic en una zona vacía de la escena.
+
+\subsection{Las métricas de la red}
+
+Bajo las estadísticas aparecen cuatro medidas que describen la estructura de la red y que el
+servidor calcula al cargarla:
+
+\begin{itemize}
+	\item La \textbf{densidad} indica qué proporción de las conexiones posibles existe realmente. Un
+		valor cercano a cero corresponde a una red muy dispersa y uno cercano a uno a una red en la
+		que casi todas las regiones están conectadas entre sí.
+	\item El \textbf{grado medio} es el número de conexiones que tiene una región por término medio.
+	\item El \textbf{coeficiente de clustering} mide si los vecinos de una región están conectados
+		también entre ellos, es decir, si la red forma agrupaciones locales.
+	\item Las \textbf{componentes conexas} indican si la red es una sola pieza o si está formada por
+		varios bloques sin ningún camino entre ellos.
+\end{itemize}
+
+Cuando se selecciona un nodo, su panel muestra además dos medidas propias de esa región. La
+\textbf{intermediación} es alta en regiones que actúan como puente, por las que pasan muchos de los
+caminos más cortos entre otras dos. La \textbf{cercanía} es alta en regiones que están a pocos pasos
+del resto de la red.
+
+\subsection{Colorear la red según una métrica}
+
+El desplegable \textbf{colorear y dimensionar por} cambia el criterio con el que se pintan los nodos.
+Además del grupo anatómico, que es la opción de partida, se puede elegir el grado, la intermediación
+o la cercanía. Al hacerlo, el tamaño y el color de cada nodo pasan a reflejar su valor, de modo que
+las regiones más destacadas según esa medida saltan a la vista sin tener que ir mirándolas una a una.
+
+La leyenda cambia en consecuencia y muestra la escala de color con los valores mínimo y máximo de la
+métrica en esa red, como puede verse en la figura~\ref{fig:s3-mapeo}.
+
+\subsection{Buscar una región concreta}
+
+El buscador de la columna izquierda localiza regiones por su etiqueta. Al situar el cursor en el
+campo se despliega la lista completa, porque las etiquetas son abreviaturas del atlas
+(\texttt{PUT} para el putamen, \texttt{HIP} para el hipocampo) y no siempre se conocen de antemano.
+Escribiendo unas letras la lista se reduce a las coincidencias.
+
+Al elegir una región, esta queda seleccionada y la cámara se desplaza hasta situarla en el centro de
+la pantalla, como muestra la figura~\ref{fig:s3-busqueda}.
+
+\subsection{Ajustar la visualización a tu gusto}
+
+El panel de controles permite mostrar u ocultar las conexiones, cambiar su opacidad, activar la
+rotación automática, mostrar los ejes de referencia, cambiar el tamaño de los nodos y alternar entre
+el tema oscuro y el claro. El tema elegido se recuerda para las siguientes visitas.
+
+El botón \textbf{restablecer} devuelve todos estos ajustes a como estaban al principio, lo que
+resulta cómodo después de haber probado varias combinaciones.
+
+\subsection{Llevarse los resultados}
+
+Hay dos formas de exportar lo que se está viendo:
+
+\begin{itemize}
+	\item El botón \textbf{exportar imagen} descarga una captura de la escena tal y como aparece en
+		ese momento, con el encuadre, el filtrado y los colores que se hayan elegido. Sirve para
+		incluir la figura en un documento o una presentación.
+	\item En el catálogo de redes, los botones \textbf{CSV} y \textbf{JSON} descargan las métricas
+		de la red: una fila por región con su grado, su intermediación y su cercanía, seguida de las
+		métricas globales. El CSV se abre directamente en una hoja de cálculo.
+\end{itemize}
+
+\subsection{Cambiar de red}
+
+El enlace \textbf{cambiar}, junto al nombre de la red activa, abre el catálogo con las redes
+disponibles. Al pulsar \textbf{visualizar} en cualquiera de ellas, la escena se sustituye por la red
+elegida y todos los paneles se actualizan.
+
+\section{Si te registras como investigador}
+
+Con una cuenta se pueden cargar redes propias y conservarlas. El registro se hace desde el botón
+\textbf{iniciar sesión} de la barra superior, y desde ahí mismo se pasa al formulario de alta con el
+enlace correspondiente, como muestra la figura~\ref{fig:s4-acceso}. Solo hacen falta un nombre, un
+correo y una contraseña de al menos ocho caracteres.
+
+\subsection{Cargar una red propia}
+
+Una red se describe con dos ficheros que hay que subir a la vez, porque por separado no sirven de
+nada: uno con las coordenadas de cada región y otro con la matriz de conexiones. El formato es el
+que se detalla en los requisitos de información del capítulo 2.
+
+En la ventana de redes, la pestaña \textbf{cargar una red} pide un nombre, una descripción opcional y
+los dos ficheros (figura~\ref{fig:s4-subida}). Al enviarlos, el sistema los comprueba antes de
+guardar nada. Si algo no cuadra, la carga se rechaza indicando el motivo concreto, ya sea que la
+matriz no es cuadrada, que sus dimensiones no coinciden con el número de regiones del otro fichero o
+que contiene valores que no son números. Si todo está bien, la red aparece en la lista y ya se puede
+visualizar como cualquier otra.
+
+\subsection{Gestionar tus redes}
+
+Las redes propias aparecen en el catálogo bajo el epígrafe \textbf{mis redes}, separadas de las
+públicas (figura~\ref{fig:s4-catalogo}). Desde ahí se pueden visualizar, exportar sus métricas o
+eliminarlas.
+
+Las redes que subas son \textbf{privadas}. No aparecen en el catálogo de los demás usuarios y nadie
+más puede abrirlas ni descargar sus métricas. Solo tú y un administrador tenéis acceso a ellas.
+
+\section{Si eres administrador}
+
+El administrador dispone de un botón adicional en la barra superior que da paso al panel de
+administración, con dos apartados.
+
+\subsection{Usuarios}
+
+Muestra la lista de personas registradas con su correo, el número de redes que han subido y su rol
+(figura~\ref{fig:s4-admin}). Desde el desplegable se le puede asignar a alguien el rol de
+administrador o devolverlo al de investigador, y también se pueden dar cuentas de baja.
+
+Hay dos cosas que un administrador no puede hacer consigo mismo: quitarse el rol y eliminar su propia
+cuenta. La razón es sencilla: si fuera el único, el sistema se quedaría sin nadie capaz de
+administrarlo.
+
+Al eliminar a un usuario se borran sus redes privadas, pero las que estuvieran publicadas siguen en
+el catálogo. Desaparecerían sin previo aviso para el resto de usuarios, y no parece razonable que la
+baja de una cuenta se lleve por delante contenido que otros estaban usando.
+
+\subsection{Catálogo}
+
+Recoge todas las redes del sistema, propias y ajenas, indicando cuáles son públicas
+(figura~\ref{fig:s4-admin-catalogo}). El botón \textbf{publicar} pone una red a disposición de
+cualquier visitante y \textbf{retirar} la devuelve a su estado privado sin borrarla. También pueden
+eliminarse por completo.
+
+\section{Problemas frecuentes}
+
+\begin{itemize}
+	\item \textbf{La primera carga tarda bastante.} Si la aplicación lleva un rato sin usarse, el
+		servidor puede haberse suspendido y necesita unos segundos para volver a ponerse en marcha.
+		Las siguientes veces responde con normalidad.
+	\item \textbf{El buscador no encuentra la región.} Las etiquetas son abreviaturas del atlas, así
+		que escribir el nombre completo en castellano no da resultados. Es mejor situar el cursor en
+		el campo vacío y elegir de la lista.
+	\item \textbf{La red se ve como una maraña.} Es lo normal con todas las conexiones a la vista.
+		Subiendo el umbral de peso se queda solo lo más relevante, y bajar la opacidad de las
+		conexiones también ayuda.
+	\item \textbf{Una red cargada aparece rechazada.} El mensaje indica el motivo. Lo más habitual es
+		que la matriz tenga un tamaño distinto al número de regiones del fichero de nodos, o que se
+		haya subido el mismo fichero dos veces por error.
+\end{itemize}

@@ -81,7 +81,7 @@ implementación realizada y las pruebas con las que se ha validado.
 Antes de implementar la interfaz se elaboró un \textbf{boceto (\textit{mockup})} de su distribución,
 que sirvió de guía para el desarrollo. La interfaz se ha diseñado como una \textbf{aplicación de una
 sola pantalla} en la que la escena 3D ocupa todo el espacio disponible y la información se superpone
-en paneles (HUD) situados en las esquinas, de modo que no obstruyan la visualización. Los elementos
+en paneles (HUD) situados en las esquinas, para que no obstruyan la visualización. Los elementos
 principales, mostrados en el \textit{mockup} de la figura~\ref{fig:mockup}, son:
 
 \begin{itemize}
@@ -238,7 +238,7 @@ secuencia de la figura~\ref{fig:secuencia}.
 \end{figure}
 
 Este diseño inicial tiene una limitación clara: tal y como está planteado, cada petición de
-una red reconstruye el grafo y su JSON desde los ficheros, de modo que visualizar la misma red muchas
+una red reconstruye el grafo y su JSON desde los ficheros, así que visualizar la misma red muchas
 veces repite el mismo trabajo. Para las redes públicas, que no cambian, esto es ineficiente. Una
 mejora prevista, que se abordará al introducir la persistencia en el Sprint 4, es \textbf{construir
 la red y su JSON una sola vez y almacenar el resultado} (en una caché o en la base de datos) para
@@ -457,7 +457,7 @@ la escena 3D ocupe todo el espacio y la información se superponga en paneles qu
 \end{itemize}
 
 Además, el contador de conexiones del panel de estadísticas pasa a mostrar la relación
-\textit{visibles / totales}, de modo que el usuario perciba en todo momento qué proporción de la red
+\textit{visibles / totales}, de forma que el usuario perciba en todo momento qué proporción de la red
 está viendo. La figura~\ref{fig:mockup-s2} recoge el boceto de la interfaz resultante, con los dos
 elementos nuevos destacados.
 
@@ -589,7 +589,7 @@ capturando los clics que no impactan sobre ningún nodo.
 
 En el módulo de parseo se ha eliminado el umbral fijo y se ha añadido el cálculo del grado. Como las
 aristas de peso nulo no representan conexiones reales, se eliminan del grafo antes de calcular los
-grados, de modo que el grado obtenido sea el correcto:
+grados, para que el grado obtenido sea el correcto:
 
 \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily, keywordstyle=\color{blue!60!black}, commentstyle=\color{gray}, showstringspaces=false, frame=single, columns=fullflexible]
 # Las aristas de peso nulo no representan conexion: se eliminan del grafo
@@ -794,7 +794,7 @@ Durante las pruebas de este \textit{sprint} se detectaron los siguientes errores
 
 Al igual que en el \textit{sprint} anterior, la validación final corresponde al director del proyecto.
 Para hacerla posible, la aplicación se ha \textbf{desplegado en un servidor accesible desde Internet},
-de modo que tanto el director como, más adelante, los miembros del tribunal puedan probarla sin
+de manera que tanto el director como, más adelante, los miembros del tribunal puedan probarla sin
 instalar nada.
 
 El despliegue emplea una \textbf{imagen de producción} distinta de la utilizada en desarrollo: en
@@ -833,7 +833,7 @@ habitual para dibujar líneas anchas en WebGL. Con ella el grosor sí es configu
 en un valor ligeramente superior al anterior para ganar visibilidad sin recargar la escena.
 
 \paragraph*{Resaltado de las conexiones del nodo seleccionado.} Al seleccionar un nodo se resaltaba
-el nodo, pero no sus conexiones, de modo que seguir hacia dónde iba cada una exigía fijarse mucho.
+el nodo, pero no sus conexiones, con lo que seguir hacia dónde iba cada una exigía fijarse mucho.
 Ahora, al pulsar sobre un nodo, sus aristas se dibujan en un color distinto y con más grosor que el
 resto. Para conseguirlo se mantienen dos geometrías separadas: la de la red completa, que no cambia,
 y una segunda que contiene solo las aristas del nodo seleccionado y se construye al vuelo cuando
@@ -978,7 +978,7 @@ por una única pieza o por varios bloques aislados. En cuanto a las centralidade
 por lo que identifica regiones que actúan como puente, mientras que la \textbf{cercanía} mide lo
 próximo que está un nodo del resto de la red.
 
-Hay aquí una decisión metodológica que conviene justificar. Tanto la intermediación como la cercanía
+Hay aquí una decisión metodológica que merece una explicación. Tanto la intermediación como la cercanía
 se apoyan en el concepto de camino más corto, y en un grafo ponderado ese cálculo puede tener en
 cuenta los pesos interpretándolos como distancias. En una red cerebral, sin embargo, el peso expresa
 lo \emph{intensa} que es una conexión, no lo que cuesta recorrerla: un peso alto significa una
@@ -1040,7 +1040,7 @@ figura~\ref{fig:sec-s3} recoge el diagrama de secuencia de ambas interacciones.
 \subsubsection*{Backend: métricas de la red y centralidades (RF 8, RF 6.1)}
 
 El módulo de parseo incorpora el cálculo de las métricas justo después de construir el grafo. La
-biblioteca de análisis de grafos resuelve cada una con una llamada, de modo que el código se mantiene
+biblioteca de análisis de grafos resuelve cada una con una llamada, así que el código se mantiene
 breve y legible:
 
 \begin{lstlisting}[language=Python, basicstyle=\footnotesize\ttfamily, keywordstyle=\color{blue!60!black}, commentstyle=\color{gray}, showstringspaces=false, frame=single, columns=fullflexible]
@@ -1188,7 +1188,7 @@ La tabla~\ref{tab:pruebas-s3} recoge las pruebas de validación de este \textit{
 			centrarlo, sin saltos bruscos. & Correcto \\
 		\addlinespace
 		P-18 (RF 10) & Situar el cursor en el campo de búsqueda vacío. &
-			Se despliega la lista de las 90 regiones de la red, de modo que el usuario pueda elegir
+			Se despliega la lista de las 90 regiones de la red, de forma que el usuario pueda elegir
 			una sin conocer de antemano las abreviaturas del atlas. & Correcto \\
 		\bottomrule
 	\end{tabularx}
@@ -1214,7 +1214,7 @@ Durante el desarrollo y las pruebas de este \textit{sprint} se detectaron los si
 	\item \textbf{El buscador era inutilizable sin conocer el atlas.} Este fue el error más
 		instructivo, porque el código funcionaba correctamente y aun así la funcionalidad no servía.
 		Las etiquetas de las regiones son abreviaturas de la parcelación empleada
-		(\texttt{PUT}, \texttt{HIP}, \texttt{SFGdor}), de modo que un usuario que escribiera
+		(\texttt{PUT}, \texttt{HIP}, \texttt{SFGdor}), con lo que un usuario que escribiera
 		\textit{frontal}, \textit{putamen} o \textit{hipocampo} no obtenía ninguna coincidencia y
 		concluía, con razón, que la búsqueda no funcionaba. El problema no estaba en el filtrado sino
 		en que no había forma de saber qué escribir. Se corrigió haciendo que, al situar el cursor en
@@ -1357,7 +1357,7 @@ privada los datos de cada entidad, lo que se traduce en dos tablas.
 		de sus dos ficheros [RI 4.2].
 \end{itemize}
 
-Hay dos decisiones sobre el almacenamiento que conviene justificar.
+Sobre el almacenamiento se tomaron dos decisiones que merece la pena razonar.
 
 \paragraph*{Los ficheros se guardan en la base de datos, no en disco.} Lo natural sería dejarlos en
 una carpeta del servidor, pero en los alojamientos habituales el disco del contenedor es
@@ -1526,7 +1526,7 @@ def grafo_de(red):
 
 \subsubsection*{Frontend: personalización y exportación (RF 11, RF 12)}
 
-Los ajustes de visualización se declaran en un único objeto con sus valores por defecto, de modo que
+Los ajustes de visualización se declaran en un único objeto con sus valores por defecto, de manera que
 restablecer la vista consiste sencillamente en volver a ese objeto en lugar de deshacer cada cambio
 por separado. El tema se aplica marcando la raíz del documento, lo que permite que toda la hoja de
 estilos responda a un único cambio, y se recuerda entre visitas.
@@ -1729,7 +1729,7 @@ Durante el desarrollo y las pruebas de este \textit{sprint} se detectaron los si
 		color no es decorativo: indica a qué grupo anatómico pertenece la región o qué valor tiene en
 		la métrica representada. Teñirlo borraba ese dato justo en el nodo que el usuario estaba
 		mirando. Se corrigió haciendo que el nodo conserve su color y que sus conexiones se dibujen
-		en ese mismo tono, de modo que lo que distingue a la selección es el tamaño y el grosor. Hubo
+		en ese mismo tono, de manera que lo que distingue a la selección es el tamaño y el grosor. Hubo
 		que reducir además el brillo del nodo seleccionado, porque con el valor anterior el color se
 		saturaba hacia el blanco y tampoco llegaba a reconocerse.
 	\item \textbf{La aplicación no arrancaba si la base de datos no respondía.} Al depender de una

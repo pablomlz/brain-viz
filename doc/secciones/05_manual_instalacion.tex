@@ -2,7 +2,9 @@
 
 En este capítulo se detalla el procedimiento para instalar y ejecutar la aplicación. Gracias al uso
 de contenedores, el despliegue es reproducible y no requiere instalar manualmente las dependencias
-de Python ni de Node.js: basta con disponer de Docker.
+de Python ni de Node.js: basta con disponer de Docker. Tampoco hace falta preparar la base de datos,
+porque la aplicación crea las tablas que necesita la primera vez que arranca y deja la red de
+ejemplo disponible en el catálogo.
 
 El proyecto contempla dos formas de ejecución, pensadas para propósitos distintos. La
 \textbf{ejecución en local} (secciones~\ref{sec:requisitos} y~\ref{sec:lanzamiento}) levanta los dos
@@ -120,6 +122,55 @@ docker build -t brain-viz:prod .
 docker run -p 8080:8080 brain-viz:prod
 \end{verbatim}
 
+\subsection{Configuración mediante variables de entorno}
+
+El comportamiento de la aplicación se ajusta con las variables de entorno que recoge la
+tabla~\ref{tab:variables}. Ninguna es obligatoria para probarla en local, pero en un servidor
+público deberían definirse todas.
+
+\begin{table}[H]
+	\centering
+	\caption{Variables de entorno de la aplicación.}
+	\label{tab:variables}
+	\small
+	\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{4.1cm} >{\raggedright\arraybackslash}X}
+		\toprule
+		\textbf{Variable} & \textbf{Para qué sirve} \\
+		\midrule
+		\texttt{PORT} & Puerto en el que escucha el servidor. Si no se indica, el 8080. \\
+		\addlinespace
+		\texttt{SECRET\_KEY} & Clave con la que se firma la cookie de sesión. Debe ser un valor
+			difícil de adivinar y distinto en cada instalación. \\
+		\addlinespace
+		\texttt{COOKIE\_SEGURA} & Con el valor \texttt{1}, la cookie de sesión solo viaja por
+			HTTPS. Se activa en producción. \\
+		\addlinespace
+		\texttt{DATABASE\_URL} & Base de datos que se va a utilizar. Sin ella se emplea un fichero
+			local. \\
+		\addlinespace
+		\texttt{ADMIN\_EMAIL}, \texttt{ADMIN\_PASSWORD}, \texttt{ADMIN\_NOMBRE} & Crean la cuenta
+			de administrador la primera vez que arranca la aplicación. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+La cuenta de administrador se crea de esta forma y no desde la propia web a propósito: si cualquiera
+pudiera registrarse como administrador, el control del catálogo y de los usuarios no serviría de
+nada. Estas variables tampoco se escriben en el repositorio, que es público, sino que se definen en
+el panel del proveedor.
+
+\subsection{Sobre el almacenamiento}
+
+En los alojamientos habituales el disco del contenedor es efímero: se reconstruye entero cada vez que
+se publica una versión nueva. Si la base de datos fuera un fichero dentro del contenedor, los
+usuarios registrados y las redes que hubieran cargado desaparecerían con cada despliegue. Por eso el
+despliegue emplea una base de datos externa, indicada mediante \texttt{DATABASE\_URL}, que debe
+estar en la misma región que el servicio para que se comuniquen por la red privada del proveedor.
+
+Si esa base de datos dejara de responder, la aplicación no se queda sin arrancar: comprueba la
+conexión al iniciarse y, cuando no la obtiene, continúa con la base de datos local. En ese caso se
+pierden los datos almacenados, pero el catálogo público se sigue explorando con normalidad.
+
 \subsection{Publicación}
 
 El repositorio incluye un fichero \texttt{render.yaml} que describe el servicio, de forma que la
@@ -141,3 +192,16 @@ periodo puede tardar aproximadamente un minuto mientras el servicio se reactiva;
 atienden con normalidad. Para reducir este efecto durante los periodos de evaluación se emplea un
 servicio externo de comprobación periódica que consulta el \textit{endpoint} \texttt{/health} a
 intervalos regulares, manteniendo la instancia activa.
+
+\section{Ejecución de las pruebas}
+
+El proyecto incluye un conjunto de pruebas automatizadas de la API. Para ejecutarlas basta con
+instalar las dependencias del \textit{backend} y lanzarlas desde la raíz del repositorio:
+
+\begin{verbatim}
+pip install -r backend/requirements.txt pytest
+python -m pytest backend/tests -q
+\end{verbatim}
+
+Cada prueba trabaja sobre una base de datos limpia, así que se pueden ejecutar en cualquier orden y
+ninguna depende del resultado de las anteriores.

@@ -82,12 +82,15 @@
 	% Índice de contenidos
 	\tableofcontents
 
-	% Índice de figuras y de tablas. Se compactan ligeramente para que cada uno
-	% quepa en una página y no quede una hoja suelta con una sola entrada.
-	{\renewcommand{\baselinestretch}{0.92}\selectfont
+	% Índice de figuras y de tablas. Se compactan (interlineado algo menor y sin
+	% el hueco que LaTeX deja entre capítulos) para que cada uno quepa en una
+	% página y no quede una hoja suelta con una o dos entradas.
+	\begingroup
+	\renewcommand{\baselinestretch}{0.92}\selectfont
+	\renewcommand*{\addvspace}[1]{}
 	\listoffigures
 	\listoftables
-	}
+	\endgroup
 	\cleardoublepage
 
 	% Cap. 1 - Introducción
@@ -98,8 +101,8 @@
 	\input{secciones/01_introduccion}
 
 	% Cap. 2 - Requisitos del Software
-	%   2.1 Requisitos (funcionales, no funcionales, de información)
-	%   2.2 Perfil de usuarios
+	%   2.1 Perfil de usuarios
+	%   2.2 Requisitos (funcionales, no funcionales, de información)
 	%   2.3 Casos de uso
 	%   2.4 Criterios de validación
 	\input{secciones/02_requisitos}
@@ -113,20 +116,13 @@
 
 	% Cap. 4 - Desarrollo del software
 	%   4.1 Análisis de arquitecturas y patrones
-	%   4.2 Sprint 1
+	%   4.2 a 4.5 Sprints 1 a 4
 	\input{secciones/04_desarrollo}
 
-	% --- Capítulos posteriores al Sprint 1 ---------------------------------------
-	% El tutor pide para esta entrega SOLO hasta la documentación del Sprint 1 (cap. 1-4);
-	% los manuales y las conclusiones se redactan más adelante. Descomenta cuando toque.
-	% \input{secciones/05_manual_instalacion}  % Cap. 5 - Manual de instalación
-	% \input{secciones/06_manual_usuario}      % Cap. 6 - Manual de usuario
-	% \input{secciones/07_conclusiones}        % Cap. 7 - Conclusiones
+	\input{secciones/05_manual_instalacion}  % Cap. 5 - Manual de instalación
+	\input{secciones/06_manual_usuario}      % Cap. 6 - Manual de usuario
+	\input{secciones/07_conclusiones}        % Cap. 7 - Conclusiones
 
-	% Trabajos futuros
-
-
-	
 	\newpage
 	\bibliography{bibliografia}
 	\bibliographystyle{plain}

@@ -1,25 +1,138 @@
 \chapter{Conclusiones}
 
-% NOTA: capítulo a completar al finalizar el desarrollo. Debe recoger una valoración del trabajo
-% realizado, el grado de cumplimiento de los objetivos planteados en la introducción y una
-% reflexión personal, además de las líneas de mejora y trabajo futuro.
+\section{Grado de cumplimiento de los objetivos}
+
+El objetivo general del trabajo era diseñar, desarrollar y desplegar una aplicación web para
+visualizar redes cerebrales en 3D. La aplicación está terminada, funciona y se puede probar desde
+cualquier navegador en \url{https://brain-viz.onrender.com/}, así que ese objetivo se ha cumplido.
+Vale la pena repasar uno a uno los objetivos específicos que se plantearon en la introducción.
+
+El primero era \textbf{cargar y visualizar redes en 3D de forma interactiva y en tiempo real}. Se
+cumple desde el Sprint 1 y es la base sobre la que se ha construido todo lo demás. La red se dibuja
+con los nodos en sus coordenadas anatómicas y la cámara responde sin esperas.
+
+El segundo era \textbf{proporcionar un análisis básico de las métricas de teoría de grafos}. Se
+cumple en el Sprint 3, con cuatro métricas globales y tres medidas de centralidad por región. Aquí
+quiero destacar que no me limité a comprobar que salían números: contrasté las cinco métricas con
+implementaciones escritas por mí sin usar la librería, incluida una del algoritmo de Brandes para la
+intermediación. Es el tipo de comprobación que no se ve en la aplicación pero que da confianza en
+que los resultados son correctos, que es lo que importa si alguien va a usarlos para investigar.
+
+El tercero era \textbf{ofrecer una visualización interactiva que permita navegar, filtrar,
+seleccionar e inspeccionar}. Se cumple entre los Sprints 2 y 3. Además del filtrado y la selección
+que pedía el requisito, la aplicación permite buscar una región concreta y representar visualmente
+cualquiera de las métricas calculadas.
+
+El cuarto era que la aplicación fuese \textbf{mantenible y escalable}, con una separación clara entre
+el procesamiento y la visualización. La separación se ha mantenido durante todo el desarrollo y se
+nota en el resultado: el \textit{backend} no sabe nada de cómo se dibuja la red y el \textit{frontend}
+no calcula ninguna métrica. En cuanto al mantenimiento, al llegar al Sprint 4 el código se dividió en
+módulos con una responsabilidad definida en lugar de dejar crecer los ficheros existentes, y se
+añadió un conjunto de pruebas automatizadas.
+
+El quinto era que se pudiera \textbf{desplegar de manera sencilla}. Se cumple, aunque con un matiz que
+merece la pena contar. Durante los tres primeros sprints el despliegue era el entorno de desarrollo
+con contenedores, y al llegar el momento de publicarlo en un servidor descubrí que eso no valía: eran
+dos servicios que se comunicaban por un nombre interno de la red de Docker que fuera de ella no
+existe, y además usaban servidores de desarrollo. Tuve que preparar una imagen distinta que compila
+la interfaz y la sirve desde el propio \textit{backend} en un solo contenedor. Fue un trabajo que no
+tenía previsto y que me enseñó que «funciona en mi máquina» y «se puede desplegar» no son lo mismo.
+
+Los dieciocho requisitos funcionales recogidos en el capítulo 2 están implementados, junto con los
+requisitos no funcionales y de información. Queda una comprobación pendiente que prefiero dejar
+señalada antes que dar por buena: la verificación formal de los 60 fotogramas por segundo del
+[RNF 1]. La medí con dos redes de tamaños muy distintos y el resultado fue el mismo en ambas, pero
+también lo fue al medir una página vacía, lo que indica que el límite lo ponía el entorno de medida y
+no la aplicación. Lo que sí puede afirmarse es que multiplicar por treinta el número de conexiones no
+produjo ninguna degradación apreciable.
 
 \section{Experiencia personal}
 
-% Reflexión sobre el proceso de desarrollo: aprendizajes técnicos (stack web moderno, visualización
-% 3D con WebGL, contenedores), dificultades encontradas y su resolución, y valoración global del
-% cumplimiento de los objetivos.
+Lo que más me llevo de este trabajo no es tanto haber aprendido tecnologías concretas, que también,
+sino haber visto lo que separa un programa que funciona de un proyecto terminado.
 
-\section{Propuesta de mejoras}
+En lo técnico, nunca había trabajado con visualización 3D en el navegador y era la parte que más me
+preocupaba al empezar. Resultó ser más accesible de lo que esperaba gracias a poder describir la
+escena de forma declarativa, igual que el resto de la interfaz, en lugar de tener que llevar a mano el
+bucle de dibujado. Donde sí me encontré con la dificultad real fue en el rendimiento. La primera
+versión del filtrado por umbral reconstruía la geometría entera cada vez que se movía el control, y
+era inviable. La solución consistió en darse cuenta de que si el servidor envía las conexiones
+ordenadas por peso, las visibles son siempre las primeras y basta con decirle a la tarjeta gráfica
+cuántas dibujar. Ese cambio de enfoque, buscar la propiedad de los datos que simplifica el problema
+en lugar de optimizar el código, es probablemente lo más útil que he aprendido.
 
-Entre las principales líneas de trabajo futuro se contemplan:
+Algo parecido me pasó con los grosores de las líneas. Mi tutor me pidió que las conexiones se vieran
+un poco más gruesas, algo que parecía cuestión de cambiar un número, y resultó que la especificación
+de WebGL no obliga a los navegadores a dibujar líneas de más de un píxel y en la práctica ignoran ese
+parámetro. Hubo que cambiar la forma de dibujarlas. Ha sido un buen recordatorio de que conviene
+comprobar las cosas antes de suponer que son sencillas.
 
-\begin{itemize}
-	\item Optimización del rendimiento para grafos de gran tamaño (más de 1000 nodos) mediante
-		técnicas como el nivel de detalle (LOD) o el uso de \textit{web workers} para los cálculos
-		más pesados.
-	\item Incorporación de análisis de red más avanzados, como la detección de comunidades o el
-		cálculo de caminos mínimos entre regiones.
-	\item Soporte para más atlas y formatos de datos públicos.
-	\item Autenticación real y persistencia de configuraciones de usuario.
-\end{itemize}
+De las pruebas he cambiado bastante de idea. Al principio las veía como un trámite para poner en la
+memoria. Cambié de opinión cuando, comprobando que la suma de los grados fuera el doble del número de
+aristas, descubrí que todos los nodos tenían el mismo grado: la librería estaba creando una conexión
+por cada celda de la matriz, incluidas las de valor cero. Ese error no daba ningún síntoma en
+pantalla, la aplicación se veía perfecta, y sin esa comprobación habría llegado hasta el final. Por
+eso en el Sprint 4, cuando aparecieron los datos privados de cada usuario, lo primero que automaticé
+fueron las pruebas de que nadie puede ver lo ajeno.
+
+También he aprendido algo sobre lo que significa que algo esté «terminado». Varias veces di por
+cerrada una funcionalidad y no lo estaba. El buscador es el mejor ejemplo: el código filtraba
+correctamente, pero las etiquetas del atlas son abreviaturas y quien escribía «frontal» o
+«hipocampo» no obtenía nada y concluía, con razón, que no funcionaba. El programa estaba bien y la
+funcionalidad no servía. La solución no fue tocar el filtrado sino mostrar la lista de regiones para
+que se pueda elegir directamente.
+
+En cuanto a la organización, trabajar por sprints me ha venido bien. Cada uno terminaba con algo que
+se podía enseñar y probar, y las revisiones de mi tutor entre uno y otro han cambiado el resultado
+final más de lo que yo esperaba. Varias de las mejoras que ahora me parecen evidentes, como que el
+grado mostrado cambie al filtrar o que las conexiones del nodo seleccionado se distingan, salieron de
+esas revisiones y no se me habrían ocurrido probando yo solo la aplicación, precisamente porque yo ya
+sabía lo que hacía cada cosa.
+
+Si tuviera que empezar de nuevo, lo que haría distinto es preparar antes el despliegue real. Dejarlo
+para el final hizo que arrastrara durante tres sprints un montaje que servía para desarrollar pero no
+para publicar, y que la diferencia entre ambos no apareciera hasta que ya no quedaba más remedio.
+
+\section{Propuestas de mejora y trabajo futuro}
+
+La aplicación cumple lo que se planteó, pero durante el desarrollo han ido apareciendo líneas de
+continuación que quedan fuera del alcance de este trabajo.
+
+\subsection*{Rendimiento con redes grandes}
+
+Las pruebas con una red de 500 nodos y más de 12.000 conexiones no mostraron degradación en el
+dibujado, pero el cálculo de la intermediación sí se nota: pasa de 12 milisegundos con la red de
+ejemplo a algo más de medio segundo. Guardar el resultado ya procesado resuelve el problema a partir
+de la segunda consulta, aunque la primera sigue costando lo mismo. Para redes bastante mayores tendría
+sentido calcular las métricas en segundo plano y avisar cuando estén listas, en lugar de hacer
+esperar a quien pide la red. En el lado del dibujado, redes de varios miles de nodos requerirían
+reducir el detalle de los elementos lejanos.
+
+\subsection*{Más análisis de red}
+
+Las métricas implementadas son las más habituales, pero hay otras que encajarían bien con el tipo de
+preguntas que se hacen sobre un connectoma: detectar comunidades de regiones muy conectadas entre sí,
+calcular el camino más corto entre dos regiones concretas y resaltarlo en la escena, o comparar dos
+redes para ver en qué se diferencian. Esto último sería especialmente útil en estudios que comparan
+sujetos sanos con pacientes.
+
+\subsection*{Más formatos y atlas}
+
+Ahora mismo la aplicación admite el formato de \textit{BrainNet Viewer}, que está bastante extendido
+pero no es el único. Aceptar matrices en otros formatos y traer atlas de repositorios públicos
+ampliaría bastante a quién le resulta útil la herramienta, y evitaría que el usuario tenga que
+convertir sus datos antes de poder verlos.
+
+\subsection*{Trabajo compartido}
+
+Ahora las redes son privadas o públicas, sin término medio. Poder compartir una red concreta con
+personas determinadas, o con un grupo de investigación, encajaría con la forma en la que se trabaja
+realmente. En la misma línea, guardar una vista concreta (con su encuadre, su umbral y su criterio de
+color) y poder enviar un enlace a ella facilitaría comentar resultados con otras personas.
+
+\subsection*{Accesibilidad}
+
+Es la carencia más clara de lo que hay hecho. La aplicación depende mucho del color para transmitir
+información, tanto en los grupos anatómicos como en las escalas de métricas, y no he comprobado cómo
+se ve con distintos tipos de daltonismo. Añadir paletas pensadas para eso, y revisar el manejo con
+teclado, sería lo primero que haría si el proyecto continuara.
