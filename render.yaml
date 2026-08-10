@@ -6,7 +6,8 @@ services:
     name: brain-viz
     runtime: docker
     dockerfilePath: ./Dockerfile
-    region: frankfurt          # el más cercano a España
+    region: oregon             # debe coincidir con la de la base de datos,
+                               # para que se comuniquen por la red privada
     plan: free
     branch: main
     healthCheckPath: /health   # Render comprueba aquí que el servicio está vivo
