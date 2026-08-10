@@ -34,6 +34,12 @@ Funcionalidades disponibles actualmente:
 - Mapeo visual: el color y el tamaño de los nodos pueden reflejar cualquiera de
   esas métricas, con una leyenda que se adapta a la escala.
 - Búsqueda de una región por su etiqueta, con desplazamiento de la cámara hasta ella.
+- Personalización de la vista (tamaño de nodos, opacidad, ejes, rotación y tema claro
+  u oscuro) y restablecimiento a los valores iniciales.
+- Exportación de la vista actual como imagen y de las métricas en CSV o JSON.
+- Cuentas de usuario: cualquiera puede explorar el catálogo público sin registrarse, y
+  quien se registra puede cargar sus propias redes y gestionarlas de forma privada.
+- Administración del catálogo de redes públicas y de los usuarios registrados.
 
 ## Arquitectura
 
@@ -41,7 +47,7 @@ Sigue un modelo cliente-servidor desacoplado:
 
 | Componente | Tecnología | Responsabilidad |
 |---|---|---|
-| **Backend** | Python · Flask · NetworkX | Procesa los ficheros de la red, construye el grafo y lo expone mediante una API |
+| **Backend** | Python · Flask · NetworkX · SQLAlchemy | Procesa las redes, calcula sus métricas, las expone mediante una API y gestiona usuarios y conjuntos de datos |
 | **Frontend** | React · Three.js (react-three-fiber) | Visualización 3D interactiva en el navegador |
 | **Infraestructura** | Docker · Docker Compose | Entorno reproducible en desarrollo y despliegue |
 
@@ -50,10 +56,30 @@ Sigue un modelo cliente-servidor desacoplado:
 | Endpoint | Descripción |
 |---|---|
 | `GET /health` | Verificación del estado del servicio |
-| `GET /api/brain-data` | Devuelve la red procesada en JSON: `nodes`, `links` y `meta` |
+| `GET /api/brain-data` | Red por defecto del catálogo, en JSON: `nodes`, `links` y `meta` |
+| `GET /api/networks` | Catálogo visible para quien hace la petición |
+| `GET /api/networks/<id>` | Una red concreta, ya procesada |
+| `POST /api/networks` | Carga de una red propia (dos ficheros) |
+| `DELETE /api/networks/<id>` | Baja de una red propia |
+| `GET /api/networks/<id>/metricas.csv\|json` | Exportación de las métricas |
+| `POST /api/auth/registro` · `/login` · `/logout` | Gestión de la sesión |
+| `GET /api/auth/sesion` | Usuario actual, o `null` si se navega como visitante |
+| `GET`/`PATCH`/`DELETE /api/admin/usuarios[/<id>]` | Gestión de usuarios |
+| `PATCH`/`DELETE /api/admin/redes/<id>` | Gestión del catálogo público |
 
-Ambos endpoints devuelven una página HTML legible si se accede a ellos desde el navegador
-(o añadiendo `?format=html`).
+`/health` y `/api/brain-data` devuelven una página HTML legible si se accede a ellos desde
+el navegador (o añadiendo `?format=html`).
+
+### Roles
+
+| Rol | Puede |
+|---|---|
+| **Visitante** (sin registro) | Explorar, filtrar, analizar y exportar las redes públicas |
+| **Investigador** (registrado) | Además, cargar sus propias redes y gestionarlas en privado |
+| **Administrador** | Además, gestionar el catálogo público y los usuarios |
+
+Las contraseñas se almacenan con hash y la sesión viaja en una cookie firmada por el
+servidor. Una red privada solo es accesible para su propietario y para un administrador.
 
 ## Formato de los datos
 
@@ -106,14 +132,40 @@ El contenedor escucha en el puerto que indique la variable de entorno `PORT` (80
 defecto). El fichero [`render.yaml`](render.yaml) describe el servicio para su despliegue
 automático.
 
+### Variables de entorno
+
+| Variable | Para qué sirve |
+|---|---|
+| `PORT` | Puerto en el que escucha el servidor (8080 por defecto) |
+| `SECRET_KEY` | Clave con la que se firma la cookie de sesión |
+| `COOKIE_SEGURA` | A `1` en producción, para que la cookie solo viaje por HTTPS |
+| `DATABASE_URL` | Base de datos a utilizar; sin ella se usa un fichero SQLite local |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NOMBRE` | Crean la cuenta de administrador la primera vez que arranca |
+
+> **Sobre la persistencia.** En los alojamientos gratuitos el disco del contenedor es
+> efímero y se pierde en cada despliegue, de modo que con SQLite los usuarios y las redes
+> cargadas no sobreviven a una nueva publicación. Definiendo `DATABASE_URL` para apuntar a
+> una base de datos externa, los datos persisten sin tocar el código.
+
+## Pruebas
+
+```bash
+python -m pytest backend/tests -q
+```
+
+Cubren el acceso, la carga y validación de redes, la exportación, las funciones de
+administración y la confidencialidad entre usuarios.
+
 ---
 
 ## Estructura del repositorio
 
 ```
 backend/     Servicio de datos y análisis (Flask + NetworkX)
-  data/      Redes de ejemplo (.node y .edge)
-  src/       Código: app.py (API) y graph_parser.py (procesamiento)
+  data/      Red de ejemplo (.node y .edge) y base de datos SQLite
+  src/       app.py (API), graph_parser.py (procesamiento), models.py,
+             auth.py, redes.py y administracion.py
+  tests/     Pruebas automatizadas de la API
 frontend/    Aplicación cliente (React + Three.js)
   src/       Componentes e interfaz
 doc/         Memoria del TFG (LaTeX) e imágenes/diagramas
@@ -132,4 +184,4 @@ uso están en el capítulo 2 de la memoria.
 | 1 | Carga y procesamiento de la red, visualización 3D, cámara y estadísticas | Completado |
 | 2 | Filtrado por umbral, selección e inspección de nodos, coloreado por grupo | Completado |
 | 3 | Métricas de teoría de grafos, mapeo visual por métrica y búsqueda de nodos | Completado |
-| 4 | Cuentas de usuario, carga y gestión de redes propias, y administración | Pendiente |
+| 4 | Cuentas de usuario, carga y gestión de redes propias, y administración | Completado |
