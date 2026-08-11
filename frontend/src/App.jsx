@@ -53,6 +53,11 @@ function colorMetrica(t) {
 const LINK_WIDTH = 1.6;
 const LINK_WIDTH_SELECTED = 3.2;
 
+// Cuándo se emplea la disposición para pantallas pequeñas. Se mira también la
+// altura porque un teléfono en horizontal tiene ancho de sobra pero apenas 400
+// puntos de alto, y ahí los paneles de escritorio no caben.
+const CONSULTA_MOVIL = '(max-width: 820px), (max-height: 500px)';
+
 // Nº de aristas cuyo peso alcanza el umbral (RF 5). Como la lista llega
 // ordenada por peso descendente, ese número es la posición de la primera arista
 // que ya no lo alcanza, y se localiza con una búsqueda binaria en O(log E) en
@@ -83,7 +88,7 @@ const AJUSTES_INICIALES = {
   metrica: 'group',   // Criterio de color y tamaño de los nodos (RF 9)
   // Factor de tamaño de los nodos (RF 11). En el móvil se parte de un valor algo
   // mayor: acertar con el dedo sobre una esfera pequeña es difícil.
-  tamanoNodos: window.matchMedia('(max-width: 820px)').matches ? 1.5 : 1,
+  tamanoNodos: window.matchMedia('(max-width: 820px), (max-height: 500px)').matches ? 1.5 : 1,
 };
 
 function Mark({ size = 24 }) {
@@ -351,12 +356,12 @@ export default function App() {
 
   // En pantallas pequeñas los paneles no caben alrededor de la escena, así que
   // se muestran de uno en uno desde una barra inferior.
-  const [movil, setMovil] = useState(() => window.matchMedia('(max-width: 820px)').matches);
+  const [movil, setMovil] = useState(() => window.matchMedia(CONSULTA_MOVIL).matches);
   const [hoja, setHoja] = useState(null);   // 'datos' | 'controles' | null
   const tactil = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
 
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 820px)');
+    const mq = window.matchMedia(CONSULTA_MOVIL);
     const alCambiar = (e) => { setMovil(e.matches); if (!e.matches) setHoja(null); };
     mq.addEventListener('change', alCambiar);
     return () => mq.removeEventListener('change', alCambiar);
