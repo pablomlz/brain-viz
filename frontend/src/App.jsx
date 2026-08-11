@@ -81,7 +81,9 @@ const AJUSTES_INICIALES = {
   threshold: 0,       // Umbral de peso mínimo (RF 5)
   visibleLinks: 0,    // Nº de aristas que superan el umbral
   metrica: 'group',   // Criterio de color y tamaño de los nodos (RF 9)
-  tamanoNodos: 1,     // Factor de tamaño de los nodos (RF 11)
+  // Factor de tamaño de los nodos (RF 11). En el móvil se parte de un valor algo
+  // mayor: acertar con el dedo sobre una esfera pequeña es difícil.
+  tamanoNodos: window.matchMedia('(max-width: 820px)').matches ? 1.5 : 1,
 };
 
 function Mark({ size = 24 }) {
@@ -347,6 +349,19 @@ export default function App() {
   const [ventana, setVentana] = useState(null);   // 'acceso' | 'redes' | 'admin'
   const [tema, setTema] = useState(() => localStorage.getItem('brainviz-tema') || 'oscuro');
 
+  // En pantallas pequeñas los paneles no caben alrededor de la escena, así que
+  // se muestran de uno en uno desde una barra inferior.
+  const [movil, setMovil] = useState(() => window.matchMedia('(max-width: 820px)').matches);
+  const [hoja, setHoja] = useState(null);   // 'datos' | 'controles' | null
+  const tactil = typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 820px)');
+    const alCambiar = (e) => { setMovil(e.matches); if (!e.matches) setHoja(null); };
+    mq.addEventListener('change', alCambiar);
+    return () => mq.removeEventListener('change', alCambiar);
+  }, []);
+
   const [busqueda, setBusqueda] = useState('');   // Texto buscado (RF 10)
   const [buscadorAbierto, setBuscadorAbierto] = useState(false);
   const [objetivo, setObjetivo] = useState(null); // Nodo al que va la cámara
@@ -553,8 +568,9 @@ export default function App() {
         {settings.showAxes && <axesHelper args={[70]} />}
       </Canvas>
 
-      {/* Columna izquierda: estadísticas y métricas de la red */}
-      <div className="stack-tl">
+      {/* Columna izquierda: estadísticas y métricas de la red. En el móvil los
+          mismos paneles se muestran dentro de una hoja desplegable. */}
+      <div className={movil ? (hoja === 'datos' ? 'hoja' : 'oculto') : 'stack-tl'}>
       <div className="panel">
         <div className="brand">
           <Mark size={24} />
@@ -631,7 +647,7 @@ export default function App() {
 
       {/* Columna derecha: controles y, si procede, el nodo seleccionado.
           Se apilan en una columna flexible para que nunca se solapen. */}
-      <div className="stack-tr">
+      <div className={movil ? (hoja === 'controles' ? 'hoja' : 'oculto') : 'stack-tr'}>
       <div className="panel">
         <div className="panel-hd">
           <span className="panel-ttl">Controles</span>
@@ -763,7 +779,7 @@ export default function App() {
       {/* Abajo izquierda: leyenda. Cambia según se coloree por grupo o por
           métrica, para que siempre explique lo que se está viendo (RF 7, RF 9) */}
       {meta.groups.length > 0 && rangoMetrica && (
-        <div className="panel panel-bl">
+        <div className={movil ? 'leyenda-movil' : 'panel panel-bl'}>
           <div className="panel-hd">
             <span className="panel-ttl">Leyenda</span>
             <span className="panel-idx">
@@ -784,7 +800,7 @@ export default function App() {
       )}
 
       {meta.groups.length > 0 && !rangoMetrica && (
-        <div className="panel panel-bl">
+        <div className={movil ? 'leyenda-movil' : 'panel panel-bl'}>
           <div className="panel-hd">
             <span className="panel-ttl">Leyenda</span>
             <span className="panel-idx">GRUPOS</span>
@@ -802,6 +818,22 @@ export default function App() {
         </div>
       )}
 
+      {/* Barra inferior del móvil: da acceso a los paneles, que en una pantalla
+          pequeña no caben alrededor de la escena */}
+      {movil && (
+        <div className="barra-movil">
+          <button className={hoja === 'datos' ? 'activo' : ''}
+                  onClick={() => setHoja(hoja === 'datos' ? null : 'datos')}>
+            Datos
+          </button>
+          <button className={hoja === 'controles' ? 'activo' : ''}
+                  onClick={() => setHoja(hoja === 'controles' ? null : 'controles')}>
+            Controles
+          </button>
+          <button onClick={() => setVentana('redes')}>Redes</button>
+        </div>
+      )}
+
       {/* Arriba a la derecha del todo: sesión (RF 13) */}
       <div className="sesion">
         {usuario ? (
@@ -813,12 +845,16 @@ export default function App() {
             {usuario.rol === 'administrador' && (
               <button className="btn-ghost" onClick={() => setVentana('admin')}>Administrar</button>
             )}
-            <button className="btn-ghost" onClick={() => setVentana('redes')}>Mis redes</button>
+            {!movil && (
+              <button className="btn-ghost" onClick={() => setVentana('redes')}>Mis redes</button>
+            )}
             <button className="btn-ghost" onClick={cerrarSesion}>Salir</button>
           </>
         ) : (
           <>
-            <button className="btn-ghost" onClick={() => setVentana('redes')}>Redes</button>
+            {!movil && (
+              <button className="btn-ghost" onClick={() => setVentana('redes')}>Redes</button>
+            )}
             <button className="btn-ghost" onClick={() => setVentana('acceso')}>Iniciar sesión</button>
           </>
         )}
@@ -861,10 +897,23 @@ export default function App() {
       )}
 
       {/* Abajo centro: pista */}
+      {/* La pista de uso depende del dispositivo: en una pantalla táctil no hay
+          ni rueda ni clic. En el móvil se oculta por falta de sitio, pero en una
+          tableta sí se ve y debe decir lo correcto. */}
       <div className="hint">
-        <span><b>Arrastra</b> rotar</span>
-        <span><b>Rueda</b> zoom</span>
-        <span><b>Clic</b> seleccionar</span>
+        {tactil ? (
+          <>
+            <span><b>Arrastra</b> girar</span>
+            <span><b>Pellizca</b> acercar</span>
+            <span><b>Toca</b> seleccionar</span>
+          </>
+        ) : (
+          <>
+            <span><b>Arrastra</b> rotar</span>
+            <span><b>Rueda</b> zoom</span>
+            <span><b>Clic</b> seleccionar</span>
+          </>
+        )}
       </div>
     </div>
   );
