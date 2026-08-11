@@ -1307,6 +1307,31 @@ visitante ve ahí la invitación a iniciar sesión; un investigador, su nombre y
 un administrador, además, la entrada al panel de administración. La figura~\ref{fig:mockup-s4}
 recoge el boceto de la interfaz resultante.
 
+\paragraph*{Adaptación a pantallas pequeñas.} Al probar la aplicación desplegada desde un teléfono
+quedó claro que la distribución anterior no servía [RNF 7]. Los paneles tienen un ancho pensado para
+un monitor, y en una pantalla de unos 390 puntos las dos columnas se solapaban entre sí y cubrían la
+escena por completo, justo lo que el usuario quiere ver. Reducir su tamaño no habría bastado: en ese
+espacio no caben a la vez la visualización y toda la información que la acompaña.
+
+La decisión ha sido \textbf{cambiar cuándo se muestran, no cuánto ocupan}. Por debajo de cierto
+ancho los paneles dejan de estar permanentemente visibles y se abren desde una barra inferior, uno
+cada vez, como una hoja que se superpone a la escena y se cierra al terminar. La escena recupera así
+toda la pantalla, que es el recurso escaso en un móvil. La leyenda es la única excepción y se
+mantiene siempre a la vista, en forma de tira horizontal, porque se consulta mientras se mira la red
+y no tendría sentido obligar a abrir un panel cada vez. La figura~\ref{fig:movil} muestra el
+resultado.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[height=12cm]{imagenes/app_movil_escena}
+	\hspace{0.5cm}
+	\includegraphics[height=12cm]{imagenes/app_movil_hoja}
+	\caption{La aplicación en un teléfono [RNF 7]. A la izquierda, la escena ocupa toda la pantalla,
+	con la leyenda y la barra de acceso a los paneles en la parte inferior. A la derecha, el panel de
+	controles abierto como una hoja sobre la escena.}
+	\label{fig:movil}
+\end{figure}
+
 \begin{figure}[H]
 	\centering
 	\begin{tikzpicture}[font=\footnotesize]
@@ -1319,11 +1344,11 @@ recoge el boceto de la interfaz resultante.
 		\node[anchor=north west, align=left] at (0.5,8.35)
 			{\textbf{Brain Viz}\\[1pt]\footnotesize Red activa · Estadísticas\\\footnotesize
 			Métricas · Buscador};
-		\draw[rounded corners=2pt, fill=white, draw=black!45] (9.3,4.9) rectangle (12.65,8.45);
-		\node[anchor=north west, align=left] at (9.45,8.35)
+		\draw[rounded corners=2pt, fill=white, draw=black!45] (9.05,4.9) rectangle (12.65,8.45);
+		\node[anchor=north west, align=left] at (9.2,8.35)
 			{\textbf{Controles}\\[1pt]\footnotesize Umbral · métrica\\\footnotesize Conexiones ·
 			ejes\\\textbf{\footnotesize Tamaño de nodos}\\\textbf{\footnotesize Tema}\\[2pt]
-			\textbf{\footnotesize Restablecer}~~\textbf{\footnotesize Exportar}};
+			\textbf{\footnotesize Restablecer}~\textbf{\footnotesize Exportar}};
 		% Ventana modal (nueva)
 		\draw[rounded corners=3pt, fill=white, draw=black!60, very thick] (3.3,1.5) rectangle (9.7,6.6);
 		\node[anchor=north west, align=left] at (3.5,6.4)
@@ -1545,6 +1570,38 @@ copiarlo se obtiene una imagen en blanco. Es necesario indicarle expresamente qu
 const restablecerVista = () => { setSettings(AJUSTES_INICIALES); setTema('oscuro'); };
 \end{lstlisting}
 
+\subsubsection*{Frontend: adaptación a pantallas pequeñas (RNF 7)}
+
+El cambio de distribución se resuelve con una consulta de medios que, por debajo de 820 puntos de
+ancho, retira los paneles de las esquinas y los pasa a la hoja desplegable. Los mismos paneles se
+reutilizan en ambos casos: lo único que cambia es el contenedor en el que se colocan, así que no hay
+dos versiones de la interfaz que mantener por separado.
+
+Llevar una aplicación con una escena 3D a un navegador de móvil sacó a la luz cuatro
+comportamientos que no aparecen en el escritorio y que conviene dejar anotados:
+
+\begin{itemize}
+	\item \textbf{La altura de la ventana no es la que parece.} La unidad de medida habitual para
+		ocupar toda la pantalla se calcula sin tener en cuenta que la barra del navegador aparece y
+		desaparece al desplazarse, así que la interfaz quedaba más alta que la pantalla y parte de
+		ella se salía. Se resuelve con la unidad que sí sigue la altura real disponible.
+	\item \textbf{Los gestos se los quedaba el navegador.} Arrastrar sobre la escena desplazaba la
+		página en lugar de girar la red, y el gesto de pellizco ampliaba la web en vez de acercar la
+		cámara. Hay que declarar explícitamente que el lienzo gestiona sus propios gestos.
+	\item \textbf{El navegador ampliaba la página al escribir.} Al enfocar un campo de texto cuya
+		letra mide menos de dieciséis puntos, el navegador amplía la página por su cuenta y después
+		no vuelve a alejarla, con lo que la interfaz queda descolocada. Basta con no bajar de ese
+		tamaño en los campos.
+	\item \textbf{La muesca y la barra del sistema ocupan espacio.} En los teléfonos actuales hay
+		zonas de la pantalla que no son utilizables. Los elementos de los bordes se apartan de ellas
+		mediante las variables que el navegador expone para eso.
+\end{itemize}
+
+Se han ajustado también los detalles propios del uso con el dedo, que es bastante menos preciso que
+un cursor: los nodos parten de un tamaño mayor, las zonas de pulsación de los controles se han
+ampliado y el texto de ayuda habla de arrastrar, pellizcar y tocar en lugar de mencionar la rueda y
+el clic del ratón.
+
 El resultado se recoge en las figuras siguientes: la~\ref{fig:s4-acceso} muestra la ventana de
 acceso, la~\ref{fig:s4-catalogo} el catálogo de redes, la~\ref{fig:s4-subida} el formulario de
 carga, las~\ref{fig:s4-admin} y~\ref{fig:s4-admin-catalogo} el panel de administración y
@@ -1690,6 +1747,14 @@ La tabla~\ref{tab:pruebas-s4} recoge las pruebas de validación de los requisito
 		P-29 (RF 18, RF 18.1) & Consultar los usuarios y cambiar un rol. &
 			El administrador ve la lista completa y puede asignar y revocar el rol de
 			investigador. & Correcto \\
+		\addlinespace
+		P-30 (RNF 7) & Abrir la aplicación en un teléfono. &
+			La escena ocupa toda la pantalla, ningún panel la tapa ni se sale de los bordes, y los
+			paneles se abren desde la barra inferior. & Correcto \\
+		\addlinespace
+		P-31 (RNF 7) & Manejar la escena con gestos y escribir en un campo. &
+			Arrastrar gira la red y el pellizco acerca la cámara sin mover la página; al escribir, el
+			navegador no amplía la interfaz. & Correcto \\
 		\bottomrule
 	\end{tabularx}
 \end{table}

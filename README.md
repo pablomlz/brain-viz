@@ -34,6 +34,8 @@ Funcionalidades disponibles actualmente:
 - Mapeo visual: el color y el tamaño de los nodos pueden reflejar cualquiera de
   esas métricas, con una leyenda que se adapta a la escala.
 - Búsqueda de una región por su etiqueta, con desplazamiento de la cámara hasta ella.
+- Interfaz adaptada al tamaño de la pantalla: en el móvil la escena ocupa todo el
+  espacio y los paneles se abren desde una barra inferior.
 - Personalización de la vista (tamaño de nodos, opacidad, ejes, rotación y tema claro
   u oscuro) y restablecimiento a los valores iniciales.
 - Exportación de la vista actual como imagen y de las métricas en CSV o JSON.

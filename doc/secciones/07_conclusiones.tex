@@ -39,7 +39,12 @@ la interfaz y la sirve desde el propio \textit{backend} en un solo contenedor. F
 tenía previsto y que me enseñó que «funciona en mi máquina» y «se puede desplegar» no son lo mismo.
 
 Los dieciocho requisitos funcionales recogidos en el capítulo 2 están implementados, junto con los
-requisitos no funcionales y de información. Queda una comprobación pendiente que prefiero dejar
+requisitos no funcionales y de información. Uno de estos últimos, el de adaptación a la pantalla, no
+estaba en la lista inicial: apareció al abrir la aplicación ya desplegada desde un teléfono y
+comprobar que los paneles laterales, pensados para un monitor, tapaban por completo la
+visualización. Es un problema que no se detecta trabajando siempre en un ordenador, y que en cambio
+salta a la vista en cuanto alguien entra desde el móvil, que es como va a entrar buena parte de la
+gente a la que se le enseñe el enlace. Queda una comprobación pendiente que prefiero dejar
 señalada antes que dar por buena: la verificación formal de los 60 fotogramas por segundo del
 [RNF 1]. La medí con dos redes de tamaños muy distintos y el resultado fue el mismo en ambas, pero
 también lo fue al medir una página vacía, lo que indica que el límite lo ponía el entorno de medida y
