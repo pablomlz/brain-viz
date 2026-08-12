@@ -1,4 +1,5 @@
 import json
+import mimetypes
 import os
 from datetime import timedelta
 
@@ -42,6 +43,10 @@ EDGE_FILE = os.path.join(DATA_DIR, 'AAL90.edge')
 # Vite con recarga en caliente y este directorio no está presente.
 STATIC_DIR = os.path.join(os.path.dirname(BASE_DIR), 'static')
 HAY_FRONTEND = os.path.isdir(STATIC_DIR)
+
+# Python no conoce esta extensión, y sin el tipo correcto el navegador no lee el
+# manifiesto y la aplicación no se puede añadir a la pantalla de inicio.
+mimetypes.add_type('application/manifest+json', '.webmanifest')
 
 
 def wants_html():

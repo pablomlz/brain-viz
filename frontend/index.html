@@ -6,7 +6,15 @@
          los paneles se apartan de ella con las variables safe-area del CSS -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#0b0c0e" />
+    <!-- Añadida a la pantalla de inicio, la aplicación se abre sin las barras del
+         navegador, que en un teléfono se comen buena parte de la pantalla. Safari
+         necesita sus propias etiquetas además del manifiesto. -->
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Brain Viz" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2024%2024%27%3E%3Crect%20width%3D%2724%27%20height%3D%2724%27%20rx%3D%275%27%20fill%3D%27%230b0c0e%27/%3E%3Cline%20x1%3D%276%27%20y1%3D%2717%27%20x2%3D%2713%27%20y2%3D%277%27%20stroke%3D%27%2331363d%27%20stroke-width%3D%271.3%27/%3E%3Cline%20x1%3D%2713%27%20y1%3D%277%27%20x2%3D%2718%27%20y2%3D%2714%27%20stroke%3D%27%2331363d%27%20stroke-width%3D%271.3%27/%3E%3Cline%20x1%3D%276%27%20y1%3D%2717%27%20x2%3D%2718%27%20y2%3D%2714%27%20stroke%3D%27%2331363d%27%20stroke-width%3D%271.3%27/%3E%3Ccircle%20cx%3D%276%27%20cy%3D%2717%27%20r%3D%272.4%27%20fill%3D%27%234c7df0%27/%3E%3Ccircle%20cx%3D%2713%27%20cy%3D%277%27%20r%3D%272.4%27%20fill%3D%27%23e8e9eb%27/%3E%3Ccircle%20cx%3D%2718%27%20cy%3D%2714%27%20r%3D%272.4%27%20fill%3D%27%238e949d%27/%3E%3C/svg%3E" />
     <title>Brain Viz · Connectome Explorer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
