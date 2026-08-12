@@ -1634,6 +1634,14 @@ comportamientos que no aparecen en el escritorio y que conviene dejar anotados:
 		desapercibido en las pruebas.
 \end{itemize}
 
+Queda un último recorte del espacio disponible que no depende de la aplicación: las barras del propio
+navegador. La forma de evitarlas es permitir que la aplicación se añada a la pantalla de inicio y se
+abra a pantalla completa, para lo que se declaran un manifiesto con el nombre, los colores y el modo
+de presentación, un juego de iconos y las etiquetas específicas de Safari, que no se conforma con el
+manifiesto. El servidor tiene que anunciar además el tipo de contenido del manifiesto, que no está
+entre los que la biblioteca estándar reconoce por la extensión; sin él el navegador ni siquiera
+ofrece la opción.
+
 Se han ajustado también los detalles propios del uso con el dedo, que es bastante menos preciso que
 un cursor: los nodos parten de un tamaño mayor, las zonas de pulsación de los controles se han
 ampliado y el texto de ayuda habla de arrastrar, pellizcar y tocar en lugar de mencionar la rueda y
