@@ -1273,7 +1273,11 @@ RF 18) y es el que transforma la herramienta en un sistema con usuarios. Hasta a
 era la misma para todo el mundo: mostraba una red fija y no recordaba nada de una visita a la
 siguiente. Con este \textit{sprint} aparecen las cuentas de usuario [RF 13], la posibilidad de
 cargar redes propias y conservarlas [RF 14, RF 15], la exportación de resultados [RF 12, RF 16] y
-las funciones de administración [RF 17, RF 18], además de la personalización de la vista [RF 11].
+las funciones de administración [RF 17, RF 18], además de la personalización de la vista [RF 11]. Se
+cierra también el último requisito no funcional que quedaba por atender, el de que la interfaz se
+adapte al tamaño de la pantalla [RNF 7], que es donde tiene sentido abordarlo: con la aplicación ya
+publicada en una dirección que cualquiera puede abrir, entrar desde el teléfono deja de ser una
+hipótesis.
 
 Es también el \textit{sprint} con mayor impacto en la arquitectura. Los tres anteriores compartían
 una característica que simplificaba mucho las cosas: el sistema no almacenaba nada. Al introducir
@@ -1307,29 +1311,54 @@ visitante ve ahí la invitación a iniciar sesión; un investigador, su nombre y
 un administrador, además, la entrada al panel de administración. La figura~\ref{fig:mockup-s4}
 recoge el boceto de la interfaz resultante.
 
-\paragraph*{Adaptación a pantallas pequeñas.} Al probar la aplicación desplegada desde un teléfono
-quedó claro que la distribución anterior no servía [RNF 7]. Los paneles tienen un ancho pensado para
-un monitor, y en una pantalla de unos 390 puntos las dos columnas se solapaban entre sí y cubrían la
-escena por completo, justo lo que el usuario quiere ver. Reducir su tamaño no habría bastado: en ese
-espacio no caben a la vez la visualización y toda la información que la acompaña.
+\paragraph*{Adaptación al tamaño de la pantalla.} La aplicación se concibió desde el principio para
+usarse sin instalar nada desde cualquier navegador, y eso incluye el de un teléfono. Ahora bien, la
+distribución descrita hasta aquí da por supuesto un monitor: hay sitio para dos columnas de paneles
+alrededor de la escena. En una pantalla de unos 390 puntos de ancho esas columnas no solo no caben,
+sino que se solapan entre sí y cubren por completo la visualización, que es justamente lo que el
+usuario ha venido a ver. Encoger los paneles tampoco resolvería nada, porque en ese espacio no caben
+a la vez la red y toda la información que la acompaña [RNF 7].
 
-La decisión ha sido \textbf{cambiar cuándo se muestran, no cuánto ocupan}. Por debajo de cierto
-ancho los paneles dejan de estar permanentemente visibles y se abren desde una barra inferior, uno
-cada vez, como una hoja que se superpone a la escena y se cierra al terminar. La escena recupera así
-toda la pantalla, que es el recurso escaso en un móvil. La leyenda es la única excepción y se
-mantiene siempre a la vista, en forma de tira horizontal, porque se consulta mientras se mira la red
-y no tendría sentido obligar a abrir un panel cada vez. La figura~\ref{fig:movil} muestra el
-resultado.
+La decisión de diseño es \textbf{cambiar cuándo se muestran los paneles, no cuánto ocupan}. Cuando
+no hay espacio para tenerlos siempre presentes, dejan de estarlo y se abren desde una barra inferior,
+uno cada vez, como una hoja que se superpone a la escena y se cierra al terminar. Así la
+visualización recupera toda la pantalla, que es el recurso escaso. La leyenda es la única excepción y
+permanece siempre visible en forma de tira, porque se consulta mientras se mira la red y obligar a
+abrir un panel cada vez resultaría incómodo.
+
+Merece la pena precisar qué se entiende por «no hay espacio», porque el criterio evidente
+resulta insuficiente. Atender solo al ancho deja fuera un caso muy común: un teléfono girado tiene
+unos 870 puntos de ancho, más que de sobra según esa medida, pero apenas 400 de alto, con lo que los
+paneles siguen sin caber y se salen por abajo. El criterio combina por tanto ambas dimensiones, y en
+horizontal se compacta además la interfaz y la leyenda se sitúa arriba, para no restar altura a la
+escena justo donde más escasea.
+
+Un último detalle, propio de los teléfonos actuales, es que no toda la pantalla es utilizable: la
+muesca de la cámara y las esquinas redondeadas reservan unas franjas donde no se debe colocar nada.
+Su tamaño depende de la orientación, ya que al girar el aparato la muesca pasa de estar arriba a
+estar en un costado, así que los elementos situados en los bordes se apartan de las cuatro franjas y
+no de dos. Las figuras~\ref{fig:movil}
+y~\ref{fig:movil-horizontal} muestran el resultado en las dos orientaciones.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[height=12cm]{imagenes/app_movil_escena}
 	\hspace{0.5cm}
 	\includegraphics[height=12cm]{imagenes/app_movil_hoja}
-	\caption{La aplicación en un teléfono [RNF 7]. A la izquierda, la escena ocupa toda la pantalla,
+	\caption[La aplicación en un teléfono {[RNF 7]}.]{La aplicación en un teléfono [RNF 7]. A la izquierda, la escena ocupa toda la pantalla,
 	con la leyenda y la barra de acceso a los paneles en la parte inferior. A la derecha, el panel de
 	controles abierto como una hoja sobre la escena.}
 	\label{fig:movil}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{imagenes/app_movil_horizontal}
+	\caption[El mismo teléfono girado {[RNF 7]}.]{El mismo teléfono girado [RNF 7]. Pese a tener más ancho que muchas ventanas de
+	escritorio, la altura disponible obliga a mantener la distribución de móvil. La leyenda pasa
+	arriba para no restar altura a la escena, y los márgenes laterales dejan libres las franjas que
+	reservan la muesca y las esquinas redondeadas.}
+	\label{fig:movil-horizontal}
 \end{figure}
 
 \begin{figure}[H]
@@ -1570,12 +1599,16 @@ copiarlo se obtiene una imagen en blanco. Es necesario indicarle expresamente qu
 const restablecerVista = () => { setSettings(AJUSTES_INICIALES); setTema('oscuro'); };
 \end{lstlisting}
 
-\subsubsection*{Frontend: adaptación a pantallas pequeñas (RNF 7)}
+\subsubsection*{Frontend: adaptación al tamaño de la pantalla (RNF 7)}
 
-El cambio de distribución se resuelve con una consulta de medios que, por debajo de 820 puntos de
-ancho, retira los paneles de las esquinas y los pasa a la hoja desplegable. Los mismos paneles se
-reutilizan en ambos casos: lo único que cambia es el contenedor en el que se colocan, así que no hay
-dos versiones de la interfaz que mantener por separado.
+El cambio de distribución se resuelve con una consulta de medios que retira los paneles de las
+esquinas y los pasa a la hoja desplegable cuando el ancho baja de 820 puntos \emph{o} la altura baja
+de 500. Basta con que falle una de las dos para que los paneles no quepan, y el caso de la altura es
+justamente el del teléfono girado, que por ancho pasaría de sobra. Esa misma condición la lee también
+el componente principal para saber qué contenedor usar, escrita una sola vez en un sitio, de modo que
+la hoja de estilos y la lógica no puedan discrepar. Los paneles son además los mismos en ambas distribuciones: lo único que
+cambia es el contenedor en el que se colocan, así que no hay dos versiones de la interfaz que
+mantener por separado.
 
 Llevar una aplicación con una escena 3D a un navegador de móvil sacó a la luz cuatro
 comportamientos que no aparecen en el escritorio y que conviene dejar anotados:
@@ -1593,8 +1626,12 @@ comportamientos que no aparecen en el escritorio y que conviene dejar anotados:
 		no vuelve a alejarla, con lo que la interfaz queda descolocada. Basta con no bajar de ese
 		tamaño en los campos.
 	\item \textbf{La muesca y la barra del sistema ocupan espacio.} En los teléfonos actuales hay
-		zonas de la pantalla que no son utilizables. Los elementos de los bordes se apartan de ellas
-		mediante las variables que el navegador expone para eso.
+		zonas de la pantalla que no son utilizables, y cuáles son depende de cómo se sostenga el
+		aparato: en vertical están arriba y abajo, y al girarlo la muesca pasa a un costado. Los
+		elementos de los bordes se apartan de las cuatro mediante las variables que el navegador
+		expone para eso. Conviene señalar que el navegador solo declara esas variables si la página
+		pide expresamente ocupar la pantalla completa; si no lo hace valen cero y el problema pasa
+		desapercibido en las pruebas.
 \end{itemize}
 
 Se han ajustado también los detalles propios del uso con el dedo, que es bastante menos preciso que
@@ -1752,7 +1789,11 @@ La tabla~\ref{tab:pruebas-s4} recoge las pruebas de validación de los requisito
 			La escena ocupa toda la pantalla, ningún panel la tapa ni se sale de los bordes, y los
 			paneles se abren desde la barra inferior. & Correcto \\
 		\addlinespace
-		P-31 (RNF 7) & Manejar la escena con gestos y escribir en un campo. &
+		P-31 (RNF 7) & Girar el teléfono a horizontal. &
+			La distribución sigue siendo la de móvil pese al mayor ancho, la interfaz se compacta y
+			nada queda bajo la muesca del lateral. & Correcto \\
+		\addlinespace
+		P-32 (RNF 7) & Manejar la escena con gestos y escribir en un campo. &
 			Arrastrar gira la red y el pellizco acerca la cámara sin mover la página; al escribir, el
 			navegador no amplía la interfaz. & Correcto \\
 		\bottomrule

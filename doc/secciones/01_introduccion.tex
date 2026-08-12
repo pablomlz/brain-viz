@@ -49,7 +49,7 @@ entre ellas.
 		\draw[arista] (A) -- (E) node[peso, midway] {0,6};
 		\draw[arista] (D) -- (E) node[peso, midway] {0,4};
 	\end{tikzpicture}
-	\caption{Ejemplo de grafo ponderado: los nodos ($R_i$) representan regiones cerebrales y las
+	\caption[Ejemplo de grafo ponderado.]{Ejemplo de grafo ponderado: los nodos ($R_i$) representan regiones cerebrales y las
 	aristas, con su peso asociado, las conexiones entre ellas.}
 	\label{fig:grafo-ponderado}
 \end{figure}
@@ -75,8 +75,8 @@ técnicos previos. Esto las aleja de un uso rápido y las hace difíciles de com
 en equipos distintos.
 
 Surge así la motivación de este trabajo: ofrecer una herramienta \textbf{web} a la que el usuario
-acceda desde cualquier navegador moderno, sin tener que instalar nada, y que le permita visualizar y
-explorar redes cerebrales sin esperas, manteniendo un equilibrio entre fidelidad de los
+acceda desde cualquier navegador moderno, sin tener que instalar nada y sea cual sea el aparato que
+tenga a mano, y que le permita visualizar y explorar redes cerebrales sin esperas, manteniendo un equilibrio entre fidelidad de los
 datos, rendimiento gráfico y simplicidad de interacción. Al tratarse de una aplicación web, la parte
 con la que interactúa el usuario se ejecuta en su navegador, mientras que el procesamiento y el
 análisis de las redes se realizan en un servicio de servidor, con lo que la herramienta puede

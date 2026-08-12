@@ -39,12 +39,7 @@ la interfaz y la sirve desde el propio \textit{backend} en un solo contenedor. F
 tenía previsto y que me enseñó que «funciona en mi máquina» y «se puede desplegar» no son lo mismo.
 
 Los dieciocho requisitos funcionales recogidos en el capítulo 2 están implementados, junto con los
-requisitos no funcionales y de información. Uno de estos últimos, el de adaptación a la pantalla, no
-estaba en la lista inicial: apareció al abrir la aplicación ya desplegada desde un teléfono y
-comprobar que los paneles laterales, pensados para un monitor, tapaban por completo la
-visualización. Es un problema que no se detecta trabajando siempre en un ordenador, y que en cambio
-salta a la vista en cuanto alguien entra desde el móvil, que es como va a entrar buena parte de la
-gente a la que se le enseñe el enlace. Queda una comprobación pendiente que prefiero dejar
+requisitos no funcionales y de información. Queda una comprobación pendiente que prefiero dejar
 señalada antes que dar por buena: la verificación formal de los 60 fotogramas por segundo del
 [RNF 1]. La medí con dos redes de tamaños muy distintos y el resultado fue el mismo en ambas, pero
 también lo fue al medir una página vacía, lo que indica que el límite lo ponía el entorno de medida y
@@ -71,6 +66,14 @@ un poco más gruesas, algo que parecía cuestión de cambiar un número, y resul
 de WebGL no obliga a los navegadores a dibujar líneas de más de un píxel y en la práctica ignoran ese
 parámetro. Hubo que cambiar la forma de dibujarlas. Ha sido un buen recordatorio de que conviene
 comprobar las cosas antes de suponer que son sencillas.
+
+Con la adaptación de la interfaz al tamaño de la pantalla aprendí algo parecido, esta vez sobre cómo
+se comprueban las cosas. Estrechar la ventana del navegador en el ordenador parecía suficiente para
+dar por buena la adaptación, y no lo era. En el teléfono de verdad entran en juego dos cosas que ahí
+no se ven: girado tiene ancho de sobra pero casi nada de altura, y el sistema reserva unas franjas
+alrededor de la muesca donde no se puede colocar nada, que además cambian de sitio al girarlo. El
+navegador de escritorio no reproduce ninguna de las dos, así que las pruebas automáticas de esa parte
+hay que hacerlas inyectando esas medidas a mano para que se parezcan a lo que pasa en el aparato.
 
 De las pruebas he cambiado bastante de idea. Al principio las veía como un trámite para poner en la
 memoria. Cambié de opinión cuando, comprobando que la suma de los grados fuera el doble del número de
