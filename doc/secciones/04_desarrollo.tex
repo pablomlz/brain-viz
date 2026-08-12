@@ -491,7 +491,7 @@ elementos nuevos destacados.
 		\node[anchor=south west, align=left] at (0.5,0.45)
 			{\textbf{Leyenda}\\\footnotesize Grupos / lóbulos (colores)};
 	\end{tikzpicture}
-	\caption{Boceto de la interfaz del Sprint 2. En trazo grueso, el nuevo panel de información del
+	\caption[Boceto de la interfaz del Sprint 2.]{Boceto de la interfaz del Sprint 2. En trazo grueso, el nuevo panel de información del
 	nodo seleccionado; en el panel de controles se incorpora el umbral de peso.}
 	\label{fig:mockup-s2}
 \end{figure}
@@ -533,7 +533,7 @@ atributos añadidos en este \textit{sprint} destacados.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/clases_sprint2}
-	\caption{Modelo de datos tras el Sprint 2, con los atributos añadidos para el filtrado (RF 5) y la
+	\caption[Modelo de datos tras el Sprint 2.]{Modelo de datos tras el Sprint 2, con los atributos añadidos para el filtrado (RF 5) y la
 	inspección de nodos (RF 6).}
 	\label{fig:clases-s2}
 \end{figure}
@@ -652,7 +652,7 @@ la selección de una región con su panel de información.
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/app_s2_umbral_bajo}\\[6pt]
 	\includegraphics[width=\textwidth]{imagenes/app_s2_umbral_alto}
-	\caption{Filtrado por umbral (RF 5). Arriba: umbral 0,00, se muestran las 411 conexiones de la
+	\caption[Filtrado por umbral (RF 5).]{Filtrado por umbral (RF 5). Arriba: umbral 0,00, se muestran las 411 conexiones de la
 	red. Abajo: umbral 0,60, quedan 168 conexiones y la estructura de la red se aprecia con mayor
 	claridad. El contador del panel de estadísticas refleja en ambos casos la relación
 	\textit{visibles / totales}.}
@@ -662,7 +662,7 @@ la selección de una región con su panel de información.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/app_s2_seleccion}
-	\caption{Selección e inspección de un nodo (RF 6): la región \texttt{IFGtriang.L} queda resaltada
+	\caption[Selección e inspección de un nodo (RF 6).]{Selección e inspección de un nodo (RF 6): la región \texttt{IFGtriang.L} queda resaltada
 	junto con sus conexiones, y el panel lateral muestra su identificador, grupo, grado y coordenadas.}
 	\label{fig:s2-seleccion}
 \end{figure}
@@ -860,7 +860,7 @@ el panel pasa a indicar 2 sobre 9.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/app_s2_grado_umbral}
-	\caption{El nodo \texttt{IFGtriang.L} con el umbral en 0,70. De sus nueve conexiones solo dos
+	\caption[El nodo \texttt{IFGtriang.L} con el umbral en 0,70.]{El nodo \texttt{IFGtriang.L} con el umbral en 0,70. De sus nueve conexiones solo dos
 	superan ese peso, y son las únicas que aparecen resaltadas; el grado que muestra el panel baja a
 	2 sobre 9.}
 	\label{fig:s2-grado}
@@ -947,7 +947,7 @@ resultante, con los tres elementos nuevos destacados.
 			\footnotesize Grupo · Grado\\\textbf{\footnotesize Intermediación}\\
 			\textbf{\footnotesize Cercanía}\\\footnotesize Coordenadas};
 	\end{tikzpicture}
-	\caption{Boceto de la interfaz del Sprint 3. En trazo grueso, el panel de métricas de la red y el
+	\caption[Boceto de la interfaz del Sprint 3.]{Boceto de la interfaz del Sprint 3. En trazo grueso, el panel de métricas de la red y el
 	buscador; en el panel de controles se incorpora el selector de mapeo visual, y el panel del nodo
 	añade sus centralidades.}
 	\label{fig:mockup-s3}
@@ -992,7 +992,7 @@ figura~\ref{fig:clases-s3} recoge el modelo de datos resultante.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/clases_sprint3}
-	\caption{Modelo de datos tras el Sprint 3, con las centralidades por nodo (RF 6.1) y el bloque de
+	\caption[Modelo de datos tras el Sprint 3.]{Modelo de datos tras el Sprint 3, con las centralidades por nodo (RF 6.1) y el bloque de
 	métricas globales de la red (RF 8) destacados.}
 	\label{fig:clases-s3}
 \end{figure}
@@ -1031,7 +1031,7 @@ figura~\ref{fig:sec-s3} recoge el diagrama de secuencia de ambas interacciones.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/sec_interaccion_sprint3}
-	\caption{Diagrama de secuencia del mapeo visual por métrica (RF 9) y de la búsqueda de un nodo
+	\caption[Diagrama de secuencia del mapeo visual y de la búsqueda (RF 9, RF 10).]{Diagrama de secuencia del mapeo visual por métrica (RF 9) y de la búsqueda de un nodo
 	con centrado de la cámara (RF 10).}
 	\label{fig:sec-s3}
 \end{figure}
@@ -1097,7 +1097,7 @@ Las figuras~\ref{fig:s3-mapeo} y~\ref{fig:s3-busqueda} muestran el resultado sob
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/app_s3_mapeo}
-	\caption{Mapeo visual por intermediación (RF 9). El tamaño y el color de cada nodo reflejan su
+	\caption[Mapeo visual por intermediación (RF 9).]{Mapeo visual por intermediación (RF 9). El tamaño y el color de cada nodo reflejan su
 	valor de la métrica, y la leyenda pasa a mostrar la escala continua con los extremos del rango.
 	A la izquierda se aprecia el panel con las métricas globales de la red (RF 8).}
 	\label{fig:s3-mapeo}
@@ -1106,7 +1106,7 @@ Las figuras~\ref{fig:s3-mapeo} y~\ref{fig:s3-busqueda} muestran el resultado sob
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.42\textwidth]{imagenes/app_s3_busqueda}
-	\caption{Búsqueda de un nodo (RF 10). Al escribir parte de una etiqueta aparecen las
+	\caption[Búsqueda de un nodo (RF 10).]{Búsqueda de un nodo (RF 10). Al escribir parte de una etiqueta aparecen las
 	coincidencias; al elegir una, la cámara se desplaza hasta la región y el panel muestra sus
 	centralidades (RF 6.1).}
 	\label{fig:s3-busqueda}
@@ -1379,19 +1379,19 @@ y~\ref{fig:movil-horizontal} muestran el resultado en las dos orientaciones.
 			ejes\\\textbf{\footnotesize Tamaño de nodos}\\\textbf{\footnotesize Tema}\\[2pt]
 			\textbf{\footnotesize Restablecer}~\textbf{\footnotesize Exportar}};
 		% Ventana modal (nueva)
-		\draw[rounded corners=3pt, fill=white, draw=black!60, very thick] (3.3,1.5) rectangle (9.7,6.6);
+		\draw[rounded corners=3pt, fill=white, draw=black!60, very thick] (3.3,1.5) rectangle (8.95,6.6);
 		\node[anchor=north west, align=left] at (3.5,6.4)
 			{\textbf{Ventana emergente} \hfill $\times$};
-		\draw[black!35] (3.5,5.75) -- (9.5,5.75);
+		\draw[black!35] (3.5,5.75) -- (8.75,5.75);
 		\node[anchor=north west, align=left] at (3.5,5.65)
 			{\footnotesize\underline{Catálogo}~~~Cargar una red\\[4pt]
 			\footnotesize\textbf{Redes públicas}\\
-			\footnotesize\fbox{\parbox{5.2cm}{\footnotesize AAL90 · 90 nodos \hfill CSV~JSON~Visualizar}}\\[2pt]
+			\fbox{\parbox{4.9cm}{\scriptsize AAL90 · 90 nodos\\[1pt]\null\hfill CSV~~JSON~~Visualizar}}\\[2pt]
 			\footnotesize\textbf{Mis redes}\\
-			\footnotesize\fbox{\parbox{5.2cm}{\footnotesize Mi conectoma \hfill CSV~JSON~Visualizar~Eliminar}}};
+			\fbox{\parbox{4.9cm}{\scriptsize Mi conectoma\\[1pt]\null\hfill CSV~~JSON~~Visualizar~~Eliminar}}};
 		\node[align=center, gray] at (6.5,0.85) {\itshape la escena 3D permanece detrás};
 	\end{tikzpicture}
-	\caption{Boceto de la interfaz del Sprint 4. En trazo grueso, la barra de sesión y la ventana
+	\caption[Boceto de la interfaz del Sprint 4.]{Boceto de la interfaz del Sprint 4. En trazo grueso, la barra de sesión y la ventana
 	emergente, que da espacio a las funciones de gestión sin restárselo a la escena; en el panel de
 	controles se incorporan la personalización y la exportación.}
 	\label{fig:mockup-s4}
@@ -1433,7 +1433,7 @@ lo reutilizan sin recalcular nada. La figura~\ref{fig:clases-s4} recoge el model
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/clases_sprint4}
-	\caption{Modelo de datos tras el Sprint 4. Las dos entidades persistentes y su relación con el
+	\caption[Modelo de datos tras el Sprint 4.]{Modelo de datos tras el Sprint 4. Las dos entidades persistentes y su relación con el
 	modelo en memoria que se construye para cada visualización.}
 	\label{fig:clases-s4}
 \end{figure}
@@ -1504,7 +1504,7 @@ figura~\ref{fig:sec-s4} el diagrama de secuencia del acceso y de la carga de una
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/modulos_sprint4}
-	\caption{Modularización del software tras el Sprint 4. Tanto el \textit{backend} como el
+	\caption[Modularización del software tras el Sprint 4.]{Modularización del software tras el Sprint 4. Tanto el \textit{backend} como el
 	\textit{frontend} se dividen en módulos con una responsabilidad definida, en lugar de crecer
 	sobre los ficheros existentes.}
 	\label{fig:modulos-s4}
@@ -1513,7 +1513,7 @@ figura~\ref{fig:sec-s4} el diagrama de secuencia del acceso y de la carga de una
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/sec_interaccion_sprint4}
-	\caption{Diagrama de secuencia del inicio de sesión (RF 13) y de la carga de una red propia
+	\caption[Diagrama de secuencia del inicio de sesión y de la carga de una red (RF 13, RF 14).]{Diagrama de secuencia del inicio de sesión (RF 13) y de la carga de una red propia
 	(RF 14), con la validación previa al almacenamiento (RF 14.1).}
 	\label{fig:sec-s4}
 \end{figure}
@@ -1647,7 +1647,7 @@ la~\ref{fig:s4-tema} la aplicación con el tema claro.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.55\textwidth]{imagenes/app_s4_acceso}
-	\caption{Registro e inicio de sesión (RF 13). Ambas operaciones comparten ventana, ya que desde
+	\caption[Registro e inicio de sesión (RF 13).]{Registro e inicio de sesión (RF 13). Ambas operaciones comparten ventana, ya que desde
 	el punto de vista del usuario son la misma decisión: entrar en su cuenta.}
 	\label{fig:s4-acceso}
 \end{figure}
@@ -1655,7 +1655,7 @@ la~\ref{fig:s4-tema} la aplicación con el tema claro.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.85\textwidth]{imagenes/app_s4_catalogo}
-	\caption{Catálogo de redes (RF 15). Se distinguen las redes públicas de las propias del
+	\caption[Catálogo de redes (RF 15).]{Catálogo de redes (RF 15). Se distinguen las redes públicas de las propias del
 	investigador, cada una con las acciones que le corresponden: visualizarla, exportar sus métricas
 	(RF 16) y, en el caso de las propias, eliminarla.}
 	\label{fig:s4-catalogo}
@@ -1664,7 +1664,7 @@ la~\ref{fig:s4-tema} la aplicación con el tema claro.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{imagenes/app_s4_subida}
-	\caption{Carga de una red propia (RF 14). Los dos ficheros se envían juntos porque una red no
+	\caption[Carga de una red propia (RF 14).]{Carga de una red propia (RF 14). Los dos ficheros se envían juntos porque una red no
 	queda definida sin ambos.}
 	\label{fig:s4-subida}
 \end{figure}
@@ -1672,7 +1672,7 @@ la~\ref{fig:s4-tema} la aplicación con el tema claro.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.85\textwidth]{imagenes/app_s4_admin}
-	\caption{Panel de administración (RF 18). Permite consultar los usuarios registrados, cambiar su
+	\caption[Panel de administración (RF 18).]{Panel de administración (RF 18). Permite consultar los usuarios registrados, cambiar su
 	rol (RF 18.1) y darlos de baja.}
 	\label{fig:s4-admin}
 \end{figure}
@@ -1680,7 +1680,7 @@ la~\ref{fig:s4-tema} la aplicación con el tema claro.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.85\textwidth]{imagenes/app_s4_admin_catalogo}
-	\caption{Gestión del catálogo público (RF 17). El administrador puede publicar una red, con lo
+	\caption[Gestión del catálogo público (RF 17).]{Gestión del catálogo público (RF 17). El administrador puede publicar una red, con lo
 	que pasa a estar disponible para cualquier visitante, o retirarla sin llegar a borrarla.}
 	\label{fig:s4-admin-catalogo}
 \end{figure}
@@ -1688,7 +1688,7 @@ la~\ref{fig:s4-tema} la aplicación con el tema claro.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{imagenes/app_s4_tema_claro}
-	\caption{Personalización de la vista (RF 11): la aplicación con el tema claro, que afecta tanto a
+	\caption[Personalización de la vista (RF 11): el tema claro.]{Personalización de la vista (RF 11): la aplicación con el tema claro, que afecta tanto a
 	los paneles como al fondo de la escena.}
 	\label{fig:s4-tema}
 \end{figure}
