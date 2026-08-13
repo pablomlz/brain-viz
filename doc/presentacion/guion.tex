@@ -1,0 +1,556 @@
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish, es-tabla]{babel}
+\usepackage[a4paper, left=2.4cm, right=2.4cm, top=2.2cm, bottom=2.2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{azul}{HTML}{2F5BD8}
+\definecolor{grafito}{HTML}{22252A}
+\definecolor{gris}{HTML}{6B7280}
+\definecolor{grisclaro}{HTML}{F0F1F4}
+
+\renewcommand{\familydefault}{\sfdefault}
+\color{grafito}
+\linespread{1.12}\selectfont
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\color{gris} Guion de la defensa · Brain Viz}
+\fancyhead[R]{\footnotesize\color{gris} Pablo Moliz Arias}
+\fancyfoot[C]{\footnotesize\color{gris}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Cabecera de cada diapositiva: número, título, duración y tiempo acumulado.
+\newcommand{\dia}[4]{%
+	\vspace{1.1em}%
+	\noindent\colorbox{grisclaro}{%
+		\begin{minipage}{\dimexpr\textwidth-2\fboxsep}
+			\vspace{0.25em}
+			{\color{azul}\bfseries Página #1}\quad{\bfseries #2}\hfill
+			{\footnotesize\color{gris} #3 · hasta #4}
+			\vspace{0.25em}
+		\end{minipage}}%
+	\vspace{0.5em}\par}
+
+% Indicaciones de lo que hay que hacer, no de lo que hay que decir.
+\newcommand{\accion}[1]{%
+	\vspace{0.2em}\par\noindent
+	{\color{azul}\rule{2.5pt}{1em}}\hspace{0.5em}{\itshape\color{azul} #1}\par
+	\vspace{0.2em}}
+
+\newcommand{\pausa}{{\color{azul}\bfseries\,/\,}}
+
+\begin{document}
+
+% ---------------------------------------------------------------- portada ---
+\thispagestyle{empty}
+\vspace*{2.5cm}
+\begin{center}
+	{\footnotesize\color{gris} TRABAJO FIN DE GRADO}\\[1.2em]
+	{\LARGE\bfseries Guion de la defensa}\\[0.6em]
+	{\color{azul}\rule{4em}{2.5pt}}\\[0.8em]
+	{\large Aplicación web para la visualización 3D de redes cerebrales}\\[0.3em]
+	{\large\bfseries Brain Viz}\\[2.2em]
+	Pablo Moliz Arias\\[0.3em]
+	{\color{gris} Tutor: Juan Ruiz de Miras}\\[2.2em]
+	{\footnotesize\color{gris} Duración prevista: 20 minutos\\
+	 36 páginas: 24 de contenido, 5 separadores y 7 de reserva}
+\end{center}
+\vfill
+\newpage
+
+% -------------------------------------------------------- cómo usar esto ---
+\section*{Antes de empezar}
+
+\textbf{Cómo está montado este guion.} Cada apartado corresponde a una diapositiva. Arriba tienes su
+número de página, cuánto debería durar y en qué minuto tendrías que ir al terminarla. El texto está escrito para
+decirlo, no para leerlo palabra por palabra: apréndete la idea y las cifras, y suéltalo con tus
+palabras. Las líneas en azul no se dicen, son cosas que hacer.
+
+\textbf{El símbolo \pausa} marca dónde conviene respirar y dejar un silencio corto. Son los momentos
+en los que se entiende lo que acabas de decir.
+
+\textbf{Los números son los de página del PDF}, que es lo que ves en el visor y en el mando. Entre
+bloque y bloque hay una página separadora con el nombre de la sección, que pasas sin decir nada.
+
+\textbf{Ritmo.} Veinte minutos dan para unas 2.600 palabras habladas. Si a mitad de la exposición
+vas con retraso, lo que se recorta es la página 11 (tecnologías) y la 28 (trabajo futuro), que son
+las que menos se echan de menos. Lo que no se recorta nunca es la 14 (rendimiento) ni la 17
+(validación de las métricas): son las dos que enseñan que hay trabajo de ingeniería detrás.
+
+\vspace{0.5em}
+\textbf{Lista de comprobación del día:}
+\begin{itemize}[leftmargin=1.4em, itemsep=0.2em]
+	\item Abre \texttt{brain-viz.onrender.com} \textbf{diez minutos antes}. El servidor gratuito se
+		duerme y la primera visita puede tardar casi un minuto en responder.
+	\item Ten la pestaña ya cargada y con la red visible, en una ventana aparte de la presentación.
+	\item Lleva el PDF de la presentación en el portátil, en un USB y en tu correo.
+	\item Si vas a enseñarla en el móvil, ábrela desde el icono de la pantalla de inicio, no desde
+		el navegador.
+	\item Ten a mano el PDF de la memoria por si preguntan por una tabla concreta.
+\end{itemize}
+
+\vspace{0.6em}
+\textbf{Reparto del tiempo}
+\vspace{0.3em}
+
+\begin{center}\footnotesize
+\begin{tabularx}{\textwidth}{@{}l X r r@{}}
+	\toprule
+	\textbf{Bloque} & \textbf{Páginas} & \textbf{Dura} & \textbf{Acaba en} \\
+	\midrule
+	Apertura                & 1 y 2    & 0:55  & 0:55 \\
+	El problema             & 4 y 5    & 2:10  & 3:05 \\
+	Qué se pedía            & 7 y 8    & 1:35  & 4:40 \\
+	Cómo lo he construido   & 10 a 21  & 10:40 & 15:20 \\
+	Cómo sé que funciona    & 23       & 0:45  & 16:05 \\
+	Demostración            & 24       & 1:30  & 17:35 \\
+	Conclusiones            & 26 a 29  & 2:15  & 19:50 \\
+	\bottomrule
+\end{tabularx}
+\end{center}
+
+\newpage
+
+% ================================================================== guion ===
+\section*{El guion}
+
+\dia{1}{Portada}{0:25}{0:25}
+
+Buenos días. Soy Pablo Moliz Arias y vengo a presentar mi Trabajo Fin de Grado, dirigido por Juan
+Ruiz de Miras. Se titula «Aplicación web para la visualización 3D de redes cerebrales», y la
+aplicación se llama Brain Viz. \pausa
+
+\accion{No te quedes en la portada más de lo necesario. Cambia de diapositiva mientras dices la
+última frase.}
+
+\dia{2}{Lo que voy a contar}{0:30}{0:55}
+
+Voy a organizarlo en cinco partes: primero cuál es el problema y qué le falta a lo que ya existe,
+después qué se pedía exactamente, luego cómo lo he construido sprint a sprint, cómo he comprobado
+que funciona, y termino con las conclusiones.
+
+Antes de nada, la aplicación está publicada y funcionando en esa dirección. Si en algún momento
+quieren abrirla, ahí está el código para hacerlo desde el móvil. \pausa
+
+\dia{4}{El cerebro se puede estudiar como una red}{1:00}{1:55}
+
+El punto de partida es una idea sencilla. El cerebro se puede representar como una red: cada región
+es un nodo, colocado en las coordenadas que le corresponden anatómicamente, y cada conexión entre
+dos regiones es una arista con un peso, que mide cómo de intensa es esa conexión.
+
+Lo interesante de mirarlo así es que la teoría de grafos ya tiene medidas para responder a preguntas
+que en neurociencia son relevantes: qué regiones actúan como puntos de paso del resto de la red, si
+la red está muy agrupada en bloques, o si se separa en partes que no se comunican. Son preguntas que
+sobre una imagen del cerebro no se pueden contestar, y sobre un grafo sí.
+
+El ejemplo que uso durante todo el trabajo es el atlas AAL90, que divide el cerebro en noventa
+regiones. \pausa
+
+\dia{5}{Lo que ya existe, y lo que le falta}{1:10}{3:05}
+
+Antes de programar nada revisé qué había. Y hay herramientas buenas, pero ninguna encajaba del todo.
+
+En escritorio, BrainNet Viewer es probablemente la más usada, y de hecho de ella he tomado el
+formato de ficheros, pero depende de MATLAB, que es comercial. Connectome Workbench es la referencia
+del Human Connectome Project, muy completa, pero con instalación y formatos propios. Y Gephi es
+potentísima para grafos, aunque no coloca los nodos donde están anatómicamente, que aquí es justo lo
+que importa.
+
+Por el lado de la web, Vizaj es la más cercana a lo que yo quería, aunque se ejecuta entera en el
+navegador y no tiene análisis en servidor. BioImage Suite Web sí es una suite completa, pero el
+visor de conectividad es uno más de sus muchos módulos, con la complejidad que eso trae. Y
+Neuroglancer, que es el visor web más conocido, está pensado para volúmenes de imagen, no para
+redes.
+
+Así que el hueco estaba bastante claro: una herramienta web y ligera, que además analice la red en
+el servidor, y que se pueda desplegar sin depender de la máquina de quien la escribió. \pausa
+
+\dia{7}{Objetivos}{0:45}{3:50}
+
+De ahí sale el objetivo general: diseñar, desarrollar y desplegar una aplicación web para visualizar
+y analizar redes cerebrales en 3D.
+
+Y cinco objetivos específicos. Los tres primeros son de funcionalidad: ver la red en 3D de forma
+interactiva, poder analizarla con métricas de grafos, y poder navegar, filtrar y seleccionar sobre
+ella. Los dos últimos son de ingeniería: que el sistema sea mantenible, con el procesamiento
+separado de la visualización, y que se pueda desplegar de forma sencilla. Volveré a estos cinco al
+final para decir en qué punto está cada uno.
+
+\dia{8}{Requisitos y organización del trabajo}{0:50}{4:40}
+
+Los objetivos se concretaron en dieciocho requisitos funcionales, siete no funcionales y cuatro de
+información, y en tres roles: visitante, investigador y administrador.
+
+Los requisitos se priorizaron en cuatro niveles, y cada nivel es un sprint. Esto es importante
+porque marca todo el desarrollo: cada sprint termina en algo que se puede enseñar y probar, no en
+media funcionalidad. El primero deja la red en pantalla, el segundo permite explorarla, el tercero
+la analiza y el cuarto añade los usuarios.
+
+\accion{Entre sprint y sprint hubo revisión con el tutor. Menciónalo aquí, porque justifica varias
+decisiones que aparecen después.}
+
+\dia{10}{Arquitectura}{0:55}{5:35}
+
+La arquitectura es cliente-servidor desacoplada. El navegador se encarga de dibujar y el servidor de
+procesar, y hablan por una API.
+
+La regla que me impuse desde el principio, y que se ha mantenido los cuatro sprints, es que el
+servidor no sabe absolutamente nada de cómo se dibuja la red, y el cliente no calcula ninguna
+métrica. Eso permite cambiar cualquiera de los dos lados sin tocar el otro, y es lo que hizo que el
+cuarto sprint, que fue el que más cambió, no rompiera nada de lo anterior.
+
+Lo que ven aquí es el montaje de desarrollo, con dos contenedores. Al publicarla eso cambia, y luego
+lo cuento. \pausa
+
+\dia{11}{Tecnologías, y por qué esas}{0:50}{6:25}
+
+Sobre las tecnologías, más que la lista me interesa el porqué.
+
+Flask porque la API es pequeña y de lectura, y un marco completo como Django habría traído mucho que
+no iba a usar. NetworkX porque implementa las métricas del área y está contrastada, que en algo que
+va a dar números a un investigador importa. React porque la interfaz es estado que cambia
+continuamente. Y Three.js a través de react-three-fiber, que me permite describir la escena 3D igual
+que el resto de la interfaz, en lugar de llevar a mano el bucle de dibujado.
+
+En la memoria cada una de estas decisiones está comparada con las alternativas que descarté.
+
+\dia{12}{Sprint 1: cargar la red y verla}{0:40}{7:05}
+
+El primer sprint deja la red en pantalla. Se leen los ficheros \texttt{.node} y \texttt{.edge}, que
+es el formato de BrainNet Viewer, y elegí ese precisamente porque es el que ya tiene la gente del
+área: si hubiera inventado un formato propio, cualquiera que quisiera probarla tendría que convertir
+sus datos antes.
+
+Los noventa nodos se dibujan en sus coordenadas anatómicas reales, y la cámara responde sin esperas.
+Esto es la base sobre la que va todo lo demás.
+
+\dia{13}{Sprint 2: explorar la red}{0:45}{7:50}
+
+El segundo sprint es el que convierte la imagen en algo explorable. El control de umbral deja ver
+solo las conexiones por encima de cierta intensidad.
+
+A la izquierda están las 411 conexiones de la red de ejemplo, que es prácticamente una maraña. A la
+derecha, subiendo el umbral, aparece la estructura: se ve qué zonas están fuertemente conectadas
+entre sí. Y al tocar una región se resaltan sus conexiones y se muestran sus datos.
+
+\dia{14}{El problema de rendimiento, y cómo se resolvió}{1:25}{9:15}
+
+Esta diapositiva es la que más me interesa contarles, porque es donde hubo un problema de verdad.
+
+Mi primera versión del filtrado recorría todas las aristas y reconstruía la geometría entera cada
+vez que se movía el control. Con la red pequeña colaba, pero con miles de conexiones se notaba en la
+mano: el control iba a tirones. \pausa
+
+La solución no fue optimizar ese código, sino darme cuenta de una propiedad de los datos. Si el
+servidor envía las aristas ya ordenadas por peso, entonces las visibles para cualquier umbral son
+siempre las primeras de la lista. Nunca son un conjunto disperso.
+
+Y eso lo cambia todo. La geometría se construye una sola vez, al cargar. Filtrar pasa a ser
+simplemente decirle a la tarjeta gráfica cuántas de esas aristas tiene que dibujar, que es una
+operación de coste constante. Y cuántas son se averigua con una búsqueda binaria sobre la lista
+ordenada, de coste logarítmico en el número de aristas.
+
+El resultado es que mover el control deja de depender del tamaño de la red. \pausa
+
+\accion{Si preguntan, la comprobación de la búsqueda binaria está hecha contra un recuento lineal en
+207 casos, sin ninguna discrepancia.}
+
+\dia{15}{Lo que salió de las revisiones}{1:00}{10:15}
+
+Quiero detenerme en las revisiones, porque cambiaron el resultado más de lo que yo esperaba.
+
+Mi tutor me pidió que las conexiones se vieran un poco más gruesas. Parecía cuestión de cambiar un
+número, y resultó que la especificación de WebGL no obliga a los navegadores a dibujar líneas de más
+de un píxel, y en la práctica ignoran ese parámetro. Hubo que cambiar por completo la forma de
+dibujarlas. Me sirvió de recordatorio de que conviene comprobar las cosas antes de darlas por
+sencillas.
+
+El segundo comentario fue que el grado mostrado tenía que cambiar con el umbral. Yo mostraba siempre
+el grado en la red completa, y al filtrar eso deja de ser lo que la persona está viendo. Ahora el
+panel dice, por ejemplo, dos conexiones visibles de nueve.
+
+Y el tercero, distinguir bien las conexiones del nodo seleccionado, manteniendo su color en lugar de
+teñirlo.
+
+Ninguna de las tres se me habría ocurrido probando yo solo la aplicación, precisamente porque yo ya
+sabía lo que hacía cada cosa. \pausa
+
+\dia{16}{Sprint 3: analizar la red}{0:50}{11:05}
+
+El tercer sprint es el análisis. Se calculan cuatro métricas globales, que describen la red entera,
+y tres medidas de centralidad, que dan un valor por región: grado, intermediación y cercanía.
+
+Pero un número en una tabla, sobre noventa regiones, no dice gran cosa. Por eso lo que me parece más
+útil de este sprint es el mapeo visual: el tamaño y el color de cada nodo pasan a representar la
+métrica elegida. Ahí lo que se ve es la intermediación, y de un vistazo se identifica qué regiones
+son los puntos de paso de la red. La respuesta está en la escena, no en una tabla.
+
+Se añadió también un buscador de regiones.
+
+\dia{17}{¿Cómo sé que esos números están bien?}{1:10}{12:15}
+
+Y aquí viene lo que para mí es la parte más importante de este sprint. Si alguien va a usar estos
+números para investigar, tienen que estar bien.
+
+Así que no me limité a comprobar que salían números: contrasté las cinco métricas con
+implementaciones escritas por mí sin usar la librería, incluida una del algoritmo de Brandes para la
+intermediación, que no es precisamente trivial.
+
+Y esa comprobación encontró un error real. Verificando que la suma de los grados fuera el doble del
+número de aristas, que es una propiedad que se cumple siempre, descubrí que todos los nodos tenían
+exactamente el mismo grado. La librería estaba creando una conexión por cada celda de la matriz,
+incluidas las que valen cero. \pausa
+
+Lo que me parece relevante es que ese fallo no daba ningún síntoma en pantalla. La aplicación se veía
+perfecta. Sin esa comprobación habría llegado hasta el final del proyecto.
+
+En cuanto al coste, la intermediación es la métrica cara. En la red de ejemplo son doce
+milisegundos, pero en una de quinientos nodos pasa de medio segundo. Guardando la red ya procesada,
+a partir de la segunda consulta son cuatro milisegundos: en la red grande, ciento cuarenta y siete
+veces más rápido.
+
+\dia{18}{Sprint 4: de una aplicación a un sistema con usuarios}{0:45}{13:00}
+
+El cuarto sprint es el que convierte la herramienta en un sistema con usuarios. Aparecen las
+cuentas, y con ellas la posibilidad de que cada investigador suba sus propias redes, que solo ve él.
+Se añaden la exportación de resultados, la personalización de la vista y un panel de administración
+para gestionar usuarios, roles y el catálogo público.
+
+\dia{19}{Lo que ese sprint obligó a cambiar}{0:45}{13:45}
+
+Este sprint fue con diferencia el que más impacto tuvo en la arquitectura, y de hecho me equivoqué
+al estimarlo: le di cinco días por ser el último, y fue el más largo.
+
+El motivo es que los tres primeros sprints compartían algo que simplificaba mucho las cosas: el
+sistema no guardaba nada. Con los datos privados surgen tres preguntas nuevas. Dónde guardar las
+contraseñas, y la respuesta es que no se guardan: se guarda un resumen del que no se puede volver
+atrás. Quién hace cada petición, que se resuelve con una sesión firmada en una cookie que el
+navegador impide leer desde el código. Y cómo impedir que alguien acceda a lo que no es suyo.
+
+Por eso lo primero que automaticé en este sprint fueron las pruebas de que nadie puede ver ni borrar
+la red de otro, ni siquiera pidiéndola directamente por su identificador. \pausa
+
+\dia{20}{Que se vea bien en cualquier pantalla}{0:45}{14:30}
+
+Uno de los requisitos no funcionales es que la interfaz se adapte al tamaño de la pantalla, y merece
+un momento porque tiene más miga de la que parece.
+
+En un teléfono no caben dos columnas de paneles alrededor de la escena. La decisión fue cambiar
+cuándo se muestran, no cuánto ocupan: se abren desde una barra inferior, de uno en uno.
+
+Y hay un detalle que da nombre a la diapositiva. El criterio para decidir que no hay espacio no
+puede ser solo el ancho: un teléfono girado, como el de la imagen, tiene ancho de sobra pero apenas
+cuatrocientos puntos de altura. Además, las franjas que el sistema reserva alrededor de la cámara
+cambian de sitio al girar el aparato, así que los elementos se apartan de los cuatro bordes y no de
+dos.
+
+\dia{21}{Despliegue}{0:50}{15:20}
+
+Sobre el despliegue tengo que contar algo que no tenía previsto.
+
+Durante los tres primeros sprints mi despliegue era el entorno de desarrollo con contenedores, y yo
+lo daba por bueno. Cuando llegó el momento de publicarlo descubrí que no valía: eran dos servicios
+que se hablaban por un nombre interno de la red de Docker, que fuera de ella no existe, y además
+usaban servidores de desarrollo, que no están pensados para eso.
+
+Tuve que preparar una imagen distinta, en dos etapas: una compila la interfaz y la otra la sirve
+desde el propio servidor, con todo el sistema en un único contenedor. Fue trabajo que no tenía
+planificado, y la lección es que «funciona en mi máquina» y «se puede desplegar» no son lo mismo.
+
+El resultado es que está publicada y cualquiera puede entrar. \pausa
+
+\dia{23}{Validación}{0:45}{16:05}
+
+Resumiendo cómo he comprobado que esto funciona. Hay diecisiete pruebas automáticas que se lanzan
+con una sola orden, treinta y dos pruebas de aceptación, una por cada requisito, y las cinco
+métricas contrastadas con código propio.
+
+Sobre rendimiento, multiplicar por treinta el número de conexiones no produjo degradación
+apreciable.
+
+Y hay algo que prefiero dejar señalado antes que darlo por bueno: la comprobación formal de los
+sesenta fotogramas por segundo no la considero concluyente, porque el mismo resultado salía midiendo
+una página vacía. Eso indica que el límite lo ponía el entorno de medida y no la aplicación, pero no
+lo demuestra.
+
+\accion{Esta última frase suma. Un tribunal valora que distingas lo que has demostrado de lo que
+no.}
+
+\dia{24}{Demostración}{1:30}{17:35}
+
+\accion{Cambia a la ventana del navegador, que ya tiene que estar cargada. Si algo falla, vuelve a
+la presentación y usa las diapositivas de reserva: nadie se dará cuenta.}
+
+Si me permiten, se lo enseño funcionando. Esta es la red de ejemplo, noventa regiones en sus
+coordenadas anatómicas.
+
+\accion{1. Gira la escena con el ratón, sin prisa.}
+
+Si subo el umbral, se van quedando solo las conexiones más intensas y aparece la estructura.
+
+\accion{2. Mueve el umbral despacio de 0 a 0,7 y vuelve a bajarlo. Es el momento más vistoso.}
+
+Al seleccionar una región se resaltan sus conexiones y el panel indica cuántas hay visibles de las
+que tiene en total.
+
+\accion{3. Toca un nodo con grado alto y señala el contador del panel.}
+
+Y si cambio el criterio de color a intermediación, los nodos que actúan como puntos de paso se ven
+inmediatamente, sin leer ningún número.
+
+\accion{4. Cambia el mapeo a intermediación y deja la escena ahí. Vuelve a la presentación.}
+
+\dia{26}{Grado de cumplimiento}{0:40}{18:15}
+
+Volviendo a los cinco objetivos del principio. Los cinco están cumplidos, y los dieciocho requisitos
+funcionales están implementados, junto con los no funcionales y los de información.
+
+En el quinto, el del despliegue, pongo «con matices» a propósito, por lo que acabo de contar: está
+cumplido, pero me costó más de lo que debería por haberlo dejado para el final.
+
+\dia{27}{Lo que me llevo}{0:45}{19:00}
+
+Si tuviera que quedarme con cuatro cosas de todo el trabajo, serían estas.
+
+La primera, que buscar la propiedad de los datos que simplifica el problema rinde mucho más que
+optimizar el código. El filtrado por umbral es el ejemplo claro.
+
+La segunda, que las pruebas no son un trámite para la memoria. El error del grado no se veía en
+pantalla.
+
+La tercera, que «terminado» no es lo mismo que «el código hace lo que dice». El buscador filtraba
+perfectamente y aun así no servía, porque las etiquetas del atlas son abreviaturas y nadie escribe
+\texttt{HIP.L} cuando busca el hipocampo. Lo que lo arregló no fue tocar el filtrado, sino mostrar la lista de regiones para poder elegir
+directamente.
+
+Y la cuarta, el valor de las revisiones, por lo que ya he comentado. \pausa
+
+\dia{28}{Trabajo futuro}{0:35}{19:35}
+
+Quedan líneas abiertas. En análisis, detectar comunidades, calcular el camino más corto entre dos
+regiones y resaltarlo, y comparar dos redes entre sí, que sería lo más útil para estudios de sujetos
+sanos frente a pacientes. También admitir más formatos y poder compartir una red con personas
+concretas.
+
+La carencia más clara es la accesibilidad: la aplicación depende mucho del color y no he comprobado
+cómo se ve con distintos tipos de daltonismo. Es lo primero que haría si continuara.
+
+\dia{29}{Cierre}{0:15}{19:50}
+
+Y hasta aquí. Muchas gracias por su atención, quedo a su disposición para las preguntas.
+
+\accion{Deja la diapositiva de cierre en pantalla durante las preguntas. Tiene la dirección y el
+código, por si quieren abrirla.}
+
+\newpage
+
+% =============================================================== preguntas ===
+\section*{Preguntas que pueden hacerte}
+
+Están ordenadas de más a menos probable. Respuestas cortas: contesta y para, no sigas hablando por
+llenar el silencio.
+
+\vspace{0.5em}
+
+\textbf{¿Por qué Flask y no Django o FastAPI?}\\
+Porque la API es pequeña y básicamente de lectura. Django trae un modelo completo, panel de
+administración y muchas cosas que no iba a usar. FastAPI habría encajado, pero Flask me daba lo que
+necesitaba con menos piezas y con más documentación disponible. En la memoria está la comparación
+completa.
+
+\textbf{¿Cómo escala con redes grandes?}\\
+El dibujado aguanta bien: probé con quinientos nodos y más de doce mil conexiones y no hubo
+degradación apreciable, gracias a que la geometría no se reconstruye. Lo que sí se nota es el
+cálculo de la intermediación, que pasa de doce milisegundos a algo más de medio segundo. Guardar el
+resultado ya procesado lo resuelve a partir de la segunda consulta, pero la primera sigue costando
+lo mismo. Para redes bastante mayores lo correcto sería calcularlo en segundo plano y avisar cuando
+esté listo.
+
+\textbf{¿Cómo garantizas que un usuario no ve las redes de otro?}\\
+Cada red guarda a qué usuario pertenece, y toda consulta filtra por el usuario de la sesión antes de
+devolver nada. No se confía en lo que pida el cliente. Y es lo primero que cubrí con pruebas
+automáticas: hay pruebas que intentan leer y borrar la red de otro usuario pidiéndola directamente
+por su identificador, y comprueban que el sistema responde que no existe.
+
+\textbf{¿Dónde se guardan las contraseñas?}\\
+No se guardan. Se guarda un resumen criptográfico con sal, del que no se puede recuperar la
+contraseña original. Al iniciar sesión se compara el resumen, nunca el texto.
+
+\textbf{¿Por qué sesión con cookie y no un token JWT?}\\
+Porque cliente y servidor se sirven desde el mismo sitio, así que la cookie es más simple y más
+segura por defecto: va firmada, el navegador impide leerla desde el código y se puede invalidar en
+el servidor, que con un token es justo lo complicado. Un token tendría sentido si hubiera clientes
+de terceros consumiendo la API.
+
+\textbf{¿Cómo validaste las métricas?}\\
+Escribí mi propia implementación de las cinco, sin usar la librería, incluida una del algoritmo de
+Brandes para la intermediación, y comparé los resultados. Además comprobé propiedades que se cumplen
+siempre, como que la suma de los grados sea el doble del número de aristas. Fue precisamente esa
+comprobación la que destapó que la librería estaba creando aristas de peso cero.
+
+\textbf{¿Qué es exactamente la intermediación y para qué sirve aquí?}\\
+Mide cuántos de los caminos más cortos entre pares de regiones pasan por una región concreta. Una
+región con intermediación alta es un punto de paso: si se daña, la comunicación entre partes de la
+red se resiente. Por eso en neurociencia interesa identificarlas.
+
+\textbf{¿Se cumplen los sesenta fotogramas por segundo del requisito?}\\
+No lo puedo afirmar con la medida que hice. Medí con dos redes de tamaños muy distintos y salió lo
+mismo en las dos, pero también salía lo mismo midiendo una página vacía, lo que indica que el techo
+lo ponía el entorno de medida. Lo que sí puedo afirmar es que multiplicar por treinta las conexiones
+no produjo degradación apreciable. Prefiero dejarlo señalado como pendiente antes que darlo por
+bueno.
+
+\textbf{¿Por qué el atlas AAL90? ¿Sirve para otros?}\\
+Lo uso como ejemplo porque es muy común y los datos están disponibles, pero la aplicación no depende
+de él: lee cualquier par de ficheros en el formato de BrainNet Viewer, con las coordenadas y la
+matriz. De hecho cualquier usuario puede subir los suyos.
+
+\textbf{¿Qué diferencia real hay con Vizaj, que es lo más parecido?}\\
+Vizaj se ejecuta entero en el navegador y se centra en la representación. Brain Viz separa el
+análisis en un servicio de servidor, que es lo que permite calcular métricas de grafos sin cargar al
+navegador, guardar resultados y tener usuarios con datos propios. Y está pensada para desplegarse de
+forma reproducible.
+
+\textbf{¿Por qué no hay pruebas automáticas de la interfaz?}\\
+Es una carencia que asumo. Las pruebas automáticas cubren el servidor, que es donde están los datos
+y las reglas de acceso, que me pareció lo prioritario. La interfaz la validé con las treinta y dos
+pruebas de aceptación, que son manuales y están documentadas una a una en la memoria. Con más tiempo
+habría añadido pruebas de extremo a extremo.
+
+\textbf{¿Qué pasa si el fichero que sube el usuario está mal?}\\
+Se valida antes de aceptarlo: que los dos ficheros vayan juntos, que la matriz sea cuadrada y que
+sus dimensiones coincidan con el número de nodos. Si algo no cuadra se rechaza con un mensaje que
+dice qué falla, en lugar de guardarlo y fallar después al dibujarlo.
+
+\textbf{¿Por qué Render y no un servidor de la universidad?}\\
+Porque quería que el resultado fuera accesible sin trámites y sin coste. Al ir todo en un contenedor
+Docker, el proveedor es intercambiable: la misma imagen se puede llevar a otro sitio sin tocar el
+código.
+
+\textbf{¿Es accesible la aplicación?}\\
+No lo suficiente, y es la carencia que señalo en el trabajo futuro. Depende mucho del color, tanto
+en los grupos anatómicos como en las escalas de métricas, y no he comprobado cómo se ve con
+daltonismo. Lo primero sería añadir paletas pensadas para eso y revisar el manejo con teclado.
+
+\textbf{¿Qué harías distinto si empezaras de nuevo?}\\
+Preparar el despliegue real desde el principio. Dejarlo para el final hizo que arrastrara durante
+tres sprints un montaje que servía para desarrollar pero no para publicar, y que la diferencia entre
+las dos cosas no apareciera hasta que ya no quedaba margen.
+
+\vspace{1.2em}
+\accion{Si te preguntan algo que no sabes, dilo. «No lo comprobé» o «eso no lo he medido» es una
+respuesta perfectamente aceptable, y es mucho mejor que inventar. Puedes añadir cómo lo
+comprobarías.}
+
+\end{document}

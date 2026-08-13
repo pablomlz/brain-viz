@@ -1,0 +1,72 @@
+% Tema propio para la presentación. Se parte del tema por defecto y se ajusta a
+% mano en lugar de usar uno de los que traen adorno, para que las diapositivas
+% queden limpias y no dependan de paquetes que puedan faltar en otra máquina.
+
+\usetheme{default}
+\usecolortheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+\definecolor{azul}{HTML}{2F5BD8}
+\definecolor{grafito}{HTML}{22252A}
+\definecolor{gris}{HTML}{6B7280}
+\definecolor{grisclaro}{HTML}{E7E9ED}
+\definecolor{verde}{HTML}{1E8E5A}
+
+\setbeamercolor{normal text}{fg=grafito, bg=white}
+\setbeamercolor{structure}{fg=azul}
+\setbeamercolor{alerted text}{fg=azul}
+\setbeamercolor{frametitle}{fg=grafito, bg=white}
+\setbeamercolor{title}{fg=grafito}
+\setbeamercolor{block title}{fg=white, bg=azul}
+\setbeamercolor{block body}{fg=grafito, bg=grisclaro}
+
+\setbeamerfont{frametitle}{size=\large, series=\bfseries}
+\setbeamerfont{title}{size=\LARGE, series=\bfseries}
+\setbeamerfont{footline}{size=\tiny}
+
+% Título de la diapositiva con una regla corta debajo, para separarlo del
+% contenido sin cargar la parte de arriba.
+\setbeamertemplate{frametitle}{%
+	\vspace{0.55em}\hspace{0.05\paperwidth}%
+	\begin{minipage}{0.9\paperwidth}
+		\raggedright\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}%
+		\insertframetitle\par\vspace{0.25em}%
+		{\color{azul}\rule{2.4em}{2pt}}
+	\end{minipage}\par\vspace{0.25em}}
+
+\setbeamertemplate{footline}{%
+	\hbox{\begin{beamercolorbox}[wd=\paperwidth, ht=1.7ex, dp=1.0ex,
+			leftskip=0.05\paperwidth, rightskip=0.05\paperwidth]{}%
+		\usebeamerfont{footline}\color{gris}%
+		Brain Viz\quad\textbar\quad Pablo Moliz Arias%
+		\hfill\insertframenumber%
+	\end{beamercolorbox}}}
+
+\setbeamertemplate{itemize item}{\color{azul}\raisebox{0.12ex}{\rule{0.45em}{0.45em}}}
+\setbeamertemplate{itemize subitem}{\color{gris}\raisebox{0.15ex}{\rule{0.32em}{0.32em}}}
+\setbeamertemplate{enumerate item}{\color{azul}\insertenumlabel.}
+\setbeamertemplate{caption}{\insertcaption}
+\setlength{\leftmargini}{1.2em}
+\setlength{\leftmarginii}{1.1em}
+
+% Separador de sección: una página con el número y el nombre, para que se note
+% el cambio de bloque durante la exposición.
+\AtBeginSection[]{%
+	\begin{frame}[plain, noframenumbering]
+		\vfill
+		\begin{center}
+			{\color{azul}\large\bfseries\insertsectionnumber}\\[0.6em]
+			{\Large\bfseries\insertsectionhead}\\[0.7em]
+			{\color{azul}\rule{3em}{2pt}}
+		\end{center}
+		\vfill
+	\end{frame}}
+
+% Cajitas para destacar una cifra o una idea de una línea.
+\newcommand{\dato}[2]{%
+	\begin{minipage}[t]{0.3\textwidth}\centering
+		{\color{azul}\Large\bfseries #1}\\[0.2em]
+		{\small\color{gris} #2}
+	\end{minipage}}
+
+\newcommand{\clave}[1]{{\color{azul}\bfseries #1}}
