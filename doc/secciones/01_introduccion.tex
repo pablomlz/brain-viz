@@ -147,11 +147,21 @@ general, orientada al análisis completo de imagen médica, lo que implica una m
 curva de aprendizaje más pronunciada para quien únicamente desea cargar y explorar un connectoma de
 forma inmediata.
 
-Además de estas dos referencias web, existen potentes herramientas de escritorio como
+\textbf{Neuroglancer}~\cite{neuroglancer}, desarrollado por Google, es otro visor que funciona en el
+navegador, en su caso para conjuntos de neuroimagen de gran tamaño, con volúmenes y reconstrucciones
+tridimensionales. Su enfoque es distinto al de este trabajo: está pensado para recorrer imágenes y
+segmentaciones, no para representar una red de regiones y sus conexiones, y ponerlo en marcha con
+datos propios exige familiarizarse con su formato de configuración.
+
+Además de las referencias web anteriores, existen potentes herramientas de escritorio como
 \textbf{BrainNet Viewer}~\cite{brainnet}, muy utilizada para la visualización de connectomas y de la
 que se adopta en este proyecto el formato de ficheros \texttt{.node} y \texttt{.edge}; su principal
-inconveniente es que depende de MATLAB, un entorno comercial. Igualmente existen herramientas
-genéricas de análisis de grafos, como \textbf{Gephi}~\cite{gephi}, muy potentes en métricas y
+inconveniente es que depende de MATLAB, un entorno comercial. En el ámbito específico de la conectividad,
+\textbf{Connectome Workbench}~\cite{workbench} es la herramienta de referencia del Human Connectome
+Project para visualizar superficies y datos de conectividad, muy completa pero con instalación
+propia, formatos específicos y una curva de aprendizaje considerable para quien solo quiere abrir un
+connectoma y mirarlo. Igualmente existen herramientas genéricas de análisis de grafos, como
+\textbf{Gephi}~\cite{gephi}, muy potentes en métricas y
 algoritmos de disposición, pero no orientadas a datos cerebrales ni a la colocación de los nodos en
 sus coordenadas anatómicas reales.
 

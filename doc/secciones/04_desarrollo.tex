@@ -293,7 +293,7 @@ el desarrollo. La comunicación con el \textit{frontend} se habilita mediante CO
 
 \subsubsection*{Frontend: visualización e interacción (RF 2, RF 3, RF 4)}
 
-El \textit{frontend} se ha implementado en React con Vite como herramienta de construcción, y utiliza
+El \textit{frontend} se ha implementado en React con Vite~\cite{vite} como herramienta de construcción, y utiliza
 Three.js a través de \textit{react-three-fiber} y su librería de utilidades \textit{drei} para el
 renderizado 3D declarativo. Al iniciarse, la aplicación solicita la red al \textit{endpoint}
 \texttt{/api/brain-data} y, con los datos recibidos, construye la escena:
@@ -546,8 +546,8 @@ como la selección operan sobre los datos que el cliente ya ha recibido, lo que 
 para cumplir el requisito de que el filtrado se aplique \emph{en tiempo real} (RF 5): una petición
 por cada movimiento del control deslizante haría la interacción inviable.
 
-El punto delicado es cómo aplicar el umbral sin penalizar el rendimiento. La solución directa
-, que consiste en recorrer las aristas y reconstruir la geometría cada vez que el usuario mueve el
+El punto delicado es cómo aplicar el umbral sin penalizar el rendimiento. La solución directa, que
+consiste en recorrer las aristas y reconstruir la geometría cada vez que el usuario mueve el
 control, obliga a recalcular y volver a enviar a la tarjeta gráfica miles de vértices en cada fotograma. En su lugar
 se ha adoptado la siguiente estrategia, apoyada en que el servidor entrega las aristas ordenadas por
 peso descendente:
