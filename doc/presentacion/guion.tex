@@ -64,7 +64,7 @@
 	Pablo Moliz Arias\\[0.3em]
 	{\color{gris} Tutor: Juan Ruiz de Miras}\\[2.2em]
 	{\footnotesize\color{gris} Duración prevista: 20 minutos\\
-	 36 páginas: 24 de contenido, 5 separadores y 7 de reserva}
+	 25 páginas: 15 de contenido, 2 separadores y 8 de reserva}
 \end{center}
 \vfill
 \newpage
@@ -83,10 +83,11 @@ en los que se entiende lo que acabas de decir.
 \textbf{Los números son los de página del PDF}, que es lo que ves en el visor y en el mando. Entre
 bloque y bloque hay una página separadora con el nombre de la sección, que pasas sin decir nada.
 
-\textbf{Ritmo.} Veinte minutos dan para unas 2.600 palabras habladas. Si a mitad de la exposición
-vas con retraso, lo que se recorta es la página 11 (tecnologías) y la 28 (trabajo futuro), que son
-las que menos se echan de menos. Lo que no se recorta nunca es la 14 (rendimiento) ni la 17
-(validación de las métricas): son las dos que enseñan que hay trabajo de ingeniería detrás.
+\textbf{Ritmo.} Son pocas diapositivas y cada una dura más de un minuto, así que no hay prisa por
+cambiar: quédate en cada una mientras la cuentas entera. Si vas con retraso, lo que se recorta es la
+parte de tecnologías de la página 5 y la mitad derecha de la 16. Lo que no se recorta nunca es la 7
+(rendimiento) ni la segunda mitad de la 9 (cómo validé las métricas): son las dos que enseñan que
+hay trabajo de ingeniería detrás.
 
 \vspace{0.5em}
 \textbf{Lista de comprobación del día:}
@@ -109,13 +110,12 @@ las que menos se echan de menos. Lo que no se recorta nunca es la 14 (rendimient
 	\toprule
 	\textbf{Bloque} & \textbf{Páginas} & \textbf{Dura} & \textbf{Acaba en} \\
 	\midrule
-	Apertura                & 1 y 2    & 0:55  & 0:55 \\
-	El problema             & 4 y 5    & 2:10  & 3:05 \\
-	Qué se pedía            & 7 y 8    & 1:35  & 4:40 \\
-	Cómo lo he construido   & 10 a 21  & 10:40 & 15:20 \\
-	Cómo sé que funciona    & 23       & 0:45  & 16:05 \\
-	Demostración            & 24       & 1:30  & 17:35 \\
-	Conclusiones            & 26 a 29  & 2:15  & 19:50 \\
+	Apertura                    & 1        & 0:25  & 0:25 \\
+	El problema y los objetivos & 2 y 3    & 3:35  & 4:00 \\
+	Cómo lo he construido       & 5 a 11   & 10:45 & 14:45 \\
+	Cómo sé que funciona        & 12       & 0:50  & 15:35 \\
+	Demostración                & 13       & 1:30  & 17:05 \\
+	Conclusiones                & 15 a 17  & 2:35  & 19:40 \\
 	\bottomrule
 \end{tabularx}
 \end{center}
@@ -131,19 +131,9 @@ Buenos días. Soy Pablo Moliz Arias y vengo a presentar mi Trabajo Fin de Grado,
 Ruiz de Miras. Se titula «Aplicación web para la visualización 3D de redes cerebrales», y la
 aplicación se llama Brain Viz. \pausa
 
-\accion{No te quedes en la portada más de lo necesario. Cambia de diapositiva mientras dices la
-última frase.}
+\accion{No te quedes en la portada. Cambia de diapositiva mientras dices la última frase.}
 
-\dia{2}{Lo que voy a contar}{0:30}{0:55}
-
-Voy a organizarlo en cinco partes: primero cuál es el problema y qué le falta a lo que ya existe,
-después qué se pedía exactamente, luego cómo lo he construido sprint a sprint, cómo he comprobado
-que funciona, y termino con las conclusiones.
-
-Antes de nada, la aplicación está publicada y funcionando en esa dirección. Si en algún momento
-quieren abrirla, ahí está el código para hacerlo desde el móvil. \pausa
-
-\dia{4}{El cerebro se puede estudiar como una red}{1:00}{1:55}
+\dia{2}{El cerebro como red, y lo que ya existe}{2:05}{2:30}
 
 El punto de partida es una idea sencilla. El cerebro se puede representar como una red: cada región
 es un nodo, colocado en las coordenadas que le corresponden anatómicamente, y cada conexión entre
@@ -152,14 +142,10 @@ dos regiones es una arista con un peso, que mide cómo de intensa es esa conexi�
 Lo interesante de mirarlo así es que la teoría de grafos ya tiene medidas para responder a preguntas
 que en neurociencia son relevantes: qué regiones actúan como puntos de paso del resto de la red, si
 la red está muy agrupada en bloques, o si se separa en partes que no se comunican. Son preguntas que
-sobre una imagen del cerebro no se pueden contestar, y sobre un grafo sí.
+sobre una imagen del cerebro no se pueden contestar, y sobre un grafo sí. El ejemplo que uso durante
+todo el trabajo es el atlas AAL90, que divide el cerebro en noventa regiones. \pausa
 
-El ejemplo que uso durante todo el trabajo es el atlas AAL90, que divide el cerebro en noventa
-regiones. \pausa
-
-\dia{5}{Lo que ya existe, y lo que le falta}{1:10}{3:05}
-
-Antes de programar nada revisé qué había. Y hay herramientas buenas, pero ninguna encajaba del todo.
+Antes de programar nada revisé qué había, y hay herramientas buenas, pero ninguna encajaba del todo.
 
 En escritorio, BrainNet Viewer es probablemente la más usada, y de hecho de ella he tomado el
 formato de ficheros, pero depende de MATLAB, que es comercial. Connectome Workbench es la referencia
@@ -167,16 +153,15 @@ del Human Connectome Project, muy completa, pero con instalación y formatos pro
 potentísima para grafos, aunque no coloca los nodos donde están anatómicamente, que aquí es justo lo
 que importa.
 
-Por el lado de la web, Vizaj es la más cercana a lo que yo quería, aunque se ejecuta entera en el
-navegador y no tiene análisis en servidor. BioImage Suite Web sí es una suite completa, pero el
-visor de conectividad es uno más de sus muchos módulos, con la complejidad que eso trae. Y
-Neuroglancer, que es el visor web más conocido, está pensado para volúmenes de imagen, no para
-redes.
+En el navegador, Vizaj es la más cercana a lo que yo quería, aunque se ejecuta entera en el cliente
+y no tiene análisis en servidor. BioImage Suite Web sí es una suite completa, pero el visor de
+conectividad es uno más de sus muchos módulos, con la complejidad que eso trae. Y Neuroglancer, que
+es el visor web más conocido, está pensado para volúmenes de imagen, no para redes.
 
 Así que el hueco estaba bastante claro: una herramienta web y ligera, que además analice la red en
 el servidor, y que se pueda desplegar sin depender de la máquina de quien la escribió. \pausa
 
-\dia{7}{Objetivos}{0:45}{3:50}
+\dia{3}{Objetivos y organización del trabajo}{1:30}{4:00}
 
 De ahí sale el objetivo general: diseñar, desarrollar y desplegar una aplicación web para visualizar
 y analizar redes cerebrales en 3D.
@@ -187,20 +172,18 @@ ella. Los dos últimos son de ingeniería: que el sistema sea mantenible, con el
 separado de la visualización, y que se pueda desplegar de forma sencilla. Volveré a estos cinco al
 final para decir en qué punto está cada uno.
 
-\dia{8}{Requisitos y organización del trabajo}{0:50}{4:40}
+Eso se concretó en dieciocho requisitos funcionales, siete no funcionales y cuatro de información, y
+en tres roles: visitante, investigador y administrador.
 
-Los objetivos se concretaron en dieciocho requisitos funcionales, siete no funcionales y cuatro de
-información, y en tres roles: visitante, investigador y administrador.
+Los requisitos se priorizaron en cuatro niveles, y cada nivel es un sprint, que es lo que marca todo
+el desarrollo: el primero deja la red en pantalla, el segundo permite explorarla, el tercero la
+analiza y el cuarto añade los usuarios. Cada uno termina en algo que se puede enseñar y probar, no
+en media funcionalidad. Y entre sprint y sprint hubo revisión con mi tutor, que como verán cambió
+varias cosas. \pausa
 
-Los requisitos se priorizaron en cuatro niveles, y cada nivel es un sprint. Esto es importante
-porque marca todo el desarrollo: cada sprint termina en algo que se puede enseñar y probar, no en
-media funcionalidad. El primero deja la red en pantalla, el segundo permite explorarla, el tercero
-la analiza y el cuarto añade los usuarios.
+\accion{Pasas la página separadora sin decir nada.}
 
-\accion{Entre sprint y sprint hubo revisión con el tutor. Menciónalo aquí, porque justifica varias
-decisiones que aparecen después.}
-
-\dia{10}{Arquitectura}{0:55}{5:35}
+\dia{5}{Arquitectura y tecnologías}{1:40}{5:40}
 
 La arquitectura es cliente-servidor desacoplada. El navegador se encarga de dibujar y el servidor de
 procesar, y hablan por una API.
@@ -208,12 +191,7 @@ procesar, y hablan por una API.
 La regla que me impuse desde el principio, y que se ha mantenido los cuatro sprints, es que el
 servidor no sabe absolutamente nada de cómo se dibuja la red, y el cliente no calcula ninguna
 métrica. Eso permite cambiar cualquiera de los dos lados sin tocar el otro, y es lo que hizo que el
-cuarto sprint, que fue el que más cambió, no rompiera nada de lo anterior.
-
-Lo que ven aquí es el montaje de desarrollo, con dos contenedores. Al publicarla eso cambia, y luego
-lo cuento. \pausa
-
-\dia{11}{Tecnologías, y por qué esas}{0:50}{6:25}
+cuarto sprint, que fue el que más cambió, no rompiera nada de lo anterior. \pausa
 
 Sobre las tecnologías, más que la lista me interesa el porqué.
 
@@ -221,30 +199,24 @@ Flask porque la API es pequeña y de lectura, y un marco completo como Django ha
 no iba a usar. NetworkX porque implementa las métricas del área y está contrastada, que en algo que
 va a dar números a un investigador importa. React porque la interfaz es estado que cambia
 continuamente. Y Three.js a través de react-three-fiber, que me permite describir la escena 3D igual
-que el resto de la interfaz, en lugar de llevar a mano el bucle de dibujado.
+que el resto de la interfaz, en lugar de llevar a mano el bucle de dibujado. En la memoria cada una
+de estas decisiones está comparada con las alternativas que descarté.
 
-En la memoria cada una de estas decisiones está comparada con las alternativas que descarté.
-
-\dia{12}{Sprint 1: cargar la red y verla}{0:40}{7:05}
+\dia{6}{Sprints 1 y 2: ver la red y explorarla}{1:25}{7:05}
 
 El primer sprint deja la red en pantalla. Se leen los ficheros \texttt{.node} y \texttt{.edge}, que
 es el formato de BrainNet Viewer, y elegí ese precisamente porque es el que ya tiene la gente del
 área: si hubiera inventado un formato propio, cualquiera que quisiera probarla tendría que convertir
-sus datos antes.
+sus datos antes. Los noventa nodos se dibujan en sus coordenadas anatómicas reales, y la cámara
+responde sin esperas.
 
-Los noventa nodos se dibujan en sus coordenadas anatómicas reales, y la cámara responde sin esperas.
-Esto es la base sobre la que va todo lo demás.
+El segundo sprint es el que convierte esa imagen en algo explorable. El control de umbral deja ver
+solo las conexiones por encima de cierta intensidad. A la izquierda están las 411 conexiones de la
+red de ejemplo, que es prácticamente una maraña. A la derecha, subiendo el umbral, aparece la
+estructura: se ve qué zonas están fuertemente conectadas entre sí. Y al tocar una región se resaltan
+sus conexiones y se muestran sus datos. \pausa
 
-\dia{13}{Sprint 2: explorar la red}{0:45}{7:50}
-
-El segundo sprint es el que convierte la imagen en algo explorable. El control de umbral deja ver
-solo las conexiones por encima de cierta intensidad.
-
-A la izquierda están las 411 conexiones de la red de ejemplo, que es prácticamente una maraña. A la
-derecha, subiendo el umbral, aparece la estructura: se ve qué zonas están fuertemente conectadas
-entre sí. Y al tocar una región se resaltan sus conexiones y se muestran sus datos.
-
-\dia{14}{El problema de rendimiento, y cómo se resolvió}{1:25}{9:15}
+\dia{7}{El problema de rendimiento, y cómo se resolvió}{1:30}{8:35}
 
 Esta diapositiva es la que más me interesa contarles, porque es donde hubo un problema de verdad.
 
@@ -266,7 +238,7 @@ El resultado es que mover el control deja de depender del tamaño de la red. \pa
 \accion{Si preguntan, la comprobación de la búsqueda binaria está hecha contra un recuento lineal en
 207 casos, sin ninguna discrepancia.}
 
-\dia{15}{Lo que salió de las revisiones}{1:00}{10:15}
+\dia{8}{Lo que salió de las revisiones}{1:05}{9:40}
 
 Quiero detenerme en las revisiones, porque cambiaron el resultado más de lo que yo esperaba.
 
@@ -286,21 +258,18 @@ teñirlo.
 Ninguna de las tres se me habría ocurrido probando yo solo la aplicación, precisamente porque yo ya
 sabía lo que hacía cada cosa. \pausa
 
-\dia{16}{Sprint 3: analizar la red}{0:50}{11:05}
+\dia{9}{Sprint 3: analizar la red, y cómo sé que está bien}{2:00}{11:40}
 
 El tercer sprint es el análisis. Se calculan cuatro métricas globales, que describen la red entera,
 y tres medidas de centralidad, que dan un valor por región: grado, intermediación y cercanía.
 
 Pero un número en una tabla, sobre noventa regiones, no dice gran cosa. Por eso lo que me parece más
 útil de este sprint es el mapeo visual: el tamaño y el color de cada nodo pasan a representar la
-métrica elegida. Ahí lo que se ve es la intermediación, y de un vistazo se identifica qué regiones
-son los puntos de paso de la red. La respuesta está en la escena, no en una tabla.
+métrica elegida. Lo que están viendo es la intermediación, y de un vistazo se identifica qué
+regiones son los puntos de paso de la red. La respuesta está en la escena, no en una tabla. Se
+añadió también un buscador de regiones. \pausa
 
-Se añadió también un buscador de regiones.
-
-\dia{17}{¿Cómo sé que esos números están bien?}{1:10}{12:15}
-
-Y aquí viene lo que para mí es la parte más importante de este sprint. Si alguien va a usar estos
+Y aquí viene lo que para mí es la parte más importante del trabajo. Si alguien va a usar estos
 números para investigar, tienen que estar bien.
 
 Así que no me limité a comprobar que salían números: contrasté las cinco métricas con
@@ -312,50 +281,34 @@ número de aristas, que es una propiedad que se cumple siempre, descubrí que to
 exactamente el mismo grado. La librería estaba creando una conexión por cada celda de la matriz,
 incluidas las que valen cero. \pausa
 
-Lo que me parece relevante es que ese fallo no daba ningún síntoma en pantalla. La aplicación se veía
-perfecta. Sin esa comprobación habría llegado hasta el final del proyecto.
+Lo relevante es que ese fallo no daba ningún síntoma en pantalla. La aplicación se veía perfecta.
+Sin esa comprobación habría llegado hasta el final del proyecto.
 
-En cuanto al coste, la intermediación es la métrica cara. En la red de ejemplo son doce
-milisegundos, pero en una de quinientos nodos pasa de medio segundo. Guardando la red ya procesada,
-a partir de la segunda consulta son cuatro milisegundos: en la red grande, ciento cuarenta y siete
-veces más rápido.
+\accion{Si preguntan por el coste: la intermediación son doce milisegundos en la red de ejemplo y
+más de medio segundo en una de quinientos nodos. Guardándola procesada, cuatro milisegundos. Está en
+la diapositiva de reserva de la página 24.}
 
-\dia{18}{Sprint 4: de una aplicación a un sistema con usuarios}{0:45}{13:00}
+\dia{10}{Sprint 4: un sistema con usuarios}{1:30}{13:10}
 
 El cuarto sprint es el que convierte la herramienta en un sistema con usuarios. Aparecen las
 cuentas, y con ellas la posibilidad de que cada investigador suba sus propias redes, que solo ve él.
 Se añaden la exportación de resultados, la personalización de la vista y un panel de administración
 para gestionar usuarios, roles y el catálogo público.
 
-\dia{19}{Lo que ese sprint obligó a cambiar}{0:45}{13:45}
+Fue con diferencia el sprint que más impacto tuvo en la arquitectura, y de hecho me equivoqué al
+estimarlo: le di cinco días por ser el último, y fue el más largo. \pausa
 
-Este sprint fue con diferencia el que más impacto tuvo en la arquitectura, y de hecho me equivoqué
-al estimarlo: le di cinco días por ser el último, y fue el más largo.
-
-El motivo es que los tres primeros sprints compartían algo que simplificaba mucho las cosas: el
-sistema no guardaba nada. Con los datos privados surgen tres preguntas nuevas. Dónde guardar las
-contraseñas, y la respuesta es que no se guardan: se guarda un resumen del que no se puede volver
-atrás. Quién hace cada petición, que se resuelve con una sesión firmada en una cookie que el
-navegador impide leer desde el código. Y cómo impedir que alguien acceda a lo que no es suyo.
+El motivo es que los tres primeros compartían algo que simplificaba mucho las cosas: el sistema no
+guardaba nada. Con los datos privados surgen tres preguntas nuevas. Dónde guardar las contraseñas, y
+la respuesta es que no se guardan: se guarda un resumen del que no se puede volver atrás. Quién hace
+cada petición, que se resuelve con una sesión firmada en una cookie que el navegador impide leer
+desde el código. Y cómo impedir que alguien acceda a lo que no es suyo, que se resuelve filtrando
+por el usuario de la sesión en toda consulta, sin fiarse nunca de lo que pida el cliente.
 
 Por eso lo primero que automaticé en este sprint fueron las pruebas de que nadie puede ver ni borrar
 la red de otro, ni siquiera pidiéndola directamente por su identificador. \pausa
 
-\dia{20}{Que se vea bien en cualquier pantalla}{0:45}{14:30}
-
-Uno de los requisitos no funcionales es que la interfaz se adapte al tamaño de la pantalla, y merece
-un momento porque tiene más miga de la que parece.
-
-En un teléfono no caben dos columnas de paneles alrededor de la escena. La decisión fue cambiar
-cuándo se muestran, no cuánto ocupan: se abren desde una barra inferior, de uno en uno.
-
-Y hay un detalle que da nombre a la diapositiva. El criterio para decidir que no hay espacio no
-puede ser solo el ancho: un teléfono girado, como el de la imagen, tiene ancho de sobra pero apenas
-cuatrocientos puntos de altura. Además, las franjas que el sistema reserva alrededor de la cámara
-cambian de sitio al girar el aparato, así que los elementos se apartan de los cuatro bordes y no de
-dos.
-
-\dia{21}{Despliegue}{0:50}{15:20}
+\dia{11}{Publicarla, y que se vea en cualquier pantalla}{1:35}{14:45}
 
 Sobre el despliegue tengo que contar algo que no tenía previsto.
 
@@ -366,11 +319,20 @@ usaban servidores de desarrollo, que no están pensados para eso.
 
 Tuve que preparar una imagen distinta, en dos etapas: una compila la interfaz y la otra la sirve
 desde el propio servidor, con todo el sistema en un único contenedor. Fue trabajo que no tenía
-planificado, y la lección es que «funciona en mi máquina» y «se puede desplegar» no son lo mismo.
+planificado, y la lección es que «funciona en mi máquina» y «se puede desplegar» no son lo mismo. El
+resultado es que está publicada y cualquiera puede entrar. \pausa
 
-El resultado es que está publicada y cualquiera puede entrar. \pausa
+Y ya publicada aparece la otra mitad de esta diapositiva, que es uno de los requisitos no
+funcionales: que la interfaz se adapte al tamaño de la pantalla. En un teléfono no caben dos
+columnas de paneles alrededor de la escena, así que la decisión fue cambiar cuándo se muestran, no
+cuánto ocupan: se abren desde una barra inferior, de uno en uno.
 
-\dia{23}{Validación}{0:45}{16:05}
+Y tiene más miga de la que parece, porque el criterio para decidir que no hay espacio no puede ser
+solo el ancho: un teléfono girado, como el de la imagen, tiene ancho de sobra pero apenas
+cuatrocientos puntos de altura. Además las franjas que el sistema reserva alrededor de la cámara
+cambian de sitio al girarlo, así que los elementos se apartan de los cuatro bordes y no de dos.
+
+\dia{12}{Validación}{0:50}{15:35}
 
 Resumiendo cómo he comprobado que esto funciona. Hay diecisiete pruebas automáticas que se lanzan
 con una sola orden, treinta y dos pruebas de aceptación, una por cada requisito, y las cinco
@@ -387,7 +349,7 @@ lo demuestra.
 \accion{Esta última frase suma. Un tribunal valora que distingas lo que has demostrado de lo que
 no.}
 
-\dia{24}{Demostración}{1:30}{17:35}
+\dia{13}{Demostración}{1:30}{17:05}
 
 \accion{Cambia a la ventana del navegador, que ya tiene que estar cargada. Si algo falla, vuelve a
 la presentación y usa las diapositivas de reserva: nadie se dará cuenta.}
@@ -411,7 +373,7 @@ inmediatamente, sin leer ningún número.
 
 \accion{4. Cambia el mapeo a intermediación y deja la escena ahí. Vuelve a la presentación.}
 
-\dia{26}{Grado de cumplimiento}{0:40}{18:15}
+\dia{15}{Grado de cumplimiento}{0:45}{17:50}
 
 Volviendo a los cinco objetivos del principio. Los cinco están cumplidos, y los dieciocho requisitos
 funcionales están implementados, junto con los no funcionales y los de información.
@@ -419,7 +381,7 @@ funcionales están implementados, junto con los no funcionales y los de informac
 En el quinto, el del despliegue, pongo «con matices» a propósito, por lo que acabo de contar: está
 cumplido, pero me costó más de lo que debería por haberlo dejado para el final.
 
-\dia{27}{Lo que me llevo}{0:45}{19:00}
+\dia{16}{Lo que me llevo, y lo que queda por hacer}{1:35}{19:25}
 
 Si tuviera que quedarme con cuatro cosas de todo el trabajo, serían estas.
 
@@ -431,22 +393,18 @@ pantalla.
 
 La tercera, que «terminado» no es lo mismo que «el código hace lo que dice». El buscador filtraba
 perfectamente y aun así no servía, porque las etiquetas del atlas son abreviaturas y nadie escribe
-\texttt{HIP.L} cuando busca el hipocampo. Lo que lo arregló no fue tocar el filtrado, sino mostrar la lista de regiones para poder elegir
-directamente.
+\texttt{HIP.L} cuando busca el hipocampo. Lo que lo arregló no fue tocar el filtrado, sino mostrar
+la lista de regiones para poder elegir directamente.
 
 Y la cuarta, el valor de las revisiones, por lo que ya he comentado. \pausa
 
-\dia{28}{Trabajo futuro}{0:35}{19:35}
-
-Quedan líneas abiertas. En análisis, detectar comunidades, calcular el camino más corto entre dos
+En cuanto a lo que queda, en análisis: detectar comunidades, calcular el camino más corto entre dos
 regiones y resaltarlo, y comparar dos redes entre sí, que sería lo más útil para estudios de sujetos
 sanos frente a pacientes. También admitir más formatos y poder compartir una red con personas
-concretas.
+concretas. Y la carencia más clara, la accesibilidad: la aplicación depende mucho del color y no he
+comprobado cómo se ve con distintos tipos de daltonismo. Es lo primero que haría si continuara.
 
-La carencia más clara es la accesibilidad: la aplicación depende mucho del color y no he comprobado
-cómo se ve con distintos tipos de daltonismo. Es lo primero que haría si continuara.
-
-\dia{29}{Cierre}{0:15}{19:50}
+\dia{17}{Cierre}{0:15}{19:40}
 
 Y hasta aquí. Muchas gracias por su atención, quedo a su disposición para las preguntas.
 

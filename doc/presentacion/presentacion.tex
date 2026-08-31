@@ -40,66 +40,26 @@
 \end{frame}
 \endgroup
 
-% ============================================================= 2. GUION =====
-\begin{frame}{Lo que voy a contar}
-	\vspace{0.6em}
-	\begin{columns}[T]
-		\begin{column}{0.58\textwidth}
-			\vspace{0.4em}
-			{\large
-			\begin{enumerate}
-				\setlength{\itemsep}{0.85em}
-				\item El problema y qué falta en lo que ya existe
-				\item Qué se pedía: objetivos y requisitos
-				\item Cómo lo he construido, sprint a sprint
-				\item Cómo sé que funciona
-				\item Conclusiones y trabajo futuro
-			\end{enumerate}}
+% ============================================ 2. EL CEREBRO Y LO QUE HAY =====
+\begin{frame}{El cerebro como red, y lo que ya existe}
+	\vspace{-0.2em}
+	\begin{columns}[c]
+		\begin{column}{0.68\textwidth}
+			{\footnotesize Cada \clave{región} es un nodo, en sus coordenadas anatómicas. Cada
+			\clave{conexión} es una arista con un peso. Sobre esa red hay medidas objetivas: qué
+			regiones son puntos de paso, cómo de agrupada está o si se separa en partes.}\\[0.3em]
+			{\color{tenue}\scriptsize El atlas AAL90, el ejemplo del trabajo, tiene 90 regiones.}
 		\end{column}
-		\begin{column}{0.38\textwidth}
-			\vspace{0.2em}
-			\begin{tikzpicture}
-				\node[fill=superficie, draw=linea, rounded corners=6pt, inner sep=1em,
-				      text width=\dimexpr\linewidth-2.5em, align=center] {%
-					{\color{apagado}\footnotesize LA APLICACIÓN ESTÁ PUBLICADA}\\[0.8em]
-					\includegraphics[width=0.44\linewidth]{qr_app}\\[0.7em]
-					{\color{acentoclaro}\small\texttt{brain-viz.onrender.com}}};
-			\end{tikzpicture}
-		\end{column}
-	\end{columns}
-\end{frame}
-
-\section{El problema}
-
-% ======================================================= 4. EL CEREBRO =====
-\begin{frame}{El cerebro se puede estudiar como una red}
-	\vspace{-0.3em}
-	\begin{columns}[T]
-		\begin{column}{0.52\textwidth}
-			\vspace{1.0em}
-			\begin{itemize}
-				\setlength{\itemsep}{0.85em}
-				\item Cada \clave{región} es un nodo, en sus coordenadas anatómicas.
-				\item Cada \clave{conexión} es una arista, con un peso que mide su intensidad.
-				\item Sobre esa red hay medidas objetivas: qué regiones son puntos de paso, cómo de
-					agrupada está, si se separa en partes.
-			\end{itemize}
-			\vspace{1.2em}
-			\suave{\small El atlas AAL90, que uso como ejemplo, divide el cerebro en 90 regiones.}
-		\end{column}
-		\begin{column}{0.44\textwidth}
+		\begin{column}{0.28\textwidth}
 			\centering
-			\vspace{0.3em}
-			\begin{tikzpicture}[scale=1.05,
-				nodo/.style={circle, minimum size=8.5mm, font=\footnotesize\bfseries,
-				             text=fondo, inner sep=0pt},
-				peso/.style={font=\scriptsize, text=tenue}]
-				\draw[verde,  line width=2.2pt, opacity=0.75] (0,2.4)--(2.7,3.1) node[peso, midway, above] {0,8};
-				\draw[ambar,  line width=1.3pt, opacity=0.75] (2.7,3.1)--(3.3,1.2) node[peso, midway, right] {0,5};
-				\draw[rojo,   line width=2.5pt, opacity=0.75] (3.3,1.2)--(1.5,0) node[peso, midway, below] {0,9};
-				\draw[morado, line width=0.9pt, opacity=0.75] (1.5,0)--(-0.4,0.9) node[peso, midway, below left] {0,3};
-				\draw[acento, line width=1.6pt, opacity=0.75] (-0.4,0.9)--(0,2.4) node[peso, midway, left] {0,6};
-				\draw[acento, line width=1.1pt, opacity=0.5]  (0,2.4)--(1.5,0) node[peso, pos=0.35, right] {0,4};
+			\begin{tikzpicture}[scale=0.44,
+				nodo/.style={circle, minimum size=5mm, font=\tiny\bfseries, text=fondo, inner sep=0pt}]
+				\draw[verde,  line width=1.6pt, opacity=0.75] (0,2.4)--(2.7,3.1);
+				\draw[ambar,  line width=1.0pt, opacity=0.75] (2.7,3.1)--(3.3,1.2);
+				\draw[rojo,   line width=1.9pt, opacity=0.75] (3.3,1.2)--(1.5,0);
+				\draw[morado, line width=0.7pt, opacity=0.75] (1.5,0)--(-0.4,0.9);
+				\draw[acento, line width=1.3pt, opacity=0.75] (-0.4,0.9)--(0,2.4);
+				\draw[acento, line width=0.9pt, opacity=0.5]  (0,2.4)--(1.5,0);
 				\node[nodo, fill=verde]  at (0,2.4)    {R1};
 				\node[nodo, fill=ambar]  at (2.7,3.1)  {R2};
 				\node[nodo, fill=rojo]   at (3.3,1.2)  {R3};
@@ -108,149 +68,121 @@
 			\end{tikzpicture}
 		\end{column}
 	\end{columns}
+	\vspace{0.6em}
+	\hspace{0.6em}%
+	\begin{minipage}{\textwidth}
+		% Rejilla dibujada a mano: las columnas de beamer añaden alto propio y aquí
+		% el espacio va justo.
+		\begin{tikzpicture}[font=\scriptsize,
+			ficha/.style={rounded corners=4pt, draw=linea, fill=superficie, inner sep=0.45em,
+			              text width=3.2cm, align=left, minimum height=0.95cm, anchor=north west}]
+			\node[text=apagado, anchor=north west] at (0,0.62) {EN EL ESCRITORIO};
+			\node[ficha] at (0,0)
+				{{\color{ambar}\bfseries BrainNet Viewer}\\ {\color{apagado}depende de MATLAB}};
+			\node[ficha] at (3.95,0)
+				{{\color{ambar}\bfseries Connectome Workbench}\\ {\color{apagado}formatos propios}};
+			\node[ficha] at (7.9,0)
+				{{\color{ambar}\bfseries Gephi}\\ {\color{apagado}sin anatomía real}};
+			\node[text=apagado, anchor=north west] at (0,-1.35) {YA EN EL NAVEGADOR};
+			\node[ficha] at (0,-1.97)
+				{{\color{verde}\bfseries Vizaj}\\ {\color{apagado}sin análisis en servidor}};
+			\node[ficha] at (3.95,-1.97)
+				{{\color{verde}\bfseries BioImage Suite Web}\\ {\color{apagado}un módulo de una suite}};
+			\node[ficha] at (7.9,-1.97)
+				{{\color{verde}\bfseries Neuroglancer}\\ {\color{apagado}para imagen, no redes}};
+		\end{tikzpicture}
+	\end{minipage}
 \end{frame}
 
-% =================================================== 5. ESTADO DEL ARTE =====
-\begin{frame}{Lo que ya existe, y lo que le falta}
-	\vspace{0.1em}
-	\begin{columns}[T]
-		\begin{column}{0.47\textwidth}
-			{\color{apagado}\footnotesize ESCRITORIO}\\[0.5em]
-			\tarjetafina[ambar]{BrainNet Viewer}{depende de MATLAB, que es comercial.}\\[0.5em]
-			\tarjetafina[ambar]{Connectome Workbench}{instalación y formatos propios.}\\[0.5em]
-			\tarjetafina[ambar]{Gephi}{no usa las coordenadas anatómicas.}
-		\end{column}
-		\begin{column}{0.47\textwidth}
-			{\color{apagado}\footnotesize NAVEGADOR}\\[0.5em]
-			\tarjetafina[verde]{Vizaj}{entera en el cliente, sin análisis en servidor.}\\[0.5em]
-			\tarjetafina[verde]{BioImage Suite Web}{un módulo de una suite muy amplia.}\\[0.5em]
-			\tarjetafina[verde]{Neuroglancer}{para volúmenes de imagen, no para redes.}
-		\end{column}
-	\end{columns}
-	\vspace{0.7em}
-	\begin{center}\small
-		{\color{acentoclaro}\bfseries El hueco:} una herramienta web y ligera, que \clave{analice la red
-		en el servidor} y se pueda \clave{desplegar} en cualquier sitio.
-	\end{center}
-\end{frame}
-
-\section{Qué se pedía}
-
-% ========================================================= 7. OBJETIVOS =====
-\begin{frame}{Objetivos}
-	\vspace{0em}
+% ============================================ 3. OBJETIVOS Y REQUISITOS =====
+\begin{frame}{Objetivos y organización del trabajo}
+	\vspace{-0.1em}
 	\begin{center}
 		\begin{tikzpicture}
 			\node[fill=superficie, draw=acento, line width=1pt, rounded corners=6pt,
-			      inner sep=1em, text width=0.82\paperwidth, align=center] {%
-				{\color{apagado}\footnotesize OBJETIVO GENERAL}\\[0.5em]
-				{\color{texto}\large Diseñar, desarrollar y desplegar una aplicación web para
-				 visualizar y analizar redes cerebrales en 3D.}};
+			      inner sep=0.6em, text width=0.82\paperwidth, align=center] {%
+				{\color{apagado}\scriptsize OBJETIVO GENERAL}\ \ {\color{texto}\small Diseñar,
+				 desarrollar y desplegar una aplicación web para visualizar y analizar redes
+				 cerebrales en 3D.}};
 		\end{tikzpicture}
 	\end{center}
-	\vspace{0.8em}
+	\vspace{0.5em}
 	\begin{columns}[T]
-		\begin{column}{0.47\textwidth}
+		\begin{column}{0.56\textwidth}
+			{\footnotesize
 			\begin{enumerate}
-				\setlength{\itemsep}{0.45em}
+				\setlength{\itemsep}{0.3em}
 				\item Cargar y visualizar redes en 3D, en tiempo real.
 				\item Analizar la red con métricas de teoría de grafos.
 				\item Navegar, filtrar, seleccionar e inspeccionar.
-			\end{enumerate}
-		\end{column}
-		\begin{column}{0.47\textwidth}
-			\begin{enumerate}
-				\setcounter{enumi}{3}
-				\setlength{\itemsep}{0.45em}
 				\item Mantenible, con el procesamiento separado de la vista.
 				\item Que se pueda desplegar de manera sencilla.
-			\end{enumerate}
+			\end{enumerate}}
+		\end{column}
+		\begin{column}{0.4\textwidth}
+			\vspace{0.2em}
+			\centering
+			\cifra{18}{requisitos\\ funcionales}\hfill
+			\cifra[verde]{7}{no\\ funcionales}\hfill
+			\cifra[ambar]{4}{de\\ información}
 		\end{column}
 	\end{columns}
-\end{frame}
-
-% ======================================================== 8. REQUISITOS =====
-\begin{frame}{Requisitos y organización del trabajo}
-	\vspace{0.2em}
+	\vspace{0.7em}
 	\begin{center}
-		\cifra{18}{requisitos funcionales}\hfill
-		\cifra[verde]{7}{no funcionales}\hfill
-		\cifra[ambar]{4}{de información}
-	\end{center}
-	\vspace{1.0em}
-	\begin{columns}[T]
-		\begin{column}{0.235\textwidth}\tarjeta{Sprint 1}{Cargar el fichero y ver la red en 3D}\end{column}
-		\begin{column}{0.235\textwidth}\tarjeta{Sprint 2}{Filtrar por umbral, seleccionar e inspeccionar}\end{column}
-		\begin{column}{0.235\textwidth}\tarjeta{Sprint 3}{Métricas, mapeo visual y búsqueda}\end{column}
-		\begin{column}{0.235\textwidth}\tarjeta{Sprint 4}{Cuentas, redes propias y administración}\end{column}
-	\end{columns}
-	\vspace{0.8em}
-	\begin{center}\small
-		Tres roles: \clave{visitante}, \clave{investigador} y \clave{administrador}.
-		\suave{Cada sprint termina en algo que se puede enseñar y probar.}
+		\begin{tikzpicture}[font=\scriptsize]
+			\foreach \i/\n/\t/\c in {0/1/{ver}/acento, 1/2/{explorar}/verde,
+			                         2/3/{analizar}/ambar, 3/4/{usuarios}/morado} {
+				\node[fill=superficie, draw=linea, rounded corners=4pt, inner sep=0.45em,
+				      minimum width=2.4cm] at (\i*2.9, 0)
+					{{\color{\c}\bfseries Sprint \n}\ \ {\color{apagado}\t}};
+			}
+		\end{tikzpicture}
 	\end{center}
 \end{frame}
 
 \section{Cómo lo he construido}
 
-% ===================================================== 10. ARQUITECTURA =====
-\begin{frame}{Arquitectura}
-	\vspace{0.2em}
-	\begin{columns}[c]
-		\begin{column}{0.5\textwidth}
-			\centering
-			\diagrama[0.53\textheight]{arquitectura}\\[0.3em]
-			\suave{\scriptsize Montaje de desarrollo. Al publicarla pasa a un solo contenedor.}
-		\end{column}
-		\begin{column}{0.46\textwidth}
-			\begin{itemize}
-				\setlength{\itemsep}{0.8em}
-				\item Cliente y servidor \clave{desacoplados}, hablando por una API.
-				\item El servidor \clave{no sabe cómo se dibuja} la red.
-				\item El cliente \clave{no calcula ninguna métrica}.
-				\item La separación se mantuvo los cuatro sprints.
-			\end{itemize}
-		\end{column}
-	\end{columns}
-\end{frame}
-
-% ====================================================== 11. TECNOLOGÍAS =====
-\begin{frame}{Tecnologías, y por qué esas}
-	\vspace{0.3em}
+% ========================================= 5. ARQUITECTURA Y TECNOLOGÍAS =====
+\begin{frame}{Arquitectura y tecnologías}
+	\vspace{0.1em}
+	\begin{center}
+		\begin{tikzpicture}[font=\footnotesize,
+			caja/.style={rounded corners=6pt, draw=linea, fill=superficie, inner sep=0.7em,
+			             text width=2.9cm, align=center, minimum height=1.5cm},
+			flecha/.style={-{Stealth[length=2.5mm]}, acento, line width=1pt}]
+			\node[caja] (cli) at (0,0)
+				{{\color{acentoclaro}\bfseries Navegador}\\[0.25em]
+				 {\color{apagado}\scriptsize React\\ Three.js}};
+			\node[caja] (srv) at (5.4,0)
+				{{\color{verde}\bfseries Servidor}\\[0.25em]
+				 {\color{apagado}\scriptsize Flask\\ NetworkX}};
+			\node[caja] (dat) at (10.8,0)
+				{{\color{ambar}\bfseries Datos}\\[0.25em]
+				 {\color{apagado}\scriptsize Ficheros \texttt{.node} y \texttt{.edge}\\ PostgreSQL}};
+			\draw[flecha] (cli) -- node[above, font=\scriptsize, text=apagado] {API REST}
+			                       node[below, font=\scriptsize, text=tenue] {JSON} (srv);
+			\draw[flecha] (srv) -- node[above, font=\scriptsize, text=apagado] {lee y guarda} (dat);
+			
+		\end{tikzpicture}
+	\end{center}
+	\vspace{0.6em}
 	\begin{columns}[T]
 		\begin{column}{0.31\textwidth}
-			\tarjeta{Flask}{La API es pequeña y de lectura.}\\[0.55em]
-			\tarjeta[verde]{React}{La interfaz es estado que cambia continuamente.}
+			\tarjetafina{Flask}{la API es pequeña y de lectura.}\\[0.45em]
+			\tarjetafina[verde]{NetworkX}{las métricas del área, contrastadas.}
 		\end{column}
 		\begin{column}{0.31\textwidth}
-			\tarjeta[ambar]{NetworkX}{Las métricas del área, ya contrastadas.}\\[0.55em]
-			\tarjeta[morado]{Three.js con react-three-fiber}{La escena 3D se describe igual que el resto de la interfaz.}
+			\tarjetafina[acentoclaro]{React}{la interfaz es estado que cambia sin parar.}\\[0.45em]
+			\tarjetafina[morado]{react-three-fiber}{la escena 3D se describe como el resto.}
 		\end{column}
 		\begin{column}{0.31\textwidth}
-			\tarjeta[rojo]{PostgreSQL}{Las cuentas y las redes sobreviven al reinicio.}\\[0.55em]
-			\tarjeta{Docker}{La misma imagen en cualquier máquina.}
+			\tarjetafina[ambar]{PostgreSQL}{lo subido sobrevive al reinicio.}\\[0.45em]
+			\tarjetafina[rojo]{Docker}{la misma imagen en cualquier máquina.}
 		\end{column}
 	\end{columns}
-	\vspace{0.8em}
-	\begin{center}
-		\suave{\footnotesize Cada decisión se compara en la memoria con lo descartado: Django, FastAPI,
-		Angular, Vue o Babylon.js.}
-	\end{center}
 \end{frame}
 
-% ========================================================= 12. SPRINT 1 =====
-\begin{lienzo}{app_completa}
-	\sobreimagen[north west]{0.05\paperwidth,-0.09\paperheight}{%
-		{\Large\bfseries Sprint 1}\\[0.15em]
-		{\color{acentoclaro}\large\bfseries Cargar la red y verla}\\[0.9em]
-		{\small
-		Se leen los ficheros \texttt{.node} y \texttt{.edge} de \textbf{BrainNet Viewer}, que es el
-		formato que ya usa la gente del área.\\[0.6em]
-		Los 90 nodos se dibujan en sus \textbf{coordenadas anatómicas}, no en una disposición
-		inventada. La cámara responde sin esperas.}}
-\end{lienzo}
-
-% ========================================================= 13. SPRINT 2 =====
+% ============================================= 6. SPRINTS 1 Y 2 (UMBRAL) =====
 \begingroup
 \setbeamertemplate{footline}{}
 \begin{frame}[plain]
@@ -272,6 +204,18 @@
 		\draw[acento, line width=1.5pt]
 			([xshift=0.5\paperwidth]current page.north west) --
 			([xshift=0.5\paperwidth]current page.south west);
+		% Texto de los dos primeros sprints, arriba, donde la escena está vacía
+		\node[anchor=north, fill=fondo, fill opacity=0.9, text opacity=1, draw=linea,
+		      rounded corners=6pt, inner sep=1.0em, text=texto, align=left,
+		      text width=0.62\paperwidth]
+			at ([yshift=-0.05\paperheight]current page.north)
+			{{\large\bfseries Sprints 1 y 2}\quad
+			 {\color{acentoclaro}\large\bfseries Ver la red y explorarla}\\[0.7em]
+			 {\small Se leen los ficheros \texttt{.node} y \texttt{.edge} de \textbf{BrainNet
+			 Viewer}, el formato que ya usa la gente del área, y los 90 nodos se dibujan en sus
+			 \textbf{coordenadas anatómicas}.\\[0.4em]
+			 El \textbf{umbral} deja solo las conexiones más intensas y saca la estructura a la
+			 vista. Al tocar una región se resaltan sus conexiones y se muestran sus datos.}};
 		\node[anchor=south west, fill=fondo, fill opacity=0.85, text opacity=1, inner sep=0.6em,
 		      rounded corners=4pt, text=texto]
 			at ([shift={(0.03\paperwidth,0.05\paperheight)}]current page.south west)
@@ -280,29 +224,24 @@
 		      rounded corners=4pt, text=texto]
 			at ([shift={(-0.03\paperwidth,0.05\paperheight)}]current page.south east)
 			{\small\bfseries Umbral 0,70\quad\suave{solo las más intensas}};
-		\node[anchor=north, fill=fondo, fill opacity=0.9, text opacity=1, inner sep=0.9em,
-		      rounded corners=6pt, text=texto, align=center, draw=linea]
-			at ([yshift=-0.06\paperheight]current page.north)
-			{{\large\bfseries Sprint 2}\quad
-			 {\color{acentoclaro}\large\bfseries Explorar la red}};
 	\end{tikzpicture}
 \end{frame}
 \endgroup
 
-% ====================================================== 14. RENDIMIENTO =====
+% ======================================================= 7. RENDIMIENTO =====
 \begin{frame}{El problema de rendimiento, y cómo se resolvió}
 	\vspace{0.2em}
 	\begin{columns}[T]
 		\begin{column}{0.44\textwidth}
 			{\color{rojo}\bfseries La primera versión}\\[0.5em]
-			{\small Cada vez que se movía el control se recorrían todas las aristas y se reconstruía la
-			geometría entera. El control iba a tirones.}\\[1.0em]
-			{\color{ambar}\bfseries La propiedad que lo simplifica}\\[0.5em]
-			{\small Si el servidor envía las aristas \textbf{ordenadas por peso}, las visibles son siempre
-			\textbf{las primeras}.}
+			{\small Cada vez que se movía el control se recorrían todas las aristas y se reconstruía
+			la geometría entera. El control iba a tirones.}\\[0.8em]
+			{\color{ambar}\bfseries La propiedad que lo simplifica}\\[0.4em]
+			{\small Si el servidor envía las aristas \textbf{ordenadas por peso}, las visibles son
+			siempre \textbf{las primeras}.}
 		\end{column}
 		\begin{column}{0.52\textwidth}
-			{\color{verde}\bfseries La solución}\\[0.6em]
+			{\color{verde}\bfseries La solución}\\[0.4em]
 			\begin{tikzpicture}[font=\scriptsize]
 				\foreach \i in {0,...,5} \fill[verde] (\i*0.62, 0) rectangle (\i*0.62+0.46, 0.5);
 				\foreach \i in {6,...,11} \fill[linea] (\i*0.62, 0) rectangle (\i*0.62+0.46, 0.5);
@@ -310,12 +249,12 @@
 				\node[text=acento, anchor=south, font=\scriptsize\bfseries] at (3.65,0.75) {umbral};
 				\node[text=verde,   anchor=north, font=\scriptsize] at (1.6,-0.25) {se dibujan};
 				\node[text=tenue,   anchor=north, font=\scriptsize] at (5.5,-0.25) {no se dibujan};
-				\node[text=apagado, anchor=west, font=\scriptsize] at (0,1.15)
+				\node[text=apagado, anchor=west,  font=\scriptsize] at (0,1.15)
 					{aristas ordenadas por peso, de mayor a menor};
 			\end{tikzpicture}
-			\vspace{0.7em}
+			\vspace{0.5em}
 			\begin{itemize}
-				\setlength{\itemsep}{0.25em}
+				\setlength{\itemsep}{0.2em}
 				\item[] {\small La geometría se construye \clave{una sola vez}.}
 				\item[] {\small Filtrar es decir \clave{cuántas dibujar}: coste constante.}
 				\item[] {\small Cuántas son, con \clave{búsqueda binaria}: $O(\log E)$.}
@@ -324,13 +263,13 @@
 	\end{columns}
 \end{frame}
 
-% ======================================================= 15. REVISIONES =====
+% ======================================================== 8. REVISIONES =====
 \begin{frame}{Lo que salió de las revisiones}
 	\vspace{0.4em}
 	\begin{columns}[T]
 		\begin{column}{0.31\textwidth}
-			\tarjeta[rojo]{Conexiones más gruesas}{Parecía cambiar un número. WebGL no obliga a dibujar
-				líneas de más de un píxel: hubo que cambiar la forma de dibujarlas.}
+			\tarjeta[rojo]{Conexiones más gruesas}{Parecía cambiar un número. WebGL no obliga a
+				dibujar líneas de más de un píxel: hubo que cambiar la forma de dibujarlas.}
 		\end{column}
 		\begin{column}{0.31\textwidth}
 			\tarjeta[ambar]{El grado, con el umbral}{El de la red completa deja de ser lo que se
@@ -343,150 +282,65 @@
 	\end{columns}
 	\vspace{1.0em}
 	\begin{center}
-		\suave{\small Ninguna se me habría ocurrido probando yo solo la aplicación, precisamente porque yo
-		ya sabía lo que hacía cada cosa.}
+		\suave{\small Ninguna se me habría ocurrido probando yo solo la aplicación, precisamente
+		porque yo ya sabía lo que hacía cada cosa.}
 	\end{center}
 \end{frame}
 
-% ========================================================= 16. SPRINT 3 =====
+% ======================================== 9. SPRINT 3 Y SUS COMPROBACIONES ===
 \begin{lienzo}{escena_intermediacion}
-	\sobreimagen[north east]{-0.05\paperwidth,-0.09\paperheight}{%
-		{\Large\bfseries Sprint 3}\\[0.15em]
-		{\color{acentoclaro}\large\bfseries Analizar la red}\\[0.9em]
+	\sobreimagen[north east]{-0.045\paperwidth,-0.07\paperheight}{%
+		{\Large\bfseries Sprint 3}\ \ {\color{acentoclaro}\large\bfseries Analizar la red}\\[0.7em]
 		{\small
-		\textbf{Cuatro métricas globales} y \textbf{tres centralidades} por región.\\[0.6em]
-		El tamaño y el color de cada nodo pasan a representar la métrica elegida. Aquí, la
-		intermediación: los puntos de paso de la red se ven de un vistazo, sin leer una tabla.}}
+		\textbf{Cuatro métricas globales} y \textbf{tres centralidades} por región. El tamaño y el
+		color de cada nodo representan la métrica elegida: aquí, la intermediación.\\[0.6em]
+		{\color{acentoclaro}\bfseries ¿Y cómo sé que están bien?}\\[0.3em]
+		Contrasté las cinco con implementaciones escritas por mí sin la librería, incluida una del
+		\textbf{algoritmo de Brandes}.\\[0.4em]
+		Comprobar que la suma de los grados fuera el doble del número de aristas destapó un
+		\textbf{error real} que \textbf{no daba ningún síntoma en pantalla}.}}
 \end{lienzo}
 
-% =================================================== 17. VALIDACIÓN MET =====
-\begin{frame}{¿Cómo sé que esos números están bien?}
-	\vspace{0.2em}
-	\begin{columns}[T]
-		\begin{column}{0.53\textwidth}
-			\begin{itemize}
-				\setlength{\itemsep}{0.7em}
-				\item Contrasté las \clave{cinco métricas} con implementaciones escritas por mí sin
-					la librería, incluida una del \clave{algoritmo de Brandes}.
-				\item Comprobar que la suma de los grados fuera el doble del número de aristas
-					destapó un \clave{error real}: se creaba una conexión por cada celda de la
-					matriz, también las de valor cero.
-				\item Ese fallo \clave{no daba ningún síntoma en pantalla}.
-			\end{itemize}
-		\end{column}
-		\begin{column}{0.43\textwidth}
-			\vspace{0.8em}
-			{\color{apagado}\footnotesize COSTE DE LA INTERMEDIACIÓN}\\[1.3em]
-			\begin{tikzpicture}[font=\scriptsize]
-				\node[text=texto, anchor=west, font=\scriptsize] at (0,2.3) {500 nodos, primera vez};
-				\fill[rojo] (0,1.5) rectangle (5.4,1.98);
-				\node[text=rojo, anchor=west, font=\small\bfseries] at (5.55,1.74) {652 ms};
-				\node[text=texto, anchor=west, font=\scriptsize] at (0,1.15) {ya calculada};
-				\fill[verde] (0,0.35) rectangle (0.24,0.83);
-				\node[text=verde, anchor=west, font=\small\bfseries] at (0.4,0.59) {4 ms};
-				\node[text=apagado, anchor=west, font=\scriptsize] at (0,-0.3)
-					{se guarda procesada: 147 veces más rápido};
-			\end{tikzpicture}
-		\end{column}
-	\end{columns}
-\end{frame}
-
-% ========================================================= 18. SPRINT 4 =====
+% ========================================= 10. SPRINT 4 Y SU IMPACTO ========
 \begin{lienzo}{app_catalogo}
-	\sobreimagen[north west]{0.05\paperwidth,-0.09\paperheight}{%
-		{\Large\bfseries Sprint 4}\\[0.15em]
-		{\color{acentoclaro}\large\bfseries De aplicación a sistema con usuarios}\\[0.9em]
+	\sobreimagen[north west]{0.045\paperwidth,-0.07\paperheight}{%
+		{\Large\bfseries Sprint 4}\ \ {\color{acentoclaro}\large\bfseries Un sistema con
+		usuarios}\\[0.7em]
 		{\small
-		Cuentas de usuario y sesión. Cada investigador sube sus \textbf{redes propias}, que solo ve
-		él.\\[0.5em]
-		Exportación en CSV y JSON, personalización de la vista y panel de \textbf{administración}
-		de usuarios, roles y catálogo público.}}
+		Cuentas, \textbf{redes propias} que solo ve quien las sube, exportación en CSV y JSON y
+		panel de \textbf{administración}.\\[0.6em]
+		{\color{acentoclaro}\bfseries El sistema deja de ser sin estado}\\[0.3em]
+		Las contraseñas no se guardan, se guarda un resumen. La sesión va firmada en una cookie que
+		el navegador impide leer. Y toda consulta filtra por el usuario: nunca se confía en lo que
+		pida el cliente.\\[0.4em]
+		Fue lo primero que cubrí con pruebas automáticas.}}
 \end{lienzo}
 
-% ======================================================= 19. IMPACTO S4 =====
-\begin{frame}{Lo que ese sprint obligó a cambiar}
-	\vspace{0.2em}
-	\begin{center}\small
-		Hasta el Sprint 3 el sistema \clave{no guardaba nada}. Con los datos privados aparecen tres
-		preguntas que antes no existían.
-	\end{center}
-	\vspace{0.8em}
+% ======================================================== 11. PUBLICARLA =====
+\begin{frame}{Publicarla, y que se vea en cualquier pantalla}
+	\vspace{0em}
 	\begin{columns}[T]
-		\begin{column}{0.31\textwidth}
-			\tarjeta[ambar]{¿Dónde van las contraseñas?}{No se guardan. Se guarda un resumen del que
-				no se puede volver atrás.}
+		\begin{column}{0.45\textwidth}
+			\tarjeta[rojo]{Lo que tenía}{Dos contenedores que se hablaban por un nombre interno de
+				Docker, con servidores de desarrollo. Servía para trabajar, no para publicar.}\\[0.6em]
+			\tarjeta[verde]{Lo que hice}{Una imagen en dos etapas: una compila la interfaz y otra la
+				sirve desde el propio servidor. Todo en un solo contenedor, ya publicado.}
 		\end{column}
-		\begin{column}{0.31\textwidth}
-			\tarjeta[morado]{¿Quién hace cada petición?}{Sesión firmada en una cookie que el
-				navegador impide leer desde el código.}
-		\end{column}
-		\begin{column}{0.31\textwidth}
-			\tarjeta[verde]{¿Y lo ajeno?}{Toda consulta filtra por el usuario de la sesión. No se
-				confía en lo que pida el cliente.}
-		\end{column}
-	\end{columns}
-	\vspace{0.7em}
-	\begin{center}
-		\suave{\footnotesize Lo primero que automaticé fueron las pruebas de que nadie puede ver ni
-		borrar la red de otro, ni pidiéndola por su identificador.}
-	\end{center}
-\end{frame}
-
-% ========================================================= 20. PANTALLA =====
-\begin{frame}{Que se vea bien en cualquier pantalla}
-	\vspace{0.3em}
-	\begin{columns}[c]
-		\begin{column}{0.44\textwidth}
-			\begin{itemize}
-				\setlength{\itemsep}{0.9em}
-				\item[] {\small En un teléfono no caben dos columnas de paneles. Se cambia
-					\clave{cuándo se muestran}, no cuánto ocupan.}
-				\item[] {\small El criterio no puede ser solo el ancho: un teléfono \clave{girado}
-					tiene ancho de sobra y casi nada de altura.}
-				\item[] {\small Los bordes esquivan las franjas del sistema, que \clave{cambian de
-					sitio} al girar el aparato.}
-			\end{itemize}
-		\end{column}
-		\begin{column}{0.52\textwidth}
+		\begin{column}{0.51\textwidth}
 			\centering
 			\begin{tikzpicture}
 				\node[draw=linea, line width=1pt, rounded corners=8pt, inner sep=0pt]
-					{\includegraphics[width=0.5\paperwidth]{app_movil_horizontal}};
-			\end{tikzpicture}\\[0.5em]
-			\suave{\scriptsize El teléfono girado, que es el caso que el criterio del ancho dejaba
-			fuera}
+					{\includegraphics[width=0.49\paperwidth]{app_movil_horizontal}};
+			\end{tikzpicture}\\[0.4em]
+			{\footnotesize En el móvil los paneles se abren desde una barra: cambia \clave{cuándo se
+			muestran}, no cuánto ocupan.}\\[0.3em]
+			{\color{tenue}\scriptsize El criterio no puede ser solo el ancho: girado tiene ancho de
+			sobra y casi nada de altura.}
 		\end{column}
 	\end{columns}
 \end{frame}
 
-% ======================================================= 21. DESPLIEGUE =====
-\begin{frame}{Despliegue}
-	\vspace{0em}
-	\begin{columns}[T]
-		\begin{column}{0.44\textwidth}
-			\tarjeta[rojo]{Lo que tenía}{Dos contenedores que se hablaban por un nombre interno de Docker,
-				con servidores de desarrollo. Servía para trabajar, no para publicar.}\\[0.7em]
-			\tarjeta[verde]{Lo que hice}{Una imagen en dos etapas: una compila la interfaz y otra la
-				sirve desde el propio servidor. Todo en un solo contenedor.}
-		\end{column}
-		\begin{column}{0.5\textwidth}
-			\centering
-			\vspace{0.4em}
-			\begin{tikzpicture}
-				\node[fill=superficie, draw=linea, rounded corners=6pt, inner sep=1em,
-				      text width=0.42\paperwidth, align=center] {%
-					{\color{apagado}\footnotesize ESTÁ PUBLICADA}\\[0.7em]
-					\includegraphics[width=0.36\linewidth]{qr_app}\\[0.7em]
-					{\color{acentoclaro}\small\texttt{brain-viz.onrender.com}}};
-			\end{tikzpicture}\\[0.8em]
-			\suave{\footnotesize «Funciona en mi máquina» y «se puede desplegar» no son lo mismo.}
-		\end{column}
-	\end{columns}
-\end{frame}
-
-\section{Cómo sé que funciona}
-
-% ======================================================= 23. VALIDACIÓN =====
+% ========================================================= 12. VALIDACIÓN =====
 \begin{frame}{Validación}
 	\vspace{0.9em}
 	\begin{center}
@@ -509,7 +363,7 @@
 	\end{columns}
 \end{frame}
 
-% ============================================================= 24. DEMO =====
+% ============================================================= 13. DEMO =====
 \begingroup
 \usebackgroundtemplate{\includegraphics[width=\paperwidth, height=\paperheight]{hero}}
 \begin{frame}[plain]
@@ -526,7 +380,7 @@
 
 \section{Conclusiones}
 
-% ===================================================== 26. CUMPLIMIENTO =====
+% ===================================================== 15. CUMPLIMIENTO =====
 \begin{frame}{Grado de cumplimiento}
 	\vspace{0.4em}
 	\begin{center}
@@ -551,42 +405,36 @@
 	\end{center}
 \end{frame}
 
-% ===================================================== 27. LO QUE LLEVO =====
-\begin{frame}{Lo que me llevo}
-	\vspace{0.9em}
+% ============================== 16. LO QUE ME LLEVO Y TRABAJO FUTURO ========
+\begin{frame}{Lo que me llevo, y lo que queda por hacer}
+	\vspace{0.5em}
 	\begin{columns}[T]
 		\begin{column}{0.47\textwidth}
-			\tarjeta{La propiedad de los datos}{Buscar lo que simplifica el problema rinde más que
-				optimizar el código. El filtrado por umbral es el ejemplo claro.}\\[0.6em]
-			\tarjeta[verde]{Las pruebas no son un trámite}{El error del grado no se veía en pantalla
-				y habría llegado hasta el final.}
+			{\color{apagado}\scriptsize LO QUE ME LLEVO}\\[0.7em]
+			{\small
+			\begin{itemize}
+				\setlength{\itemsep}{0.6em}
+				\item Buscar la \clave{propiedad de los datos} rinde más que optimizar el código.
+				\item Las pruebas no son un trámite: el error del grado \clave{no se veía}.
+				\item «Terminado» no es «funciona»: el buscador filtraba bien y no servía.
+				\item Las revisiones cambiaron el resultado más de lo que esperaba.
+			\end{itemize}}
 		\end{column}
 		\begin{column}{0.47\textwidth}
-			\tarjeta[ambar]{«Terminado» no es «funciona»}{El buscador filtraba bien y aun así no
-				servía: nadie escribe \texttt{HIP.L} cuando busca el hipocampo.}\\[0.6em]
-			\tarjeta[morado]{El valor de que te revisen}{Las revisiones cambiaron el resultado más
-				de lo que esperaba, porque yo ya sabía lo que hacía cada cosa.}
+			{\color{apagado}\scriptsize TRABAJO FUTURO}\\[0.7em]
+			{\small
+			\begin{itemize}
+				\setlength{\itemsep}{0.6em}
+				\item Detectar \clave{comunidades}, camino más corto y comparar dos redes.
+				\item Admitir \clave{más formatos y atlas}, sin convertir nada a mano.
+				\item Compartir una red con personas concretas y enviar enlaces a una vista.
+				\item \clave{Accesibilidad}: depende mucho del color y no está probada.
+			\end{itemize}}
 		\end{column}
 	\end{columns}
 \end{frame}
 
-% =================================================== 28. TRABAJO FUTURO =====
-\begin{frame}{Trabajo futuro}
-	\vspace{0.7em}
-	\begin{columns}[T]
-		\begin{column}{0.235\textwidth}\tarjeta{Más análisis}{Detectar comunidades, camino más corto y comparar dos redes entre sí.}\end{column}
-		\begin{column}{0.235\textwidth}\tarjeta[verde]{Más formatos y atlas}{Que nadie tenga que convertir sus datos antes de poder verlos.}\end{column}
-		\begin{column}{0.235\textwidth}\tarjeta[ambar]{Trabajo compartido}{Compartir una red con personas concretas y enviar enlaces a una vista.}\end{column}
-		\begin{column}{0.235\textwidth}\tarjeta[rojo]{Accesibilidad}{La carencia más clara: depende del color y no está probada con daltonismo.}\end{column}
-	\end{columns}
-	\vspace{1.2em}
-	\begin{center}
-		\suave{\footnotesize En redes de varios miles de nodos habría además que calcular las métricas en
-		segundo plano y reducir el detalle de los elementos lejanos.}
-	\end{center}
-\end{frame}
-
-% =========================================================== 29. CIERRE =====
+% =========================================================== 17. CIERRE =====
 \begingroup
 \usebackgroundtemplate{\includegraphics[width=\paperwidth, height=\paperheight]{hero}}
 \begin{frame}[plain]
@@ -603,7 +451,7 @@
 \end{frame}
 \endgroup
 
-% =================================================== 30 a 36. RESERVA =======
+% =================================================== 18 a 25. RESERVA =======
 \begin{frame}[plain, noframenumbering]
 	\vfill
 	\begin{center}
@@ -611,6 +459,11 @@
 		{\color{apagado}\Large Diapositivas de reserva}
 	\end{center}
 	\vfill
+\end{frame}
+
+\begin{frame}[noframenumbering]{Reserva: el montaje de desarrollo}
+	\centering\diagrama[0.58\textheight]{arquitectura}\\[0.2em]
+	\suave{\scriptsize Dos contenedores en desarrollo. Al publicarla pasa a uno solo.}
 \end{frame}
 
 \begin{frame}[noframenumbering]{Reserva: modelo de datos}
@@ -643,19 +496,34 @@
 	\end{center}
 \end{frame}
 
-\begin{frame}[noframenumbering]{Reserva: métricas de la red de ejemplo}
-	\vspace{1.2em}
-	\begin{center}
-		\begin{tikzpicture}[font=\small]
-			\foreach \i/\m/\v in {0/Nodos/90, 1/Conexiones/411, 2/Densidad/{0,103},
-			                      3/{Grado medio}/{9,13}, 4/{Coeficiente de agrupamiento}/{0,548},
-			                      5/{Componentes conexas}/1} {
-				\node[text=apagado, anchor=west] at (0, -\i*0.85) {\m};
-				\node[text=texto, anchor=east, font=\small\bfseries] at (8, -\i*0.85) {\v};
-				\draw[linea] (0,-\i*0.85-0.32) -- (8,-\i*0.85-0.32);
-			}
-		\end{tikzpicture}
-	\end{center}
+\begin{frame}[noframenumbering]{Reserva: cifras de la red y coste de las métricas}
+	\vspace{0.9em}
+	\begin{columns}[T]
+		\begin{column}{0.44\textwidth}
+			\begin{tikzpicture}[font=\small]
+				\foreach \i/\m/\v in {0/Nodos/90, 1/Conexiones/411, 2/Densidad/{0,103},
+				                      3/{Grado medio}/{9,13}, 4/{Agrupamiento}/{0,548},
+				                      5/{Componentes}/1} {
+					\node[text=apagado, anchor=west] at (0, -\i*0.8) {\m};
+					\node[text=texto, anchor=east, font=\small\bfseries] at (5.4, -\i*0.8) {\v};
+					\draw[linea] (0,-\i*0.8-0.3) -- (5.4,-\i*0.8-0.3);
+				}
+			\end{tikzpicture}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			{\color{apagado}\scriptsize COSTE DE LA INTERMEDIACIÓN}\\[1.2em]
+			\begin{tikzpicture}[font=\scriptsize]
+				\node[text=texto, anchor=west, font=\scriptsize] at (0,2.3) {500 nodos, primera vez};
+				\fill[rojo] (0,1.5) rectangle (5.4,1.98);
+				\node[text=rojo, anchor=west, font=\small\bfseries] at (5.55,1.74) {652 ms};
+				\node[text=texto, anchor=west, font=\scriptsize] at (0,1.15) {ya calculada};
+				\fill[verde] (0,0.35) rectangle (0.24,0.83);
+				\node[text=verde, anchor=west, font=\small\bfseries] at (0.4,0.59) {4 ms};
+				\node[text=apagado, anchor=west, font=\scriptsize] at (0,-0.3)
+					{se guarda procesada: 147 veces más rápido};
+			\end{tikzpicture}
+		\end{column}
+	\end{columns}
 \end{frame}
 
 \begin{frame}[noframenumbering]{Reserva: la interfaz en un teléfono}
