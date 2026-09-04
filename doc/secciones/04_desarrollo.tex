@@ -345,7 +345,7 @@ algunos de los errores detectados y cómo se corrigieron.
 
 \subsubsection*{Pruebas de caja blanca (unitarias)}
 
-Se han probado de forma aislada las funciones del módulo de parseo, comprobando que, ante ficheros
+Se han probado por separado las funciones del módulo de parseo, comprobando que, ante ficheros
 correctos, el grafo resultante tiene el número esperado de nodos y aristas y que los atributos de los
 nodos (coordenadas, etiqueta y grupo) se corresponden con los del fichero de entrada. También se han
 probado los casos límite: ficheros inexistentes, matriz de adyacencia con dimensiones que no
@@ -385,7 +385,7 @@ tabla~\ref{tab:pruebas} recoge estas pruebas, el requisito que validan y su resu
 			El sistema detecta el error y no cae (respuesta de error controlada). & Correcto \\
 		\addlinespace
 		P-04 (RF 3) & Navegación con la cámara (rotar, zoom y paneo). &
-			La cámara responde de forma fluida, con amortiguación y límites de zoom. & Correcto \\
+			La cámara responde con fluidez, con amortiguación y límites de zoom. & Correcto \\
 		\addlinespace
 		P-05 (RF 4) & Comprobación del panel de estadísticas. &
 			El HUD muestra el número de nodos, aristas y grupos coherente con los datos de entrada. &
@@ -411,7 +411,7 @@ relevantes fueron:
 		y se añadió la validación correspondiente, que ahora devuelve un error controlado [RNF 3].
 \end{itemize}
 
-Estas pruebas se han realizado de forma manual sobre el entorno desplegado con contenedores. En los
+Estas pruebas se han realizado a mano sobre el entorno desplegado con contenedores. En los
 sucesivos \textit{sprints} se completarán con pruebas automatizadas del \textit{backend} y con la
 medición del rendimiento gráfico (FPS) para verificar el requisito no funcional de fluidez [RNF 1].
 
@@ -419,7 +419,7 @@ medición del rendimiento gráfico (FPS) para verificar el requisito no funciona
 
 Al finalizar el \textit{sprint} se realiza la prueba fundamental de todo desarrollo ágil: la
 validación por parte del cliente, cuyo papel asume el director del proyecto. Para que pueda probar la
-aplicación de forma cómoda, y más adelante también el tribunal, el Sprint~1 se despliega en un
+aplicación sin complicaciones, y más adelante también el tribunal, el Sprint~1 se despliega en un
 servidor público accesible en la siguiente dirección:
 
 \begin{center}
@@ -566,7 +566,7 @@ peso descendente:
 
 Con esta estrategia, mover el control deslizante no implica reconstruir nada: su coste es logarítmico en el
 número de aristas y prácticamente independiente del tamaño de la red, por lo que la escena responde
-de forma inmediata. La figura~\ref{fig:sec-s2} muestra el diagrama de secuencia de ambas
+sin esperas. La figura~\ref{fig:sec-s2} muestra el diagrama de secuencia de ambas
 interacciones.
 
 \begin{figure}[H]
@@ -705,8 +705,8 @@ La tabla~\ref{tab:pruebas-s2} recoge las pruebas de validación de los requisito
 		\textbf{Prueba} & \textbf{Descripción} & \textbf{Resultado esperado} & \textbf{Estado} \\
 		\midrule
 		P-06 (RF 5) & Mover el control de umbral y observar la escena. &
-			Las conexiones por debajo del umbral desaparecen de forma inmediata, sin esperas
-			perceptibles. & Correcto \\
+			Las conexiones por debajo del umbral desaparecen al momento, sin retardo
+			perceptible. & Correcto \\
 		\addlinespace
 		P-07 (RF 5) & Comprobar el contador \textit{visibles / totales}. &
 			Con umbral 0,50 se muestran 209 de 411 conexiones, cifra que coincide con el recuento sobre
@@ -891,7 +891,7 @@ centro de la aplicación:
 
 \begin{itemize}
 	\item Un \textbf{panel de métricas de la red} (RF 8), situado bajo el de estadísticas. Se
-		separan ambos de forma deliberada: las estadísticas describen el tamaño de la red (cuántos
+		separan ambos a propósito: las estadísticas describen el tamaño de la red (cuántos
 		nodos y conexiones tiene) mientras que las métricas describen su estructura, y mezclarlas
 		habría confundido dos cosas distintas.
 	\item Un \textbf{buscador de nodos} (RF 10) en la columna izquierda, con un campo de texto y la
@@ -1022,7 +1022,7 @@ color y el tamaño siempre aprovechan toda la escala disponible sea cual sea la 
 
 La búsqueda plantea un problema distinto, el de llevar la cámara hasta el nodo elegido. Situarla de
 golpe en la nueva posición resulta desconcertante, porque el usuario pierde la referencia de dónde
-estaba mirando. La cámara se desplaza por tanto de forma progresiva, acercándose en cada fotograma
+estaba mirando. La cámara se desplaza por tanto poco a poco, acercándose en cada fotograma
 una fracción de la distancia que le queda hasta el destino, lo que produce un movimiento suave que se
 frena solo al llegar. También se detiene la rotación automática si estaba activa, ya que de lo
 contrario la escena seguiría girando y el nodo no llegaría a quedar centrado. La
@@ -1079,7 +1079,7 @@ const color  = colorMetrica(t);
 \subsubsection*{Frontend: búsqueda y centrado de la cámara (RF 10)}
 
 Las coincidencias se obtienen filtrando las etiquetas por el texto introducido. Al elegir un
-resultado, el nodo se selecciona y la cámara viaja hasta él aproximándose de forma progresiva:
+resultado, el nodo se selecciona y la cámara viaja hasta él aproximándose progresivamente:
 
 \begin{lstlisting}[language=JavaScript, basicstyle=\footnotesize\ttfamily, keywordstyle=\color{blue!60!black}, commentstyle=\color{gray}, showstringspaces=false, frame=single, columns=fullflexible]
 // En cada fotograma la camara recorre una fraccion de lo que le queda,
@@ -1123,7 +1123,7 @@ herramienta para su investigación.
 \subsubsection*{Pruebas de caja blanca (unitarias)}
 
 Siguiendo el criterio de validación fijado en el capítulo de requisitos, cada métrica se ha
-contrastado con una implementación de referencia escrita de forma independiente, sin reutilizar la
+contrastado con una implementación de referencia escrita por separado, sin reutilizar la
 biblioteca de análisis de grafos y partiendo de la lista de adyacencia reconstruida a partir de la
 respuesta de la API. Las comprobaciones realizadas son las siguientes:
 
@@ -1295,11 +1295,11 @@ panel lateral sin comerse la visualización.
 La solución adoptada es distinguir dos clases de elementos según su uso:
 
 \begin{itemize}
-	\item Lo que se consulta \textbf{de forma continua} mientras se explora la red permanece en los
+	\item Lo que se consulta \textbf{constantemente} mientras se explora la red permanece en los
 		paneles superpuestos de siempre. Ahí se incorporan los controles nuevos de personalización
 		[RF 11]: el tamaño de los nodos, el tema y un botón para devolver la vista a su estado
 		inicial, junto al de exportar la imagen [RF 12].
-	\item Lo que se usa \textbf{de forma puntual} se traslada a \textbf{ventanas modales} que se
+	\item Lo que se usa \textbf{de vez en cuando} se traslada a \textbf{ventanas modales} que se
 		abren cuando hacen falta y se cierran al terminar: la de acceso, la de redes y la de
 		administración. Así estas funciones disponen de espacio suficiente sin restarlo a la escena
 		el resto del tiempo.
@@ -1704,13 +1704,13 @@ la~\ref{fig:s4-tema} la aplicación con el tema claro.
 \subsection{Pruebas}
 
 Este \textit{sprint} introduce la novedad más relevante en materia de pruebas: hasta ahora se habían
-realizado de forma manual, y aquí se automatizan. En el Sprint 1 se dejó anotado que en los
+realizado a mano, y aquí se automatizan. En el Sprint 1 se dejó anotado que en los
 \textit{sprints} sucesivos se completarían con pruebas automatizadas del \textit{backend}, y este es
 el momento adecuado para hacerlo, por dos razones. La primera es que la API ha crecido lo suficiente
 como para que comprobarla a mano en cada cambio deje de ser razonable. La segunda, y más importante,
 es que aparece un tipo de fallo cuyas consecuencias son de otro orden: que un usuario acceda a los
 datos privados de otro. Un error así no se manifiesta con nada raro en pantalla, así que solo puede
-descartarse comprobándolo de forma explícita y repetible.
+descartarse comprobándolo a propósito, y de una forma que se pueda repetir.
 
 \subsubsection*{Pruebas de caja blanca (unitarias)}
 

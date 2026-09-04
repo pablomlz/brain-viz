@@ -7,14 +7,15 @@ analizar las tecnologías elegidas para cada componente y calcular el coste fina
 proyecto.
 
 El desarrollo se estructura de forma ágil, basada en \textit{sprints} (ciclos cortos de trabajo),
-con el objetivo de ir creando pequeñas versiones funcionales del proyecto de manera continua. Esto
+con el objetivo de ir sacando pequeñas versiones funcionales del proyecto una tras otra. Esto
 aumenta la claridad del desarrollo y la capacidad de adaptación ante cambios o errores detectados a
 lo largo del proceso, y permite al director validar los avances \textit{sprint} a \textit{sprint}.
 
 \section{Recursos}
 
-Es fundamental establecer con qué medios se cuenta para realizar el proyecto. Se dividen en dos
-grupos: los recursos humanos y los recursos materiales. Como es lógico en un TFG, el alumno asume
+Antes de planificar nada hay que saber con qué se cuenta. Los medios de este proyecto se agrupan en
+tres bloques: las personas, el equipo y las herramientas de asistencia que he utilizado durante el
+desarrollo. Como es lógico en un TFG, el alumno asume
 todos los roles, pero para poder hacer una estimación realista de costes se toma como referencia el
 mercado laboral actual de España, simulando que el proyecto lo llevan a cabo varios profesionales.
 
@@ -68,7 +69,7 @@ y \textit{frontend}, tal y como resume la tabla~\ref{tab:secciones}.
 
 \subsection{Recursos materiales}
 
-Para sacar adelante la aplicación también es fundamental contar con las herramientas adecuadas,
+Para sacar adelante la aplicación hace falta también el equipo adecuado,
 además del personal técnico. Para estimar el coste del software y del hardware se toma como
 referencia lo que marca la Ley del Impuesto sobre Sociedades, que permite estimar una vida útil de 6
 años (2190 días) para los productos software y de 8 años (2920 días) para el hardware; el coste
@@ -116,10 +117,40 @@ desarrollo (Docker, Python, Flask, NetworkX, React, Three.js o VS~Code, entre ot
 Además de los equipos, el proyecto requiere \textbf{desplegar la aplicación en un servidor público}
 para que el director pueda validar cada sprint y, más adelante, el tribunal pueda probarla con
 facilidad. En la práctica, el despliegue de este TFG se ha realizado sobre un plan de alojamiento
-\textbf{gratuito}, por lo que su coste real ha sido nulo. No obstante, dado que ese plan impone
-limitaciones (la instancia se suspende tras un periodo de inactividad), en un contexto profesional lo
+\textbf{gratuito}, por lo que su coste real ha sido nulo. Ahora bien, ese plan impone
+limitaciones, porque la instancia se suspende tras un periodo de inactividad, y en un contexto profesional lo
 razonable sería contratar un servidor virtual (VPS) de bajo coste; a efectos de presupuesto se estima
 en 6,00\,\euro{}/mes, que es la cifra que se incluye en la estimación final por ser la más realista.
+
+\subsection{Herramientas de asistencia basadas en inteligencia artificial}
+
+Durante todo el proyecto me he apoyado en dos asistentes conversacionales, \textbf{Claude}, de
+Anthropic~\cite{claude}, y \textbf{Gemini}, de Google~\cite{gemini}. Como su uso ha sido continuado y
+no anecdótico, dejo constancia aquí de para qué los he utilizado y de dónde está el límite.
+
+En la parte de programación me han servido sobre todo para dos cosas. La primera, resolver dudas
+concretas sobre bibliotecas que no había usado nunca, en especial la de renderizado 3D en el
+navegador, que era la tecnología que más me preocupaba al empezar. La segunda, proponer alternativas
+cuando algo no salía como esperaba, que en la práctica se parece bastante a consultar en un foro,
+solo que la respuesta llega antes. También los consulté al preparar el despliegue, que era la parte
+en la que tenía menos experiencia.
+
+En la memoria los he usado para revisar la redacción de textos ya escritos y para buscar
+incoherencias entre lo que decía el documento y lo que realmente hacía la aplicación, que en un
+trabajo que se ha ido escribiendo a lo largo de varios meses es un problema real.
+
+Conviene decir con la misma claridad lo que no han hecho. El análisis de requisitos, el diseño de la
+arquitectura, las decisiones que se justifican en este capítulo y la interpretación de los
+resultados son míos. Todo el código que ha acabado en el proyecto lo he leído y entendido antes de
+darlo por bueno, y no hay ninguna parte que no sepa explicar. De hecho, la razón por la que contrasté
+las cinco métricas con implementaciones escritas por mí, y no me limité a confiar en la biblioteca,
+es exactamente esa: no me valía con que algo pareciera correcto.
+
+Y hay un motivo práctico para esa desconfianza, y es que estas herramientas se equivocan. Varias
+sugerencias que recibí durante el desarrollo eran plausibles y no funcionaban, así que la única
+manera sensata de trabajar con ellas es comprobar siempre lo que proponen. Aparecen mencionadas en
+esta memoria por el mismo criterio con el que se mencionan el editor de código o el sistema de
+control de versiones: son herramientas que he usado, y ocultarlas no tendría sentido.
 
 \section{Planificación temporal}
 
@@ -285,7 +316,7 @@ tabla~\ref{tab:backend} compara las alternativas de \textit{framework} de backen
 
 \textbf{Selección final:} se descarta Django por su enfoque monolítico, innecesario aquí. Entre Flask
 y FastAPI se elige \textbf{Flask}~\cite{flask}, ya que permite crear una API totalmente funcional para
-leer los ficheros de forma directa, procesarlos con NetworkX~\cite{networkx} y enviarlos como JSON al
+leer los ficheros directamente, procesarlos con NetworkX~\cite{networkx} y enviarlos como JSON al
 frontend con la máxima sencillez.
 
 \subsection{Framework de frontend (UI)}
