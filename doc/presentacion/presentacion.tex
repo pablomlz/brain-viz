@@ -316,9 +316,9 @@
 				{aristas \textbf{ordenadas por peso}: las visibles son siempre las primeras};
 		\end{tikzpicture}
 	\end{center}
-	\vspace{0.45em}
+	\vspace{0.35em}
 	\begin{center}
-		{\large ¿Cuántas? \clave{búsqueda binaria}, $O(\log E)$}
+		{¿Cuántas? \clave{búsqueda binaria}, $O(\log E)$}
 	\end{center}
 	\vfill
 \end{frame}
@@ -327,32 +327,91 @@
 \begin{frame}{Lo que salió de las revisiones}
 	\vfill
 	\begin{center}
-		\begin{minipage}{0.8\paperwidth}\Large
-			\begin{itemize}
-				\setlength{\itemsep}{1.1em}
-				\item Conexiones más gruesas
-				\item El grado, con el umbral
-				\item Resaltar sin desteñir
-			\end{itemize}
-		\end{minipage}
+		\begin{tikzpicture}[font=\small,
+			t/.style={font=\small\bfseries, text=texto, anchor=north},
+			p/.style={font=\scriptsize, text=apagado, anchor=north, align=center}]
+
+			% --- 1. grosor de las conexiones
+			\node[t] at (0,3.0) {Conexiones más gruesas};
+			\draw[verde, line width=0.4pt] (-1.7,2.15) -- (-0.2,2.15);
+			\node[text=tenue, font=\scriptsize, anchor=west] at (-0.1,2.15) {antes};
+			\draw[verde, line width=3.2pt] (-1.7,1.55) -- (-0.2,1.55);
+			\node[text=verde, font=\scriptsize\bfseries, anchor=west] at (-0.1,1.55) {ahora};
+			\node[p, text width=3.9cm] at (0,1.05)
+				{WebGL no obliga a más de 1 píxel:\\ hubo que dibujarlas de otra forma};
+
+			% --- 2. el grado con el umbral
+			\node[t] at (4.9,3.0) {El grado, con el umbral};
+			\node[text=rojo, font=\Large\bfseries] at (3.95,1.9) {11/11};
+			\draw[-{Stealth[length=2.5mm]}, acento, line width=1.2pt] (4.65,1.9) -- (5.25,1.9);
+			\node[text=verde, font=\Large\bfseries] at (5.95,1.9) {7/11};
+			\node[p, text width=3.9cm] at (4.9,1.05)
+				{al filtrar, el grado de la red\\ completa deja de ser lo que se ve};
+
+			% --- 3. resaltar manteniendo el color
+			\node[t] at (9.8,3.0) {Resaltar sin desteñir};
+			\foreach \i/\c in {0/verde, 1/ambar, 2/rojo} {
+				\draw[acentoclaro, line width=1.6pt] (8.7,2.3-\i*0.32) -- (9.5,2.3-\i*0.32);
+			}
+			\foreach \i/\c in {0/verde, 1/ambar, 2/rojo} {
+				\draw[\c, line width=2.4pt] (10.1,2.3-\i*0.32) -- (10.9,2.3-\i*0.32);
+			}
+			\node[text=tenue, font=\scriptsize] at (9.1,1.5) {antes};
+			\node[text=verde, font=\scriptsize\bfseries] at (10.5,1.5) {ahora};
+			\node[p, text width=3.9cm] at (9.8,1.05)
+				{se distinguen por grosor y brillo,\\ manteniendo su color};
+		\end{tikzpicture}
 	\end{center}
 	\vfill
 \end{frame}
 
 % ============================================== 12. SPRINT 3 ================
 \begin{lienzo}{escena_intermediacion}
-	\rotuloder{{\Large\bfseries Mapeo visual}\\[0.3em]
-	           {\color{acentoclaro}\large color y tamaño $=$ intermediación}}
+	\rotuloder{{\Large\bfseries Mapeo visual}\\[0.4em]
+	           {\color{acentoclaro}\large tamaño y color $=$ la métrica}\\[0.7em]
+	           {\small\color{apagado}grado · intermediación · cercanía}}
+	% Escala de color, abajo a la derecha: la misma rampa que usa la aplicación
+	\begin{tikzpicture}[remember picture, overlay]
+		\node[anchor=south east, fill=fondo, fill opacity=0.88, text opacity=1, draw=linea,
+		      rounded corners=6pt, inner sep=0.7em, text=texto]
+			at ([shift={(-0.05\paperwidth,0.06\paperheight)}]current page.south east) {%
+			\begin{tikzpicture}[font=\small]
+				\foreach \i/\c in {0/{2F4B7C}, 1/{4C7DF0}, 2/{58C4A3}, 3/{E0A458}, 4/{D6685E}} {
+					\definecolor{tono}{HTML}{\c}
+					\fill[tono] (\i*0.9, 0) rectangle (\i*0.9+0.9, 0.45);
+				}
+				\node[text=apagado, anchor=west, font=\scriptsize] at (0,-0.35) {baja};
+				\node[text=apagado, anchor=east, font=\scriptsize] at (4.5,-0.35) {alta};
+				\node[text=texto, anchor=south, font=\small\bfseries] at (2.25,0.55)
+					{intermediación};
+			\end{tikzpicture}};
+	\end{tikzpicture}
 \end{lienzo}
 
 % ============================================== 13. VALIDAR ================
 \begin{frame}{¿Y esos números están bien?}
 	\vfill
 	\begin{center}
-		{\Large Contrasté las cinco métricas con\\[0.4em]
-		\clave{implementaciones escritas por mí}}\\[2.0em]
-		{\color{rojo}\Large Apareció un error real}\\[0.6em]
-		{\color{apagado}\large todos los nodos tenían el mismo grado}
+		\begin{tikzpicture}[font=\small,
+			c/.style={rounded corners=6pt, draw=linea, fill=superficie, inner sep=0.6em,
+			          align=center}]
+			% --- la comprobación
+			\node[c, text width=5.4cm] (id) at (0,0)
+				{{\color{apagado}\footnotesize LA COMPROBACIÓN}\\[0.5em]
+				 {\color{texto}\large $\sum \text{grado}(i) = 2\,|A|$}\\[0.5em]
+				 {\color{apagado}\footnotesize se cumple en todo grafo}};
+			% --- lo que salió
+			\node[c, text width=5.4cm, draw=rojo] (mal) at (7.4,0)
+				{{\color{apagado}\footnotesize LO QUE SALÍA}\\[0.5em]
+				 {\color{rojo}\large los 90 nodos con grado 89}\\[0.5em]
+				 {\color{apagado}\footnotesize una arista por cada celda,\\ también las de valor cero}};
+			\draw[-{Stealth[length=3.5mm]}, acento, line width=1.4pt] (id) -- (mal);
+		\end{tikzpicture}
+	\end{center}
+	\vspace{0.8em}
+	\begin{center}
+		Las cinco métricas contrastadas con \clave{código propio}, incluido \clave{Brandes}\\[0.4em]
+		{\color{rojo}\bfseries En pantalla no se veía nada raro}
 	\end{center}
 	\vfill
 \end{frame}
@@ -381,17 +440,39 @@
 	\vfill
 	\begin{center}
 		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{acento}\fontsize{48}{48}\selectfont\bfseries 17}\\[0.4em]
-			{\large pruebas\\ automáticas}
+			{\color{acento}\fontsize{36}{36}\selectfont\bfseries 17}\\[0.3em]
+			{\small pruebas automáticas}
 		\end{minipage}%
 		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{verde}\fontsize{48}{48}\selectfont\bfseries 32}\\[0.4em]
-			{\large pruebas de\\ aceptación}
+			{\color{verde}\fontsize{36}{36}\selectfont\bfseries 32}\\[0.3em]
+			{\small pruebas de aceptación}
 		\end{minipage}%
 		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{ambar}\fontsize{48}{48}\selectfont\bfseries 5}\\[0.4em]
-			{\large métricas\\ contrastadas}
+			{\color{ambar}\fontsize{36}{36}\selectfont\bfseries 5}\\[0.3em]
+			{\small métricas contrastadas}
 		\end{minipage}
+	\end{center}
+	\vspace{0.9em}
+	\begin{center}
+		\begin{tikzpicture}[font=\small]
+			% --- la prueba de carga: 411 frente a 12.470 aristas
+			\node[text=apagado, anchor=west, font=\scriptsize] at (0,1.3) {red de ejemplo};
+			\fill[acento, rounded corners=2pt] (0,0.85) rectangle (0.32,1.15);
+			\node[text=texto, anchor=west, font=\small] at (0.5,1.0) {411 aristas};
+			\node[text=apagado, anchor=west, font=\scriptsize] at (0,0.5) {red sintética};
+			\fill[verde, rounded corners=2pt] (0,0.05) rectangle (5.6,0.35);
+			\node[text=texto, anchor=west, font=\small] at (5.8,0.2) {12.470 aristas};
+			\node[text=verde, anchor=west, font=\small\bfseries] at (0,-0.5)
+				{$\times 30$ conexiones, sin degradación apreciable};
+			% --- lo que no se da por bueno
+			\draw[linea] (9.6,-0.7) -- (9.6,1.4);
+			\node[text=ambar, anchor=north west, font=\small\bfseries] at (10.1,1.35)
+				{Lo que dejo señalado};
+			\node[text=apagado, anchor=north west, font=\scriptsize, text width=4.2cm]
+				at (10.1,0.9)
+				{los 60 fotogramas no los doy por buenos: el mismo resultado salía midiendo una
+				 página vacía};
+		\end{tikzpicture}
 	\end{center}
 	\vfill
 \end{frame}
