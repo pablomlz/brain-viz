@@ -443,40 +443,37 @@
 \begin{frame}{Validación}
 	\vfill
 	\begin{center}
-		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{acento}\fontsize{36}{36}\selectfont\bfseries 17}\\[0.3em]
-			{\small pruebas automáticas}
-		\end{minipage}%
-		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{verde}\fontsize{36}{36}\selectfont\bfseries 32}\\[0.3em]
-			{\small pruebas de aceptación}
-		\end{minipage}%
-		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{ambar}\fontsize{36}{36}\selectfont\bfseries 5}\\[0.3em]
-			{\small métricas contrastadas}
-		\end{minipage}
-	\end{center}
-	\vspace{0.9em}
-	\begin{center}
+		% Coordenadas fijas: las tres columnas y las dos filas quedan alineadas
+		% exactamente, sin depender de lo que ocupe cada texto.
 		\begin{tikzpicture}[font=\small]
-			% --- la prueba de carga: 411 frente a 12.470 aristas
-			\node[text=apagado, anchor=west, font=\scriptsize] at (0,1.3) {red de ejemplo};
-			\fill[acento, rounded corners=2pt] (0,0.85) rectangle (0.32,1.15);
-			\node[text=texto, anchor=west, font=\small] at (0.5,1.0) {411 aristas};
-			\node[text=apagado, anchor=west, font=\scriptsize] at (0,0.5) {red sintética};
-			\fill[verde, rounded corners=2pt] (0,0.05) rectangle (5.6,0.35);
-			\node[text=texto, anchor=west, font=\small] at (5.8,0.2) {12.470 aristas};
-			\node[text=verde, anchor=west, font=\small\bfseries] at (0,-0.5)
-				{$\times 30$ conexiones, sin degradación apreciable};
-			% --- lo que no se da por bueno
-			\draw[linea] (9.6,-0.7) -- (9.6,1.4);
-			\node[text=ambar, anchor=north west, font=\small\bfseries] at (10.1,1.35)
-				{Lo que dejo señalado};
-			\node[text=apagado, anchor=north west, font=\scriptsize, text width=4.2cm]
-				at (10.1,0.9)
-				{los 60 fotogramas no los doy por buenos: el mismo resultado salía midiendo una
-				 página vacía};
+			% --- qué se ha probado
+			\foreach \i/\n/\t/\d/\c in {%
+				0/{17}/{pruebas automáticas}/{una orden, base limpia}/acento,
+				1/{32}/{pruebas de aceptación}/{una por requisito}/verde,
+				2/{5}/{métricas contrastadas}/{con código propio}/ambar} {
+				\node[text=\c, font=\fontsize{34}{34}\selectfont\bfseries] at (\i*4.6, 0) {\n};
+				\node[text=texto, anchor=north] at (\i*4.6, -0.75) {\t};
+				\node[text=apagado, anchor=north, font=\scriptsize] at (\i*4.6, -1.3) {\d};
+			}
+			\draw[linea] (-1.9, -1.95) -- (11.1, -1.95);
+
+			% --- la prueba de carga
+			\node[rounded corners=5pt, draw=linea, fill=superficie, inner sep=0.55em,
+			      text=texto, align=center] (a) at (1.1,-3.1)
+				{{\bfseries 411} aristas\\[0.15em]{\color{apagado}\scriptsize red de ejemplo}};
+			\node[rounded corners=5pt, draw=verde, fill=superficie, inner sep=0.55em,
+			      text=texto, align=center] (b) at (8.1,-3.1)
+				{{\bfseries 12.470} aristas\\[0.15em]{\color{apagado}\scriptsize red sintética}};
+			\draw[-{Stealth[length=3.5mm]}, acento, line width=1.4pt] (a) -- (b)
+				node[midway, above, text=acento, font=\bfseries] {$\times 30$}
+				node[midway, below, text=verde, font=\small\bfseries] {sin degradación};
 		\end{tikzpicture}
+	\end{center}
+	\vspace{0.6em}
+	\begin{center}
+		{\color{ambar}\bfseries Lo que dejo señalado:}
+		{\color{apagado}los 60 fotogramas no los doy por buenos, el mismo
+		 resultado salía midiendo una página vacía}
 	\end{center}
 	\vfill
 \end{frame}
