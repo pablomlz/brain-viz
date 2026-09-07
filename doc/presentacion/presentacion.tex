@@ -61,11 +61,11 @@
 			\end{tikzpicture}
 		\end{column}
 		\begin{column}{0.54\textwidth}
-			{\Large
-			Región $=$ \clave{nodo}\\[0.9em]
-			Conexión $=$ \clave{arista con peso}\\[1.6em]
-			{\color{apagado} Puntos de paso}\\[0.5em]
-			{\color{apagado} Agrupamiento}\\[0.5em]
+			{\large
+			Región $=$ \clave{nodo}\\[0.7em]
+			Conexión $=$ \clave{arista con peso}\\[1.2em]
+			{\color{apagado} Puntos de paso}\\[0.4em]
+			{\color{apagado} Agrupamiento}\\[0.4em]
 			{\color{apagado} Componentes}}
 		\end{column}
 	\end{columns}
@@ -73,34 +73,35 @@
 
 % ============================================== 3. LO QUE YA EXISTE ==========
 \begin{frame}{Lo que ya existe}
-	\vspace{0.2em}
+	\vfill
 	\begin{center}
 		\begin{tikzpicture}[font=\normalsize,
 			f/.style={rounded corners=6pt, draw=linea, fill=superficie, inner sep=0.5em,
-			          text width=3.3cm, align=center, minimum height=1.2cm, anchor=north}]
+			          text width=3.3cm, align=center, minimum height=0.95cm, anchor=north}]
 			\node[text=apagado, anchor=north west, font=\small] at (-0.1,0.95) {ESCRITORIO};
 			\node[f] at (1.65,0.45)  {{\color{ambar}\bfseries BrainNet Viewer}};
 			\node[f] at (5.35,0.45)  {{\color{ambar}\bfseries Connectome Workbench}};
 			\node[f] at (9.05,0.45)  {{\color{ambar}\bfseries Gephi}};
-			\node[text=apagado, anchor=north west, font=\small] at (-0.1,-1.25) {NAVEGADOR};
-			\node[f] at (1.65,-1.75) {{\color{verde}\bfseries Vizaj}};
-			\node[f] at (5.35,-1.75) {{\color{verde}\bfseries BioImage Suite Web}};
-			\node[f] at (9.05,-1.75) {{\color{verde}\bfseries Neuroglancer}};
+			\node[text=apagado, anchor=north west, font=\small] at (-0.1,-1.05) {NAVEGADOR};
+			\node[f] at (1.65,-1.5) {{\color{verde}\bfseries Vizaj}};
+			\node[f] at (5.35,-1.5) {{\color{verde}\bfseries BioImage Suite Web}};
+			\node[f] at (9.05,-1.5) {{\color{verde}\bfseries Neuroglancer}};
 		\end{tikzpicture}
 	\end{center}
-	\vspace{0.7em}
+	\vspace{0.4em}
 	\begin{center}
-		{\Large Ninguna \clave{analiza la red en el servidor}}
+		{\large Ninguna \clave{analiza la red en el servidor}}
 	\end{center}
+	\vfill
 \end{frame}
 
 % ================================================ 4. OBJETIVOS ==============
 \begin{frame}{Objetivos y requisitos}
-	\vspace{0.6em}
+	\vfill
 	\begin{center}
 		\begin{minipage}{0.8\paperwidth}\normalsize
 			\begin{enumerate}
-				\setlength{\itemsep}{0.35em}
+				\setlength{\itemsep}{0.2em}
 				\item Visualizar en 3D, en tiempo real
 				\item Analizar con métricas de grafos
 				\item Navegar, filtrar y seleccionar
@@ -109,18 +110,19 @@
 			\end{enumerate}
 		\end{minipage}
 	\end{center}
-	\vspace{0.8em}
+	\vspace{0.3em}
 	\begin{center}
 		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{acento}\fontsize{36}{36}\selectfont\bfseries 18}\\[0.3em]{\large funcionales}
+			{\color{acento}\fontsize{28}{28}\selectfont\bfseries 18}\\[0.3em]{\large funcionales}
 		\end{minipage}%
 		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{verde}\fontsize{36}{36}\selectfont\bfseries 7}\\[0.3em]{\large no funcionales}
+			{\color{verde}\fontsize{28}{28}\selectfont\bfseries 7}\\[0.3em]{\large no funcionales}
 		\end{minipage}%
 		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{ambar}\fontsize{36}{36}\selectfont\bfseries 4}\\[0.3em]{\large de información}
+			{\color{ambar}\fontsize{28}{28}\selectfont\bfseries 4}\\[0.3em]{\large de información}
 		\end{minipage}
 	\end{center}
+	\vfill
 \end{frame}
 
 % =============================================== 5. ARQUITECTURA ============
@@ -128,22 +130,22 @@
 	\vfill
 	\begin{center}
 		\begin{tikzpicture}[font=\large,
-			caja/.style={rounded corners=8pt, draw=linea, fill=superficie, inner sep=0.8em,
-			             text width=3.4cm, align=center, minimum height=2.3cm},
+			caja/.style={rounded corners=8pt, draw=linea, fill=superficie, inner sep=0.6em,
+			             text width=3.0cm, align=center, minimum height=2.2cm},
 			flecha/.style={-{Stealth[length=4mm]}, acento, line width=1.6pt}]
 			\node[caja] (cli) at (0,0)
 				{{\color{acentoclaro}\bfseries Navegador}\\[0.3em]
-				 {\color{apagado}\small React · Three.js}};
-			\node[caja] (srv) at (5.6,0)
+				 {\color{apagado}\small React\\ Three.js}};
+			\node[caja] (srv) at (4.9,0)
 				{{\color{verde}\bfseries Servidor}\\[0.3em]
-				 {\color{apagado}\small Flask · NetworkX}};
-			\node[caja] (dat) at (11.2,0)
+				 {\color{apagado}\small Flask\\ NetworkX}};
+			\node[caja] (dat) at (9.8,0)
 				{{\color{ambar}\bfseries Datos}\\[0.3em]
 				 {\color{apagado}\small PostgreSQL}};
 			\draw[flecha] (cli) -- node[above, text=apagado, font=\small] {JSON} (srv);
 			\draw[flecha] (srv) -- (dat);
-			\node[text=tenue, font=\small] at (0,-1.9)   {dibuja};
-			\node[text=tenue, font=\small] at (5.6,-1.9) {calcula};
+			\node[text=tenue, font=\small] at (0,-1.75)   {dibuja};
+			\node[text=tenue, font=\small] at (4.9,-1.75) {calcula};
 		\end{tikzpicture}
 	\end{center}
 	\vfill
@@ -151,31 +153,34 @@
 
 % ============================================== 6. MÓDULOS ==================
 \begin{frame}{Módulos del sistema}
-	\vspace{0.4em}
+	\vfill
 	\begin{center}
+		% Sin «text width»: cada caja se ajusta a su nombre, así ninguna palabra
+		% larga se sale del recuadro.
 		\begin{tikzpicture}[font=\small,
-			m/.style={rounded corners=4pt, draw=linea, fill=superficiedos, inner sep=0.35em,
-			          text width=2.0cm, align=center, minimum height=0.78cm},
-			fl/.style={-{Stealth[length=2.4mm]}, acento, line width=0.9pt}]
-			% frontend, en columna
-			\node[m] (app) at (0,0)     {{\color{acentoclaro}\bfseries App.jsx}};
-			\node[m] (acc) at (0,-1.1)  {{\color{acentoclaro}\bfseries Acceso.jsx}};
-			\node[m] (red) at (0,-2.2)  {{\color{acentoclaro}\bfseries Redes.jsx}};
-			\node[m] (adm) at (0,-3.3)  {{\color{acentoclaro}\bfseries Administracion}};
-			\node[m] (api) at (2.8,-1.65) {{\color{acentoclaro}\bfseries api.js}};
-			\node[text=acentoclaro, anchor=south, font=\small] at (1.4,0.6) {Frontend (React)};
-			\draw[linea, dashed, rounded corners=6pt] (-1.4,0.5) rectangle (3.9,-3.95);
+			m/.style={rounded corners=4pt, draw=linea, fill=superficiedos,
+			          inner xsep=0.45em, inner ysep=0.35em, align=center,
+			          minimum width=1.8cm, minimum height=0.7cm},
+			fl/.style={-{Stealth[length=2.2mm]}, acento, line width=0.85pt}]
+			% --- frontend
+			\node[m] (app) at (0,0)      {{\color{acentoclaro}\bfseries App.jsx}};
+			\node[m] (acc) at (0,-0.9)   {{\color{acentoclaro}\bfseries Acceso.jsx}};
+			\node[m] (red) at (0,-1.8)   {{\color{acentoclaro}\bfseries Redes.jsx}};
+			\node[m] (adm) at (0,-2.7)   {{\color{acentoclaro}\bfseries Admin.jsx}};
+			\node[m] (api) at (2.8,-1.35) {{\color{acentoclaro}\bfseries api.js}};
+			\node[text=acentoclaro, anchor=south, font=\small] at (1.3,0.6) {Frontend (React)};
+			\draw[linea, dashed, rounded corners=6pt] (-1.45,0.45) rectangle (3.85,-3.2);
 			\foreach \n in {app,acc,red,adm} \draw[fl] (\n) -- (api);
-			% backend
-			\node[m] (apy) at (5.9,-1.65) {{\color{verde}\bfseries app.py}};
-			\node[m] (aut) at (8.7,-0.2)  {{\color{verde}\bfseries auth.py}};
-			\node[m] (rds) at (8.7,-1.3)  {{\color{verde}\bfseries redes.py}};
-			\node[m] (gpy) at (8.7,-2.4)  {{\color{verde}\bfseries graph\_parser}};
-			\node[m] (adp) at (8.7,-3.45) {{\color{verde}\bfseries administracion}};
-			\node[m] (mod) at (11.5,-1.3) {{\color{verde}\bfseries models.py}};
-			\node[m, draw=ambar] (bd) at (11.5,-2.7) {{\color{ambar}\bfseries Base de datos}};
-			\node[text=verde, anchor=south, font=\small] at (8.7,0.6) {Backend (Flask)};
-			\draw[linea, dashed, rounded corners=6pt] (4.75,0.5) rectangle (12.7,-4.1);
+			% --- backend
+			\node[m] (apy) at (5.3,-1.35)  {{\color{verde}\bfseries app.py}};
+			\node[m] (aut) at (7.9,-0.25)  {{\color{verde}\bfseries auth.py}};
+			\node[m] (rds) at (7.9,-1.15)  {{\color{verde}\bfseries redes.py}};
+			\node[m] (gpy) at (7.9,-2.05)  {{\color{verde}\bfseries graph\_parser.py}};
+			\node[m] (adp) at (7.9,-2.95)  {{\color{verde}\bfseries admin.py}};
+			\node[m] (mod) at (10.7,-0.9) {{\color{verde}\bfseries models.py}};
+			\node[m, draw=ambar] (bd) at (10.7,-2.1) {{\color{ambar}\bfseries Base de datos}};
+			\node[text=verde, anchor=south, font=\small] at (7.9,0.6) {Backend (Flask)};
+			\draw[linea, dashed, rounded corners=6pt] (4.3,0.45) rectangle (12.4,-3.45);
 			\draw[fl] (api) -- node[above, text=apagado, font=\scriptsize] {HTTP} (apy);
 			\foreach \n in {aut,rds,adp} \draw[fl] (apy) -- (\n);
 			\draw[fl] (rds) -- (gpy);
@@ -183,14 +188,15 @@
 			\draw[fl] (mod) -- (bd);
 		\end{tikzpicture}
 	\end{center}
+	\vfill
 \end{frame}
 
 % ======================================== 7. PLANIFICACIÓN Y COSTE ==========
 \begin{frame}{Planificación y presupuesto}
-	\vspace{0.3em}
+	\vfill
 	\begin{columns}[T]
 		\begin{column}{0.56\textwidth}
-			\begin{tikzpicture}[font=\small, xscale=0.175, yscale=0.55]
+			\begin{tikzpicture}[font=\small, xscale=0.165, yscale=0.40]
 				\foreach \i/\t/\ini/\dur/\c in {%
 					0/{Requisitos}/0/5/acento,
 					1/{Planificación}/5/4/acento,
@@ -213,18 +219,19 @@
 			\begin{tikzpicture}[font=\normalsize]
 				\foreach \i/\m/\v in {0/{Personal}/{4.906,80}, 1/{Equipo}/{35,72},
 				                      2/{Licencias}/{25,85}} {
-					\node[text=apagado, anchor=west] at (0,-\i*0.95) {\m};
-					\node[text=texto, anchor=east] at (4.9,-\i*0.95) {\v\,\euro};
+					\node[text=apagado, anchor=west] at (0,-\i*0.85) {\m};
+					\node[text=texto, anchor=east] at (4.9,-\i*0.85) {\v\,\euro};
 				}
-				\draw[linea, line width=1pt] (0,-3.1) -- (4.9,-3.1);
-				\node[text=texto, anchor=west, font=\large\bfseries] at (0,-3.8) {Total};
-				\node[text=ambar, anchor=east, font=\large\bfseries] at (4.9,-3.8) {4.968,37\,\euro};
+				\draw[linea, line width=1pt] (0,-2.8) -- (4.9,-2.8);
+				\node[text=texto, anchor=west, font=\large\bfseries] at (0,-3.45) {Total};
+				\node[text=ambar, anchor=east, font=\large\bfseries] at (4.9,-3.45) {4.968,37\,\euro};
 			\end{tikzpicture}
-			\vspace{0.9em}
+			\vspace{0.5em}
 
 			{\color{apagado} 38 días · 304 horas}
 		\end{column}
 	\end{columns}
+	\vfill
 \end{frame}
 
 % ============================================ 8. SPRINTS 1 Y 2 ==============
@@ -269,25 +276,26 @@
 
 % ============================================= 10. RENDIMIENTO ==============
 \begin{frame}{El problema de rendimiento}
-	\vspace{0.1em}
+	\vfill
 	\begin{center}
-		{\color{rojo}\Large Reconstruía la geometría entera}
+		{\color{rojo}\large Reconstruía la geometría entera}
 	\end{center}
-	\vspace{0.7em}
+	\vspace{0.3em}
 	\begin{center}
 		\begin{tikzpicture}
-			\foreach \i in {0,...,5} \fill[verde] (\i*1.0, 0) rectangle (\i*1.0+0.78, 0.75);
-			\foreach \i in {6,...,11} \fill[linea] (\i*1.0, 0) rectangle (\i*1.0+0.78, 0.75);
-			\draw[acento, line width=2.5pt] (5.92,-0.4) -- (5.92,1.15);
-			\node[text=acento, anchor=south, font=\bfseries] at (5.92,1.2) {umbral};
-			\node[text=apagado, anchor=west, font=\small] at (0,-0.9)
+			\foreach \i in {0,...,5} \fill[verde] (\i*1.0, 0) rectangle (\i*1.0+0.78, 0.62);
+			\foreach \i in {6,...,11} \fill[linea] (\i*1.0, 0) rectangle (\i*1.0+0.78, 0.62);
+			\draw[acento, line width=2.5pt] (5.92,-0.3) -- (5.92,1.0);
+			\node[text=acento, anchor=south, font=\bfseries] at (5.92,1.05) {umbral};
+			\node[text=apagado, anchor=west, font=\small] at (0,-0.75)
 				{aristas ordenadas por peso};
 		\end{tikzpicture}
 	\end{center}
-	\vspace{0.6em}
+	\vspace{0.25em}
 	\begin{center}
-		{\color{verde}\fontsize{30}{30}\selectfont\bfseries $O(\log E)$}
+		{\color{verde}\fontsize{28}{28}\selectfont\bfseries $O(\log E)$}
 	\end{center}
+	\vfill
 \end{frame}
 
 % ============================================== 11. REVISIONES ==============
@@ -336,11 +344,11 @@
 	\begin{center}
 		\begin{tikzpicture}
 			\node[draw=linea, line width=1.5pt, rounded corners=10pt, inner sep=0pt]
-				{\includegraphics[width=0.62\paperwidth]{app_movil_horizontal}};
+				{\includegraphics[width=0.58\paperwidth]{app_movil_horizontal}};
 		\end{tikzpicture}
 	\end{center}
-	\vspace{0.9em}
-	\begin{center}{\Large\texttt{brain-viz.onrender.com}}\end{center}
+	\vspace{0.7em}
+	\begin{center}{\large\texttt{brain-viz.onrender.com}}\end{center}
 \end{frame}
 
 % ============================================== 16. VALIDACIÓN =============
