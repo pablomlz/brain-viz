@@ -366,58 +366,31 @@
 \end{frame}
 
 % ============================================== 12. SPRINT 3 ================
-\begingroup
-\setbeamertemplate{footline}{}
-\begin{frame}[plain]
-	\begin{tikzpicture}[remember picture, overlay]
-		% --- izquierda: el mismo grafo coloreado por grupo anatómico
-		\begin{scope}
-			\clip (current page.north west) rectangle
-				([xshift=0.5\paperwidth]current page.south west);
-			\node[anchor=north west, inner sep=0pt]
-				at ([xshift=-0.25\paperwidth]current page.north west)
-				{\includegraphics[height=\paperheight]{escena_umbral_0}};
-		\end{scope}
-		% --- derecha: el mismo grafo coloreado y dimensionado por intermediación
-		\begin{scope}
-			\clip ([xshift=0.5\paperwidth]current page.north west) rectangle
-				(current page.south east);
-			\node[anchor=north east, inner sep=0pt]
-				at ([xshift=0.25\paperwidth]current page.north east)
-				{\includegraphics[height=\paperheight]{escena_intermediacion}};
-		\end{scope}
-		\draw[acento, line width=1.5pt]
-			([xshift=0.5\paperwidth]current page.north west) --
-			([xshift=0.5\paperwidth]current page.south west);
-
-		% --- el titular, arriba
-		\node[anchor=north, fill=fondo, fill opacity=0.9, text opacity=1, draw=linea,
-		      rounded corners=6pt, inner sep=0.7em, text=texto, align=center]
-			at ([yshift=-0.045\paperheight]current page.north)
-			{{\large\bfseries El mismo grafo, dos lecturas}};
-
-		% --- qué es cada mitad
-		\node[anchor=south west, fill=fondo, fill opacity=0.9, text opacity=1, inner sep=0.7em,
-		      rounded corners=6pt, text=texto, align=left]
-			at ([shift={(0.035\paperwidth,0.05\paperheight)}]current page.south west)
-			{{\bfseries Color $=$ grupo anatómico}\\[0.2em]
-			 {\color{apagado}\small dónde está cada región}};
-
-		\node[anchor=south east, fill=fondo, fill opacity=0.9, text opacity=1, inner sep=0.7em,
-		      rounded corners=6pt, text=texto, align=right]
-			at ([shift={(-0.035\paperwidth,0.05\paperheight)}]current page.south east)
-			{{\bfseries Color y tamaño $=$ intermediación}\\[0.4em]
-			 \begin{tikzpicture}[baseline]
-				\foreach \i/\c in {0/{2F4B7C}, 1/{4C7DF0}, 2/{58C4A3}, 3/{E0A458}, 4/{D6685E}} {
-					\definecolor{tono}{HTML}{\c}
-					\fill[tono] (\i*0.72, 0) rectangle (\i*0.72+0.72, 0.32);
-				}
-				\node[text=apagado, anchor=west, font=\scriptsize] at (0,-0.28) {baja};
-				\node[text=apagado, anchor=east, font=\scriptsize] at (3.6,-0.28) {alta};
-			 \end{tikzpicture}};
-	\end{tikzpicture}
+\begin{frame}{El mismo grafo, cuatro lecturas}
+	\vfill
+	\begin{center}
+		% Las cuatro capturas comparten cámara, umbral y recorte: lo único que
+		% cambia entre ellas es el criterio de color. Se colocan con TikZ para
+		% que las imágenes y sus pies queden exactamente a la misma altura.
+		\begin{tikzpicture}[font=\small]
+			\foreach \i/\f/\t/\d/\c in {%
+				0/{crit_grupo}/{Grupo anatómico}/{dónde está}/acentoclaro,
+				1/{crit_grado}/{Grado}/{cuántas conexiones}/verde,
+				2/{crit_intermediacion}/{Intermediación}/{puntos de paso}/ambar,
+				3/{crit_cercania}/{Cercanía}/{cómo de bien situada}/rojo} {
+				\node[anchor=north, inner sep=0pt] (im\i) at (\i*3.45, 0)
+					{\includegraphics[width=3.25cm]{\f}};
+				\node[anchor=north, text=\c, font=\small\bfseries] at (\i*3.45, -3.15) {\t};
+				\node[anchor=north, text=apagado, font=\scriptsize] at (\i*3.45, -3.62) {\d};
+			}
+		\end{tikzpicture}
+	\end{center}
+	\vspace{0.5em}
+	\begin{center}
+		{\color{apagado}\small El tamaño y el color de cada nodo representan la métrica elegida}
+	\end{center}
+	\vfill
 \end{frame}
-\endgroup
 
 % ============================================== 13. VALIDAR ================
 \begin{frame}{¿Y esos números están bien?}
