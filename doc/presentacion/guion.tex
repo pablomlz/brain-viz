@@ -257,8 +257,9 @@ siempre las primeras de la lista. Nunca son un conjunto disperso.
 
 Y eso lo cambia todo. La geometría se construye una sola vez, al cargar, y filtrar pasa a ser
 simplemente decirle a la tarjeta gráfica cuántas de esas aristas tiene que dibujar. Cuántas son se
-averigua con una búsqueda binaria sobre la lista ordenada. El resultado es que mover el control deja
-de depender del tamaño de la red.
+averigua con una búsqueda binaria sobre la lista ordenada: en una red de doce mil aristas, catorce
+comparaciones en lugar de doce mil. El resultado es que mover el control deja de depender del tamaño
+de la red.
 
 \accion{Si preguntan: comprobé la búsqueda binaria contra un recuento lineal en 207 casos, sin
 ninguna discrepancia.}

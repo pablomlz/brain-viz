@@ -195,8 +195,8 @@
 \begin{frame}{Planificación y presupuesto}
 	\vfill
 	\begin{columns}[T]
-		\begin{column}{0.56\textwidth}
-			\begin{tikzpicture}[font=\small, xscale=0.165, yscale=0.40]
+		\begin{column}{0.53\textwidth}
+			\begin{tikzpicture}[font=\small, xscale=0.155, yscale=0.42]
 				\foreach \i/\t/\ini/\dur/\c in {%
 					0/{Requisitos}/0/5/acento,
 					1/{Planificación}/5/4/acento,
@@ -206,29 +206,34 @@
 					5/{Sprint 4}/31/5/verde,
 					6/{Memoria}/9/29/ambar} {
 					\node[text=texto, anchor=east, font=\scriptsize] at (-0.8,-\i) {\t};
-					\fill[\c, rounded corners=2pt] (\ini,-\i-0.32) rectangle (\ini+\dur,-\i+0.32);
+					\fill[\c, rounded corners=2pt] (\ini,-\i-0.3) rectangle (\ini+\dur,-\i+0.3);
+					\node[text=fondo, font=\tiny\bfseries] at (\ini+\dur/2,-\i) {\dur};
 				}
-				\draw[linea] (0,-6.9) -- (38,-6.9);
+				\draw[linea] (0,-6.85) -- (38,-6.85);
 				\foreach \d in {0,10,20,30,38}
-					\node[text=tenue, anchor=north, font=\scriptsize] at (\d,-7.0) {\d};
-				\node[text=apagado, anchor=north, font=\scriptsize] at (19,-7.9) {días laborables};
+					\node[text=tenue, anchor=north, font=\scriptsize] at (\d,-6.95) {\d};
+				\node[text=apagado, anchor=north, font=\scriptsize] at (19,-8.0) {días laborables};
 			\end{tikzpicture}
 		\end{column}
-		\begin{column}{0.4\textwidth}
-			\vspace{0.4em}
-			\begin{tikzpicture}[font=\normalsize]
-				\foreach \i/\m/\v in {0/{Personal}/{4.906,80}, 1/{Equipo}/{35,72},
-				                      2/{Licencias}/{25,85}} {
-					\node[text=apagado, anchor=west] at (0,-\i*0.85) {\m};
-					\node[text=texto, anchor=east] at (4.9,-\i*0.85) {\v\,\euro};
+		\begin{column}{0.44\textwidth}
+			\vspace{-0.2em}
+			\begin{tikzpicture}[font=\small]
+				\foreach \i/\m/\v in {0/{Recursos humanos}/{4.906,80},
+				                      1/{Hardware {\tiny(38 d)}}/{17,86},
+				                      2/{Software {\tiny(38 d)}}/{7,71},
+				                      3/{Servidor {\tiny(6 meses)}}/{36,00}} {
+					\node[text=apagado, anchor=west] at (0,-\i*0.72) {\m};
+					\node[text=texto, anchor=east] at (5.8,-\i*0.72) {\v\,\euro};
 				}
-				\draw[linea, line width=1pt] (0,-2.8) -- (4.9,-2.8);
-				\node[text=texto, anchor=west, font=\large\bfseries] at (0,-3.45) {Total};
-				\node[text=ambar, anchor=east, font=\large\bfseries] at (4.9,-3.45) {4.968,37\,\euro};
+				\draw[linea, line width=1pt] (0,-2.75) -- (5.8,-2.75);
+				\node[text=texto, anchor=west, font=\large\bfseries] at (0,-3.3) {Total};
+				\node[text=ambar, anchor=east, font=\large\bfseries] at (5.8,-3.3) {4.968,37\,\euro};
+				% las dos cifras de esfuerzo, debajo
+				\node[text=acento, anchor=west, font=\Large\bfseries] at (0,-4.5)   {38};
+				\node[text=apagado, anchor=west, font=\small]         at (0.85,-4.5) {días};
+				\node[text=verde,  anchor=west, font=\Large\bfseries] at (2.6,-4.5) {304};
+				\node[text=apagado, anchor=west, font=\small]         at (3.9,-4.5) {horas};
 			\end{tikzpicture}
-			\vspace{0.5em}
-
-			{\color{apagado} 38 días · 304 horas}
 		\end{column}
 	\end{columns}
 	\vfill
@@ -256,14 +261,23 @@
 		\draw[acento, line width=1.5pt]
 			([xshift=0.5\paperwidth]current page.north west) --
 			([xshift=0.5\paperwidth]current page.south west);
-		\node[anchor=north west, fill=fondo, fill opacity=0.88, text opacity=1, inner sep=0.7em,
-		      rounded corners=6pt, text=texto, font=\Large\bfseries]
-			at ([shift={(0.04\paperwidth,-0.07\paperheight)}]current page.north west)
-			{411 conexiones};
-		\node[anchor=north east, fill=fondo, fill opacity=0.88, text opacity=1, inner sep=0.7em,
-		      rounded corners=6pt, text=texto, font=\Large\bfseries]
-			at ([shift={(-0.04\paperwidth,-0.07\paperheight)}]current page.north east)
-			{umbral 0,70};
+		% --- los datos de partida, arriba
+		\node[anchor=north, fill=fondo, fill opacity=0.9, text opacity=1, draw=linea,
+		      rounded corners=6pt, inner sep=0.6em, text=texto, align=center, font=\small]
+			at ([yshift=-0.045\paperheight]current page.north)
+			{{\bfseries 90 regiones en coordenadas anatómicas}\ \ {\color{apagado}·}\ \
+			 {\color{apagado}formato \texttt{.node} y \texttt{.edge} de BrainNet Viewer}};
+		% --- el antes y el después del umbral
+		\node[anchor=south west, fill=fondo, fill opacity=0.88, text opacity=1, inner sep=0.7em,
+		      rounded corners=6pt, text=texto, align=left]
+			at ([shift={(0.035\paperwidth,0.05\paperheight)}]current page.south west)
+			{{\large\bfseries Umbral 0,00}\\[0.2em]
+			 {\color{acentoclaro}\bfseries 411} {\color{apagado}conexiones, todas}};
+		\node[anchor=south east, fill=fondo, fill opacity=0.88, text opacity=1, inner sep=0.7em,
+		      rounded corners=6pt, text=texto, align=right]
+			at ([shift={(-0.035\paperwidth,0.05\paperheight)}]current page.south east)
+			{{\large\bfseries Umbral 0,70}\\[0.2em]
+			 {\color{verde}\bfseries 122} {\color{apagado}de 411: la estructura}};
 	\end{tikzpicture}
 \end{frame}
 \endgroup
@@ -278,22 +292,33 @@
 \begin{frame}{El problema de rendimiento}
 	\vfill
 	\begin{center}
-		{\color{rojo}\large Reconstruía la geometría entera}
-	\end{center}
-	\vspace{0.3em}
-	\begin{center}
-		\begin{tikzpicture}
-			\foreach \i in {0,...,5} \fill[verde] (\i*1.0, 0) rectangle (\i*1.0+0.78, 0.62);
-			\foreach \i in {6,...,11} \fill[linea] (\i*1.0, 0) rectangle (\i*1.0+0.78, 0.62);
-			\draw[acento, line width=2.5pt] (5.92,-0.3) -- (5.92,1.0);
-			\node[text=acento, anchor=south, font=\bfseries] at (5.92,1.05) {umbral};
-			\node[text=apagado, anchor=west, font=\small] at (0,-0.75)
-				{aristas ordenadas por peso};
+		\begin{tikzpicture}[font=\small,
+			c/.style={rounded corners=6pt, inner sep=0.4em, text width=5.2cm, align=center}]
+			\node[c, draw=rojo, fill=superficie] (a) at (0,0)
+				{{\color{rojo}\bfseries ANTES}\\[0.25em]
+				 recorrer las $E$ aristas\\ y reconstruirlo todo\\[0.3em]
+				 {\color{rojo}\bfseries en cada movimiento: $O(E)$}};
+			\node[c, draw=verde, fill=superficie] (b) at (7.2,0)
+				{{\color{verde}\bfseries AHORA}\\[0.25em]
+				 la geometría ya está;\\ solo cuántas se dibujan\\[0.3em]
+				 {\color{verde}\bfseries $O(1)$}};
+			\draw[-{Stealth[length=3.5mm]}, acento, line width=1.4pt] (a) -- (b);
 		\end{tikzpicture}
 	\end{center}
-	\vspace{0.25em}
+	\vspace{0.45em}
 	\begin{center}
-		{\color{verde}\fontsize{28}{28}\selectfont\bfseries $O(\log E)$}
+		\begin{tikzpicture}
+			\foreach \i in {0,...,5} \fill[verde] (\i*0.9, 0) rectangle (\i*0.9+0.7, 0.45);
+			\foreach \i in {6,...,11} \fill[linea] (\i*0.9, 0) rectangle (\i*0.9+0.7, 0.45);
+			\draw[acento, line width=2.2pt] (5.32,-0.2) -- (5.32,0.72);
+			\node[text=acento, anchor=south, font=\small\bfseries] at (5.32,0.74) {umbral};
+			\node[text=apagado, anchor=west, font=\small] at (0,-0.55)
+				{aristas \textbf{ordenadas por peso}: las visibles son siempre las primeras};
+		\end{tikzpicture}
+	\end{center}
+	\vspace{0.45em}
+	\begin{center}
+		{\large ¿Cuántas? \clave{búsqueda binaria}, $O(\log E)$}
 	\end{center}
 	\vfill
 \end{frame}
