@@ -46,13 +46,21 @@
 		\begin{column}{0.42\textwidth}
 			\centering
 			\begin{tikzpicture}[scale=0.8,
-				nodo/.style={circle, minimum size=11mm, font=\small\bfseries, text=fondo, inner sep=0pt},
-				peso/.style={font=\small, text=apagado}]
-				\draw[verde,  line width=3.4pt, opacity=0.8] (0,2.4)--(3.0,3.1) node[peso, midway, above] {0,8};
-				\draw[ambar,  line width=2.0pt, opacity=0.8] (3.0,3.1)--(3.8,1.2) node[peso, midway, right] {0,5};
-				\draw[rojo,   line width=4.0pt, opacity=0.8] (3.8,1.2)--(1.7,0) node[peso, midway, below] {0,9};
+				nodo/.style={circle, minimum size=11mm, font=\small\bfseries, text=fondo,
+				             inner sep=0pt},
+				% El peso lleva fondo propio para que no se lea encima de la arista,
+				% y va colocado a mano hacia fuera del polígono en cada caso.
+				peso/.style={font=\small, text=texto, fill=fondo, inner sep=1.6pt}]
+				\draw[verde,  line width=3.4pt, opacity=0.8] (0,2.4)--(3.0,3.1);
+				\draw[ambar,  line width=2.0pt, opacity=0.8] (3.0,3.1)--(3.8,1.2);
+				\draw[rojo,   line width=4.0pt, opacity=0.8] (3.8,1.2)--(1.7,0);
 				\draw[morado, line width=1.4pt, opacity=0.8] (1.7,0)--(-0.5,0.9);
-				\draw[acento, line width=2.6pt, opacity=0.8] (-0.5,0.9)--(0,2.4) node[peso, midway, left] {0,6};
+				\draw[acento, line width=2.6pt, opacity=0.8] (-0.5,0.9)--(0,2.4);
+				\node[peso] at (1.45,3.25)  {0,8};
+				\node[peso] at (3.95,2.35)  {0,5};
+				\node[peso] at (3.20,0.30)  {0,9};
+				\node[peso] at (0.30,0.05)  {0,3};
+				\node[peso] at (-1.05,1.90) {0,6};
 				\node[nodo, fill=verde]  at (0,2.4)   {R1};
 				\node[nodo, fill=ambar]  at (3.0,3.1) {R2};
 				\node[nodo, fill=rojo]   at (3.8,1.2) {R3};
