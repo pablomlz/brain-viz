@@ -33,7 +33,7 @@
 \setbeamerfont{footline}{size=\tiny}
 
 \setbeamertemplate{frametitle}{%
-	\vspace{0.7em}\hspace{0.055\paperwidth}%
+	\vspace{0.85em}\hspace{0.055\paperwidth}%
 	\begin{minipage}{0.89\paperwidth}
 		\raggedright\usebeamerfont{frametitle}\color{texto}%
 		\insertframetitle\par\vspace{0.3em}%
@@ -46,7 +46,7 @@
 	\hbox{\begin{beamercolorbox}[wd=\paperwidth, ht=1.9ex, dp=1.2ex,
 			leftskip=0.055\paperwidth, rightskip=0.055\paperwidth]{}%
 		\usebeamerfont{footline}\color{tenue}%
-		BRAIN VIZ\hfill\thepage%
+		\hfill\thepage%
 	\end{beamercolorbox}}}
 
 \setbeamertemplate{itemize item}{\color{acento}\raisebox{0.15ex}{\rule{0.42em}{0.42em}}}
@@ -142,6 +142,32 @@
 		\node[fill=white, rounded corners=6pt, inner sep=0.6em]
 			{\includegraphics[height=#1, keepaspectratio]{#2}};
 	\end{tikzpicture}}
+
+% Rótulo sobre una captura a sangre. Poco texto y bien grande, que es lo que
+% se lee desde el fondo de un aula.
+\newcommand{\rotulo}[1]{%
+	\begin{tikzpicture}[remember picture, overlay]
+		\node[anchor=north west, fill=fondo, fill opacity=0.88, text opacity=1, draw=linea,
+		      rounded corners=8pt, inner sep=0.9em, align=left, font=\color{texto}]
+			at ([shift={(0.05\paperwidth,-0.08\paperheight)}]current page.north west) {#1};
+	\end{tikzpicture}}
+
+\newcommand{\rotuloder}[1]{%
+	\begin{tikzpicture}[remember picture, overlay]
+		\node[anchor=north east, fill=fondo, fill opacity=0.88, text opacity=1, draw=linea,
+		      rounded corners=8pt, inner sep=0.9em, align=left, font=\color{texto}]
+			at ([shift={(-0.05\paperwidth,-0.08\paperheight)}]current page.north east) {#1};
+	\end{tikzpicture}}
+
+% Frase suelta, grande y centrada: una idea por diapositiva.
+\newcommand{\frase}[2][texto]{%
+	\vfill
+	\begin{center}
+		\begin{minipage}{0.8\paperwidth}\centering
+			{\color{#1}\fontsize{22}{28}\selectfont\bfseries #2}
+		\end{minipage}
+	\end{center}
+	\vfill}
 
 \newcommand{\clave}[1]{{\color{acentoclaro}\bfseries #1}}
 \newcommand{\suave}[1]{{\color{apagado}#1}}
