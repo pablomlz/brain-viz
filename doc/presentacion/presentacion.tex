@@ -1,4 +1,4 @@
-\documentclass[aspectratio=169, 14pt]{beamer}
+\documentclass[aspectratio=169, 12pt]{beamer}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -6,7 +6,7 @@
 \usepackage[scaled=0.94]{helvet}
 \usepackage{graphicx}
 \usepackage{tikz}
-\usetikzlibrary{positioning, arrows.meta, fadings, calc}
+\usetikzlibrary{positioning, arrows.meta, fadings, calc, fit}
 \usepackage{amsmath}
 \usepackage[gen]{eurosym}
 
@@ -19,7 +19,7 @@
 
 \begin{document}
 
-% ============================================================ 1. PORTADA =====
+% ============================================================== 1. PORTADA ===
 \begingroup
 \usebackgroundtemplate{\includegraphics[width=\paperwidth, height=\paperheight]{hero}}
 \begin{frame}[plain]
@@ -39,272 +39,264 @@
 \end{frame}
 \endgroup
 
-\section{El problema}
-
-% -------------------------------------------------------- el cerebro, red ---
-\begin{frame}{El cerebro es una red}
-	\vspace{-0.6em}
-	\begin{center}
-		\begin{tikzpicture}[scale=0.88,
-			nodo/.style={circle, minimum size=11mm, font=\small\bfseries, text=fondo, inner sep=0pt},
-			peso/.style={font=\small, text=apagado}]
-			\draw[verde,  line width=4pt, opacity=0.8] (0,2.4)--(3.2,3.2) node[peso, midway, above] {0,8};
-			\draw[ambar,  line width=2.4pt, opacity=0.8] (3.2,3.2)--(4.0,1.2) node[peso, midway, right] {0,5};
-			\draw[rojo,   line width=4.6pt, opacity=0.8] (4.0,1.2)--(1.8,0) node[peso, midway, below] {0,9};
-			\draw[morado, line width=1.6pt, opacity=0.8] (1.8,0)--(-0.5,0.9) node[peso, midway, below left] {0,3};
-			\draw[acento, line width=3pt, opacity=0.8] (-0.5,0.9)--(0,2.4) node[peso, midway, left] {0,6};
-			\node[nodo, fill=verde]  at (0,2.4)   {R1};
-			\node[nodo, fill=ambar]  at (3.2,3.2) {R2};
-			\node[nodo, fill=rojo]   at (4.0,1.2) {R3};
-			\node[nodo, fill=acento] at (1.8,0)   {R4};
-			\node[nodo, fill=morado] at (-0.5,0.9){R5};
-		\end{tikzpicture}
-	\end{center}
+% ================================================== 2. EL PROBLEMA ===========
+\begin{frame}{El cerebro como red}
 	\vspace{0.2em}
-	\begin{center}
-		{\large Región $=$ \clave{nodo}\qquad Conexión $=$ \clave{arista con peso}}
-	\end{center}
-\end{frame}
-
-% ------------------------------------------------------------ qué se mide ---
-\begin{frame}{Y sobre una red se puede medir}
-	\vfill
-	\begin{columns}[T]
-		\begin{column}{0.31\textwidth}\centering
-			{\color{acento}\fontsize{40}{40}\selectfont\bfseries ?}\\[0.7em]
-			{\large\bfseries Puntos de paso}\\[0.4em]
-			{\color{apagado}\small qué regiones\\ conectan el resto}
+	\begin{columns}[c]
+		\begin{column}{0.42\textwidth}
+			\centering
+			\begin{tikzpicture}[scale=0.8,
+				nodo/.style={circle, minimum size=11mm, font=\small\bfseries, text=fondo, inner sep=0pt},
+				peso/.style={font=\small, text=apagado}]
+				\draw[verde,  line width=3.4pt, opacity=0.8] (0,2.4)--(3.0,3.1) node[peso, midway, above] {0,8};
+				\draw[ambar,  line width=2.0pt, opacity=0.8] (3.0,3.1)--(3.8,1.2) node[peso, midway, right] {0,5};
+				\draw[rojo,   line width=4.0pt, opacity=0.8] (3.8,1.2)--(1.7,0) node[peso, midway, below] {0,9};
+				\draw[morado, line width=1.4pt, opacity=0.8] (1.7,0)--(-0.5,0.9);
+				\draw[acento, line width=2.6pt, opacity=0.8] (-0.5,0.9)--(0,2.4) node[peso, midway, left] {0,6};
+				\node[nodo, fill=verde]  at (0,2.4)   {R1};
+				\node[nodo, fill=ambar]  at (3.0,3.1) {R2};
+				\node[nodo, fill=rojo]   at (3.8,1.2) {R3};
+				\node[nodo, fill=acento] at (1.7,0)   {R4};
+				\node[nodo, fill=morado] at (-0.5,0.9){R5};
+			\end{tikzpicture}
 		\end{column}
-		\begin{column}{0.31\textwidth}\centering
-			{\color{verde}\fontsize{40}{40}\selectfont\bfseries ?}\\[0.7em]
-			{\large\bfseries Agrupamiento}\\[0.4em]
-			{\color{apagado}\small si forma bloques\\ muy conectados}
-		\end{column}
-		\begin{column}{0.31\textwidth}\centering
-			{\color{ambar}\fontsize{40}{40}\selectfont\bfseries ?}\\[0.7em]
-			{\large\bfseries Componentes}\\[0.4em]
-			{\color{apagado}\small si se separa\\ en partes aisladas}
+		\begin{column}{0.54\textwidth}
+			{\Large
+			Región $=$ \clave{nodo}\\[0.9em]
+			Conexión $=$ \clave{arista con peso}\\[1.6em]
+			{\color{apagado} Puntos de paso}\\[0.5em]
+			{\color{apagado} Agrupamiento}\\[0.5em]
+			{\color{apagado} Componentes}}
 		\end{column}
 	\end{columns}
-	\vfill
 \end{frame}
 
-% ------------------------------------------------------------- escritorio ---
-\begin{frame}{Lo que ya existe: en el escritorio}
-	\vfill
+% ============================================== 3. LO QUE YA EXISTE ==========
+\begin{frame}{Lo que ya existe}
+	\vspace{0.2em}
 	\begin{center}
 		\begin{tikzpicture}[font=\normalsize,
-			f/.style={rounded corners=6pt, draw=linea, fill=superficie, inner sep=0.9em,
-			          text width=3.8cm, align=center, minimum height=3.0cm, anchor=north}, font=\large]
-			\node[f] at (0,0)   {{\color{ambar}\bfseries BrainNet\\ Viewer}\\[0.5em]
-			                     {\color{apagado}\small depende de\\ MATLAB}};
-			\node[f] at (4.9,0) {{\color{ambar}\bfseries Connectome\\ Workbench}\\[0.5em]
-			                     {\color{apagado}\small formatos\\ propios}};
-			\node[f] at (9.8,0) {{\color{ambar}\bfseries Gephi}\\[0.5em]
-			                     {\color{apagado}\small sin anatomía\\ real}};
+			f/.style={rounded corners=6pt, draw=linea, fill=superficie, inner sep=0.5em,
+			          text width=3.3cm, align=center, minimum height=1.2cm, anchor=north}]
+			\node[text=apagado, anchor=north west, font=\small] at (-0.1,0.95) {ESCRITORIO};
+			\node[f] at (1.65,0.45)  {{\color{ambar}\bfseries BrainNet Viewer}};
+			\node[f] at (5.35,0.45)  {{\color{ambar}\bfseries Connectome Workbench}};
+			\node[f] at (9.05,0.45)  {{\color{ambar}\bfseries Gephi}};
+			\node[text=apagado, anchor=north west, font=\small] at (-0.1,-1.25) {NAVEGADOR};
+			\node[f] at (1.65,-1.75) {{\color{verde}\bfseries Vizaj}};
+			\node[f] at (5.35,-1.75) {{\color{verde}\bfseries BioImage Suite Web}};
+			\node[f] at (9.05,-1.75) {{\color{verde}\bfseries Neuroglancer}};
 		\end{tikzpicture}
 	\end{center}
-	\vfill
-\end{frame}
-
-% -------------------------------------------------------------- navegador ---
-\begin{frame}{Lo que ya existe: en el navegador}
-	\vfill
+	\vspace{0.7em}
 	\begin{center}
-		\begin{tikzpicture}[font=\normalsize,
-			f/.style={rounded corners=6pt, draw=linea, fill=superficie, inner sep=0.9em,
-			          text width=3.8cm, align=center, minimum height=3.0cm, anchor=north}, font=\large]
-			\node[f] at (0,0)   {{\color{verde}\bfseries Vizaj}\\[0.5em]
-			                     {\color{apagado}\small sin análisis\\ en servidor}};
-			\node[f] at (4.9,0) {{\color{verde}\bfseries BioImage\\ Suite Web}\\[0.5em]
-			                     {\color{apagado}\small una suite\\ enorme}};
-			\node[f] at (9.8,0) {{\color{verde}\bfseries Neuroglancer}\\[0.5em]
-			                     {\color{apagado}\small para imagen,\\ no para redes}};
-		\end{tikzpicture}
+		{\Large Ninguna \clave{analiza la red en el servidor}}
 	\end{center}
-	\vfill
 \end{frame}
 
-% ------------------------------------------------------------- el hueco -----
-\begin{frame}{El hueco}
-	\frase{Una herramienta \textcolor{acentoclaro}{web y ligera},\\[0.4em]
-	que \textcolor{acentoclaro}{analice la red en el servidor}\\[0.4em]
-	y se pueda \textcolor{acentoclaro}{desplegar en cualquier sitio}.}
-\end{frame}
-
-\section{Qué se pedía}
-
-% ------------------------------------------------------------- objetivo -----
-\begin{frame}{Objetivo}
-	\frase{Diseñar, desarrollar y desplegar\\[0.3em] una aplicación web para
-	\textcolor{acentoclaro}{visualizar}\\[0.3em] y \textcolor{acentoclaro}{analizar}
-	redes cerebrales en 3D.}
-\end{frame}
-
-% ----------------------------------------------------- objetivos concretos --
-\begin{frame}{Cinco objetivos}
-	\vfill
+% ================================================ 4. OBJETIVOS ==============
+\begin{frame}{Objetivos y requisitos}
+	\vspace{0.6em}
 	\begin{center}
-		\begin{minipage}{0.78\paperwidth}\large
+		\begin{minipage}{0.8\paperwidth}\normalsize
 			\begin{enumerate}
-				\setlength{\itemsep}{0.6em}
-				\item Visualizar la red en 3D, en tiempo real.
-				\item Analizarla con métricas de teoría de grafos.
-				\item Navegar, filtrar, seleccionar e inspeccionar.
-				\item Que sea mantenible.
-				\item Que se pueda desplegar.
+				\setlength{\itemsep}{0.35em}
+				\item Visualizar en 3D, en tiempo real
+				\item Analizar con métricas de grafos
+				\item Navegar, filtrar y seleccionar
+				\item Mantenible
+				\item Desplegable
 			\end{enumerate}
 		\end{minipage}
 	\end{center}
-	\vfill
-\end{frame}
-
-% -------------------------------------------------------------- números -----
-\begin{frame}{Requisitos}
-	\vfill
+	\vspace{0.8em}
 	\begin{center}
 		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{acento}\fontsize{56}{56}\selectfont\bfseries 18}\\[0.5em]
-			{\large funcionales}
+			{\color{acento}\fontsize{36}{36}\selectfont\bfseries 18}\\[0.3em]{\large funcionales}
 		\end{minipage}%
 		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{verde}\fontsize{56}{56}\selectfont\bfseries 7}\\[0.5em]
-			{\large no funcionales}
+			{\color{verde}\fontsize{36}{36}\selectfont\bfseries 7}\\[0.3em]{\large no funcionales}
 		\end{minipage}%
 		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{ambar}\fontsize{56}{56}\selectfont\bfseries 4}\\[0.5em]
-			{\large de información}
+			{\color{ambar}\fontsize{36}{36}\selectfont\bfseries 4}\\[0.3em]{\large de información}
 		\end{minipage}
 	\end{center}
-	\vfill
 \end{frame}
 
-% --------------------------------------------------------------- sprints ----
-\begin{frame}{Cuatro sprints}
-	\vfill
-	\begin{center}
-		\begin{tikzpicture}[font=\normalsize,
-			s/.style={rounded corners=6pt, draw=linea, fill=superficie, inner sep=0.8em,
-			          text width=2.9cm, align=center, minimum height=2.5cm, anchor=north}, font=\Large]
-			\node[s] at (0,0)    {{\color{acento}\bfseries 1}\\[0.4em] ver};
-			\node[s] at (3.7,0)  {{\color{verde}\bfseries 2}\\[0.4em] explorar};
-			\node[s] at (7.4,0)  {{\color{ambar}\bfseries 3}\\[0.4em] analizar};
-			\node[s] at (11.1,0) {{\color{morado}\bfseries 4}\\[0.4em] usuarios};
-		\end{tikzpicture}
-	\end{center}
-	\vspace{1.2em}
-	\begin{center}
-		{\color{apagado} Cada sprint acaba en algo que se puede enseñar y probar}
-	\end{center}
-	\vfill
-\end{frame}
-
-\section{Cómo lo he construido}
-
-% ---------------------------------------------------------- arquitectura ----
+% =============================================== 5. ARQUITECTURA ============
 \begin{frame}{Arquitectura}
 	\vfill
 	\begin{center}
-		\begin{tikzpicture}[font=\normalsize,
-			caja/.style={rounded corners=8pt, draw=linea, fill=superficie, inner sep=0.9em,
-			             text width=3.1cm, align=center, minimum height=2.3cm},
+		\begin{tikzpicture}[font=\large,
+			caja/.style={rounded corners=8pt, draw=linea, fill=superficie, inner sep=0.8em,
+			             text width=3.4cm, align=center, minimum height=2.3cm},
 			flecha/.style={-{Stealth[length=4mm]}, acento, line width=1.6pt}]
 			\node[caja] (cli) at (0,0)
-				{{\color{acentoclaro}\bfseries Navegador}\\[0.4em]
-				 {\color{apagado}\small React\\ Three.js}};
-			\node[caja] (srv) at (5.2,0)
-				{{\color{verde}\bfseries Servidor}\\[0.4em]
-				 {\color{apagado}\small Flask\\ NetworkX}};
-			\node[caja] (dat) at (10.4,0)
-				{{\color{ambar}\bfseries Datos}\\[0.4em]
-				 {\color{apagado}\small ficheros\\ PostgreSQL}};
+				{{\color{acentoclaro}\bfseries Navegador}\\[0.3em]
+				 {\color{apagado}\small React · Three.js}};
+			\node[caja] (srv) at (5.6,0)
+				{{\color{verde}\bfseries Servidor}\\[0.3em]
+				 {\color{apagado}\small Flask · NetworkX}};
+			\node[caja] (dat) at (11.2,0)
+				{{\color{ambar}\bfseries Datos}\\[0.3em]
+				 {\color{apagado}\small PostgreSQL}};
 			\draw[flecha] (cli) -- node[above, text=apagado, font=\small] {JSON} (srv);
 			\draw[flecha] (srv) -- (dat);
-			\node[text=tenue, font=\small] at (0,-2.0)   {dibuja};
-			\node[text=tenue, font=\small] at (5.2,-2.0) {calcula};
+			\node[text=tenue, font=\small] at (0,-1.9)   {dibuja};
+			\node[text=tenue, font=\small] at (5.6,-1.9) {calcula};
 		\end{tikzpicture}
 	\end{center}
 	\vfill
 \end{frame}
 
-% ---------------------------------------------------------- tecnologías -----
-\begin{frame}{Tecnologías}
-	\vfill
+% ============================================== 6. MÓDULOS ==================
+\begin{frame}{Módulos del sistema}
+	\vspace{0.4em}
 	\begin{center}
-		\begin{tikzpicture}[font=\normalsize,
-			t/.style={rounded corners=6pt, draw=linea, fill=superficie, inner sep=0.7em,
-			          text width=3.7cm, align=center, minimum height=1.7cm, anchor=north}, font=\Large]
-			\node[t] at (0,0)     {{\color{verde}\bfseries Flask}};
-			\node[t] at (4.7,0)   {{\color{ambar}\bfseries NetworkX}};
-			\node[t] at (9.4,0)   {{\color{acentoclaro}\bfseries React}};
-			\node[t] at (0,-2.3)   {{\color{morado}\bfseries Three.js}};
-			\node[t] at (4.7,-2.3) {{\color{rojo}\bfseries PostgreSQL}};
-			\node[t] at (9.4,-2.3) {{\color{acento}\bfseries Docker}};
+		\begin{tikzpicture}[font=\small,
+			m/.style={rounded corners=4pt, draw=linea, fill=superficiedos, inner sep=0.35em,
+			          text width=2.0cm, align=center, minimum height=0.78cm},
+			fl/.style={-{Stealth[length=2.4mm]}, acento, line width=0.9pt}]
+			% frontend, en columna
+			\node[m] (app) at (0,0)     {{\color{acentoclaro}\bfseries App.jsx}};
+			\node[m] (acc) at (0,-1.1)  {{\color{acentoclaro}\bfseries Acceso.jsx}};
+			\node[m] (red) at (0,-2.2)  {{\color{acentoclaro}\bfseries Redes.jsx}};
+			\node[m] (adm) at (0,-3.3)  {{\color{acentoclaro}\bfseries Administracion}};
+			\node[m] (api) at (2.8,-1.65) {{\color{acentoclaro}\bfseries api.js}};
+			\node[text=acentoclaro, anchor=south, font=\small] at (1.4,0.6) {Frontend (React)};
+			\draw[linea, dashed, rounded corners=6pt] (-1.4,0.5) rectangle (3.9,-3.95);
+			\foreach \n in {app,acc,red,adm} \draw[fl] (\n) -- (api);
+			% backend
+			\node[m] (apy) at (5.9,-1.65) {{\color{verde}\bfseries app.py}};
+			\node[m] (aut) at (8.7,-0.2)  {{\color{verde}\bfseries auth.py}};
+			\node[m] (rds) at (8.7,-1.3)  {{\color{verde}\bfseries redes.py}};
+			\node[m] (gpy) at (8.7,-2.4)  {{\color{verde}\bfseries graph\_parser}};
+			\node[m] (adp) at (8.7,-3.45) {{\color{verde}\bfseries administracion}};
+			\node[m] (mod) at (11.5,-1.3) {{\color{verde}\bfseries models.py}};
+			\node[m, draw=ambar] (bd) at (11.5,-2.7) {{\color{ambar}\bfseries Base de datos}};
+			\node[text=verde, anchor=south, font=\small] at (8.7,0.6) {Backend (Flask)};
+			\draw[linea, dashed, rounded corners=6pt] (4.75,0.5) rectangle (12.7,-4.1);
+			\draw[fl] (api) -- node[above, text=apagado, font=\scriptsize] {HTTP} (apy);
+			\foreach \n in {aut,rds,adp} \draw[fl] (apy) -- (\n);
+			\draw[fl] (rds) -- (gpy);
+			\foreach \n in {aut,rds,adp} \draw[fl] (\n) -- (mod);
+			\draw[fl] (mod) -- (bd);
 		\end{tikzpicture}
 	\end{center}
-	\vfill
 \end{frame}
 
-% ------------------------------------------------------------- la app -------
-\begin{lienzo}{app_completa}
-	\rotulo{{\Large\bfseries Sprint 1}\\[0.3em]{\color{acentoclaro}\large 90 regiones en 3D}}
-\end{lienzo}
+% ======================================== 7. PLANIFICACIÓN Y COSTE ==========
+\begin{frame}{Planificación y presupuesto}
+	\vspace{0.3em}
+	\begin{columns}[T]
+		\begin{column}{0.56\textwidth}
+			\begin{tikzpicture}[font=\small, xscale=0.175, yscale=0.55]
+				\foreach \i/\t/\ini/\dur/\c in {%
+					0/{Requisitos}/0/5/acento,
+					1/{Planificación}/5/4/acento,
+					2/{Sprint 1}/9/8/verde,
+					3/{Sprint 2}/17/7/verde,
+					4/{Sprint 3}/24/7/verde,
+					5/{Sprint 4}/31/5/verde,
+					6/{Memoria}/9/29/ambar} {
+					\node[text=texto, anchor=east, font=\scriptsize] at (-0.8,-\i) {\t};
+					\fill[\c, rounded corners=2pt] (\ini,-\i-0.32) rectangle (\ini+\dur,-\i+0.32);
+				}
+				\draw[linea] (0,-6.9) -- (38,-6.9);
+				\foreach \d in {0,10,20,30,38}
+					\node[text=tenue, anchor=north, font=\scriptsize] at (\d,-7.0) {\d};
+				\node[text=apagado, anchor=north, font=\scriptsize] at (19,-7.9) {días laborables};
+			\end{tikzpicture}
+		\end{column}
+		\begin{column}{0.4\textwidth}
+			\vspace{0.4em}
+			\begin{tikzpicture}[font=\normalsize]
+				\foreach \i/\m/\v in {0/{Personal}/{4.906,80}, 1/{Equipo}/{35,72},
+				                      2/{Licencias}/{25,85}} {
+					\node[text=apagado, anchor=west] at (0,-\i*0.95) {\m};
+					\node[text=texto, anchor=east] at (4.9,-\i*0.95) {\v\,\euro};
+				}
+				\draw[linea, line width=1pt] (0,-3.1) -- (4.9,-3.1);
+				\node[text=texto, anchor=west, font=\large\bfseries] at (0,-3.8) {Total};
+				\node[text=ambar, anchor=east, font=\large\bfseries] at (4.9,-3.8) {4.968,37\,\euro};
+			\end{tikzpicture}
+			\vspace{0.9em}
 
-\begin{lienzo}{escena_umbral_0}
-	\rotulo{{\Large\bfseries Umbral 0,00}\\[0.3em]{\color{acentoclaro}\large 411 conexiones}}
-\end{lienzo}
+			{\color{apagado} 38 días · 304 horas}
+		\end{column}
+	\end{columns}
+\end{frame}
 
-\begin{lienzo}{escena_umbral_70}
-	\rotulo{{\Large\bfseries Umbral 0,70}\\[0.3em]{\color{acentoclaro}\large aparece la estructura}}
-\end{lienzo}
+% ============================================ 8. SPRINTS 1 Y 2 ==============
+\begingroup
+\setbeamertemplate{footline}{}
+\begin{frame}[plain]
+	\begin{tikzpicture}[remember picture, overlay]
+		\begin{scope}
+			\clip (current page.north west) rectangle
+				([xshift=0.5\paperwidth]current page.south west);
+			\node[anchor=north west, inner sep=0pt]
+				at ([xshift=-0.25\paperwidth]current page.north west)
+				{\includegraphics[height=\paperheight]{escena_umbral_0}};
+		\end{scope}
+		\begin{scope}
+			\clip ([xshift=0.5\paperwidth]current page.north west) rectangle
+				(current page.south east);
+			\node[anchor=north east, inner sep=0pt]
+				at ([xshift=0.25\paperwidth]current page.north east)
+				{\includegraphics[height=\paperheight]{escena_umbral_70}};
+		\end{scope}
+		\draw[acento, line width=1.5pt]
+			([xshift=0.5\paperwidth]current page.north west) --
+			([xshift=0.5\paperwidth]current page.south west);
+		\node[anchor=north west, fill=fondo, fill opacity=0.88, text opacity=1, inner sep=0.7em,
+		      rounded corners=6pt, text=texto, font=\Large\bfseries]
+			at ([shift={(0.04\paperwidth,-0.07\paperheight)}]current page.north west)
+			{411 conexiones};
+		\node[anchor=north east, fill=fondo, fill opacity=0.88, text opacity=1, inner sep=0.7em,
+		      rounded corners=6pt, text=texto, font=\Large\bfseries]
+			at ([shift={(-0.04\paperwidth,-0.07\paperheight)}]current page.north east)
+			{umbral 0,70};
+	\end{tikzpicture}
+\end{frame}
+\endgroup
 
-\begin{lienzo}{app_seleccion}
-	\rotuloder{{\Large\bfseries Seleccionar}\\[0.3em]{\color{acentoclaro}\large PUT.L, grado 11 de 11}}
-\end{lienzo}
-
+% ================================================= 9. EL GRADO ==============
 \begin{lienzo}{app_grado_umbral}
-	\rotuloder{{\Large\bfseries Con umbral 0,62}\\[0.3em]{\color{acentoclaro}\large grado 7 de 11}}
+	\rotuloder{{\Large\bfseries Grado 7 de 11}\\[0.3em]
+	           {\color{acentoclaro}\large cambia con el umbral}}
 \end{lienzo}
 
-% -------------------------------------------------------- el rendimiento ----
-\begin{frame}{El problema}
-	\frase[rojo]{Cada vez que se movía el control,\\[0.3em]
-	se reconstruía \textcolor{texto}{la geometría entera}.}
-\end{frame}
-
-\begin{frame}{La propiedad que lo simplifica}
-	\vfill
+% ============================================= 10. RENDIMIENTO ==============
+\begin{frame}{El problema de rendimiento}
+	\vspace{0.1em}
+	\begin{center}
+		{\color{rojo}\Large Reconstruía la geometría entera}
+	\end{center}
+	\vspace{0.7em}
 	\begin{center}
 		\begin{tikzpicture}
-			\foreach \i in {0,...,5} \fill[verde] (\i*1.05, 0) rectangle (\i*1.05+0.8, 1.0);
-			\foreach \i in {6,...,11} \fill[linea] (\i*1.05, 0) rectangle (\i*1.05+0.8, 1.0);
-			\draw[acento, line width=2.5pt] (6.22,-0.5) -- (6.22,1.5);
-			\node[text=acento, anchor=south, font=\bfseries] at (6.22,1.6) {umbral};
-			\node[text=verde,   anchor=north, font=\normalsize] at (2.8,-0.6) {se dibujan};
-			\node[text=tenue,   anchor=north, font=\normalsize] at (9.4,-0.6) {no};
-			\node[text=apagado, anchor=west,  font=\normalsize] at (0,2.4)
+			\foreach \i in {0,...,5} \fill[verde] (\i*1.0, 0) rectangle (\i*1.0+0.78, 0.75);
+			\foreach \i in {6,...,11} \fill[linea] (\i*1.0, 0) rectangle (\i*1.0+0.78, 0.75);
+			\draw[acento, line width=2.5pt] (5.92,-0.4) -- (5.92,1.15);
+			\node[text=acento, anchor=south, font=\bfseries] at (5.92,1.2) {umbral};
+			\node[text=apagado, anchor=west, font=\small] at (0,-0.9)
 				{aristas ordenadas por peso};
 		\end{tikzpicture}
 	\end{center}
-	\vfill
-\end{frame}
-
-\begin{frame}{El resultado}
-	\vfill
+	\vspace{0.6em}
 	\begin{center}
-		{\color{verde}\fontsize{60}{60}\selectfont\bfseries $O(\log E)$}\\[1.4em]
-		{\large Filtrar deja de depender\\[0.3em] del tamaño de la red}
+		{\color{verde}\fontsize{30}{30}\selectfont\bfseries $O(\log E)$}
 	\end{center}
-	\vfill
 \end{frame}
 
-% ------------------------------------------------------------ revisiones ----
+% ============================================== 11. REVISIONES ==============
 \begin{frame}{Lo que salió de las revisiones}
 	\vfill
 	\begin{center}
 		\begin{minipage}{0.8\paperwidth}\Large
 			\begin{itemize}
-				\setlength{\itemsep}{1.0em}
+				\setlength{\itemsep}{1.1em}
 				\item Conexiones más gruesas
 				\item El grado, con el umbral
 				\item Resaltar sin desteñir
@@ -314,164 +306,92 @@
 	\vfill
 \end{frame}
 
-% -------------------------------------------------------------- métricas ----
-\begin{frame}{Las métricas de la red}
-	\vfill
-	\begin{center}
-		\begin{tikzpicture}[font=\normalsize]
-			\foreach \i/\m/\v/\c in {0/{Densidad}/{0,103}/acento, 1/{Grado medio}/{9,13}/verde,
-			                         2/{Agrupamiento}/{0,548}/ambar, 3/{Componentes}/{1}/morado} {
-				\node[text=apagado, anchor=west, font=\Large] at (0, -\i*1.25) {\m};
-				\node[text=\c, anchor=east, font=\fontsize{26}{26}\selectfont\bfseries] at (11,-\i*1.25) {\v};
-				\draw[linea] (0,-\i*1.25-0.55) -- (11,-\i*1.25-0.55);
-			}
-		\end{tikzpicture}
-	\end{center}
-	\vfill
-\end{frame}
-
+% ============================================== 12. SPRINT 3 ================
 \begin{lienzo}{escena_intermediacion}
 	\rotuloder{{\Large\bfseries Mapeo visual}\\[0.3em]
 	           {\color{acentoclaro}\large color y tamaño $=$ intermediación}}
 \end{lienzo}
 
-\begin{lienzo}{app_busqueda}
-	\rotuloder{{\Large\bfseries Buscador}\\[0.3em]{\color{acentoclaro}\large la lista de las 90 regiones}}
-\end{lienzo}
-
-% ----------------------------------------------------------- validación -----
+% ============================================== 13. VALIDAR ================
 \begin{frame}{¿Y esos números están bien?}
-	\frase{Contrasté las cinco métricas con\\[0.3em]
-	\textcolor{acentoclaro}{implementaciones escritas por mí},\\[0.3em]
-	incluido el algoritmo de \textcolor{acentoclaro}{Brandes}.}
-\end{frame}
-
-\begin{frame}{Y apareció un error real}
 	\vfill
 	\begin{center}
-		{\color{apagado} La librería creaba una conexión por cada celda de la matriz}\\[1.2em]
-		{\color{rojo}\fontsize{26}{30}\selectfont\bfseries Todos los nodos\\[0.2em] tenían el mismo grado}\\[1.2em]
-		{\color{apagado} y en pantalla no se veía nada raro}
+		{\Large Contrasté las cinco métricas con\\[0.4em]
+		\clave{implementaciones escritas por mí}}\\[2.0em]
+		{\color{rojo}\Large Apareció un error real}\\[0.6em]
+		{\color{apagado}\large todos los nodos tenían el mismo grado}
 	\end{center}
 	\vfill
 \end{frame}
 
-% ------------------------------------------------------------- sprint 4 -----
+% ============================================== 14. SPRINT 4 ================
 \begin{lienzo}{app_catalogo}
-	\rotulo{{\Large\bfseries Sprint 4}\\[0.3em]{\color{acentoclaro}\large cuentas y catálogo de redes}}
+	\rotulo{{\Large\bfseries Sprint 4}\\[0.3em]
+	        {\color{acentoclaro}\large cuentas y redes propias}}
 \end{lienzo}
 
-\begin{lienzo}{app_subida}
-	\rotulo{{\Large\bfseries Redes propias}\\[0.3em]{\color{acentoclaro}\large que solo ve quien las sube}}
-\end{lienzo}
-
-\begin{frame}{Lo que hubo que resolver}
-	\vfill
-	\begin{center}
-		\begin{minipage}{0.82\paperwidth}\Large
-			\begin{itemize}
-				\setlength{\itemsep}{1.0em}
-				\item Las contraseñas no se guardan
-				\item La sesión va firmada
-				\item Cada consulta filtra por usuario
-			\end{itemize}
-		\end{minipage}
-	\end{center}
-	\vfill
-\end{frame}
-
-% --------------------------------------------------------------- móvil ------
-\begin{frame}{En el móvil}
-	\vfill
+% ============================================== 15. PUBLICADA ==============
+\begin{frame}{Publicada, y en cualquier pantalla}
+	\vspace{0.4em}
 	\begin{center}
 		\begin{tikzpicture}
 			\node[draw=linea, line width=1.5pt, rounded corners=10pt, inner sep=0pt]
-				{\includegraphics[width=0.68\paperwidth]{app_movil_horizontal}};
+				{\includegraphics[width=0.62\paperwidth]{app_movil_horizontal}};
 		\end{tikzpicture}
 	\end{center}
-	\vfill
+	\vspace{0.9em}
+	\begin{center}{\Large\texttt{brain-viz.onrender.com}}\end{center}
 \end{frame}
 
-% ------------------------------------------------------------ despliegue ----
-\begin{frame}{Despliegue}
-	\vfill
-	\begin{center}
-		\begin{tikzpicture}[font=\normalsize,
-			c/.style={rounded corners=8pt, draw=linea, fill=superficie, inner sep=0.9em,
-			          text width=4.8cm, align=center, minimum height=2.5cm}, font=\large,
-			flecha/.style={-{Stealth[length=4mm]}, acento, line width=1.6pt}]
-			\node[c, draw=rojo] (a) at (0,0)
-				{{\color{rojo}\bfseries Dos contenedores}\\[0.3em]{\color{apagado}\small de desarrollo}};
-			\node[c, draw=verde] (b) at (8.6,0)
-				{{\color{verde}\bfseries Uno solo}\\[0.3em]{\color{apagado}\small publicado}};
-			\draw[flecha] (a) -- (b);
-		\end{tikzpicture}
-	\end{center}
-	\vspace{1.5em}
-	\begin{center}{\large\texttt{brain-viz.onrender.com}}\end{center}
-	\vfill
-\end{frame}
-
-\section{Cómo sé que funciona}
-
+% ============================================== 16. VALIDACIÓN =============
 \begin{frame}{Validación}
 	\vfill
 	\begin{center}
 		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{acento}\fontsize{56}{56}\selectfont\bfseries 17}\\[0.5em]
+			{\color{acento}\fontsize{48}{48}\selectfont\bfseries 17}\\[0.4em]
 			{\large pruebas\\ automáticas}
 		\end{minipage}%
 		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{verde}\fontsize{56}{56}\selectfont\bfseries 32}\\[0.5em]
+			{\color{verde}\fontsize{48}{48}\selectfont\bfseries 32}\\[0.4em]
 			{\large pruebas de\\ aceptación}
 		\end{minipage}%
 		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{ambar}\fontsize{56}{56}\selectfont\bfseries 5}\\[0.5em]
+			{\color{ambar}\fontsize{48}{48}\selectfont\bfseries 5}\\[0.4em]
 			{\large métricas\\ contrastadas}
 		\end{minipage}
 	\end{center}
 	\vfill
 \end{frame}
 
-\begin{frame}{Rendimiento}
-	\vfill
-	\begin{center}
-		{\color{verde}\fontsize{60}{60}\selectfont\bfseries $\times 30$}\\[1.4em]
-		{\large más conexiones,\\[0.3em] sin degradación apreciable}
-	\end{center}
-	\vfill
-\end{frame}
-
-% ----------------------------------------------------------------- vídeo ----
+% ================================================== 17. VÍDEO ==============
 \begingroup
 \usebackgroundtemplate{\includegraphics[width=\paperwidth, height=\paperheight]{video_portada}}
 \begin{frame}[plain]
 	\velo[0.7]
 	\begin{tikzpicture}[remember picture, overlay]
 		\node[anchor=center, align=center] at (current page.center) {%
-			{\color{acento}\fontsize{44}{44}\selectfont\bfseries $\blacktriangleright$}\\[0.8em]
-			{\color{texto}\fontsize{30}{34}\selectfont\bfseries La aplicación funcionando}\\[0.8em]
-			{\color{apagado}\large 2 minutos y medio}};
+			{\color{acento}\fontsize{40}{40}\selectfont\bfseries $\blacktriangleright$}\\[0.8em]
+			{\color{texto}\fontsize{28}{32}\selectfont\bfseries La aplicación funcionando}};
 	\end{tikzpicture}
 \end{frame}
 \endgroup
 
-\section{Conclusiones}
-
+% ============================================ 18. CUMPLIMIENTO =============
 \begin{frame}{Los cinco objetivos}
 	\vfill
 	\begin{center}
-		\begin{tikzpicture}[font=\normalsize]
+		\begin{tikzpicture}[font=\Large]
 			\foreach \i/\t in {0/{Visualizar en 3D}, 1/{Analizar con métricas},
 			                   2/{Navegar y filtrar}, 3/{Mantenible}, 4/{Desplegable}} {
-				\node[text=verde, anchor=west, font=\Large\bfseries] at (0, -\i*1.05) {$\checkmark$};
-				\node[text=texto, anchor=west, font=\Large] at (1.0, -\i*1.05) {\t};
+				\node[text=verde, anchor=west, font=\Large\bfseries] at (0, -\i*1.0) {$\checkmark$};
+				\node[text=texto, anchor=west] at (1.0, -\i*1.0) {\t};
 			}
 		\end{tikzpicture}
 	\end{center}
 	\vfill
 \end{frame}
 
+% ============================================= 19. CONCLUSIONES ============
 \begin{frame}{Lo que me llevo}
 	\vfill
 	\begin{center}
@@ -488,23 +408,7 @@
 	\vfill
 \end{frame}
 
-\begin{frame}{Trabajo futuro}
-	\vfill
-	\begin{center}
-		\begin{minipage}{0.82\paperwidth}\Large
-			\begin{itemize}
-				\setlength{\itemsep}{1.0em}
-				\item Detectar comunidades y comparar redes
-				\item Más formatos y más atlas
-				\item Compartir una red con personas concretas
-				\item Accesibilidad
-			\end{itemize}
-		\end{minipage}
-	\end{center}
-	\vfill
-\end{frame}
-
-% ---------------------------------------------------------------- cierre ----
+% ================================================== 20. CIERRE =============
 \begingroup
 \usebackgroundtemplate{\includegraphics[width=\paperwidth, height=\paperheight]{hero}}
 \begin{frame}[plain]
@@ -519,66 +423,5 @@
 	\end{tikzpicture}
 \end{frame}
 \endgroup
-
-% =================================================================== reserva =
-\begin{frame}[plain, noframenumbering]
-	\vfill
-	\begin{center}{\color{apagado}\Large Diapositivas de reserva}\end{center}
-	\vfill
-\end{frame}
-
-\begin{frame}[noframenumbering]{Reserva: coste de la intermediación}
-	\vfill
-	\begin{center}
-		\begin{tikzpicture}[font=\normalsize]
-			\node[text=texto, anchor=west] at (0,3.3) {500 nodos, primera vez};
-			\fill[rojo] (0,2.1) rectangle (8.2,2.9);
-			\node[text=rojo, anchor=west, font=\Large\bfseries] at (8.5,2.5) {652 ms};
-			\node[text=texto, anchor=west] at (0,1.4) {ya calculada};
-			\fill[verde] (0,0.2) rectangle (0.36,1.0);
-			\node[text=verde, anchor=west, font=\Large\bfseries] at (0.7,0.6) {4 ms};
-			\node[text=apagado, anchor=west] at (0,-0.7) {147 veces más rápido};
-		\end{tikzpicture}
-	\end{center}
-	\vfill
-\end{frame}
-
-\begin{frame}[noframenumbering]{Reserva: planificación y coste}
-	\vfill
-	\begin{center}
-		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{acento}\fontsize{44}{44}\selectfont\bfseries 38}\\[0.5em]{\large días}
-		\end{minipage}%
-		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{verde}\fontsize{44}{44}\selectfont\bfseries 300}\\[0.5em]{\large horas}
-		\end{minipage}%
-		\begin{minipage}[t]{0.3\textwidth}\centering
-			{\color{ambar}\fontsize{34}{34}\selectfont\bfseries 4.968\,\euro}\\[0.7em]{\large estimado}
-		\end{minipage}
-	\end{center}
-	\vfill
-\end{frame}
-
-\begin{frame}[noframenumbering]{Reserva: el tema claro}
-	\vfill
-	\begin{center}
-		\includegraphics[width=0.66\paperwidth]{app_tema_claro}
-	\end{center}
-	\vfill
-\end{frame}
-
-\begin{frame}[noframenumbering]{Reserva: la interfaz en un teléfono}
-	\centering
-	\includegraphics[height=0.62\textheight]{app_movil_escena}\hspace{1.2em}
-	\includegraphics[height=0.62\textheight]{app_movil_hoja}
-\end{frame}
-
-\begin{frame}[noframenumbering]{Reserva: modelo de datos}
-	\centering\diagrama[0.6\textheight]{clases_sprint4}
-\end{frame}
-
-\begin{frame}[noframenumbering]{Reserva: módulos del sistema}
-	\centering\diagrama[0.6\textheight]{modulos_sprint4}
-\end{frame}
 
 \end{document}
